@@ -10,4 +10,10 @@ public class AppDbContext : DbContext
     {
     }
     public DbSet<Technology> Technologies { get; set; } = null!;
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        base.OnModelCreating(modelBuilder);
+        modelBuilder.ApplyConfigurationsFromAssembly(typeof(AppDbContext).Assembly);
+    }
 }
