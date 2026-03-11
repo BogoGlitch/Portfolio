@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Data;
+using Portfolio.Api.Extensions;
 using Portfolio.Api.Interfaces;
 using Portfolio.Api.Services;
 using System.Reflection;
@@ -35,6 +36,7 @@ if (app.Environment.IsDevelopment())
 }
 
 //app.UseHttpsRedirection();
+app.UseGlobalExceptionHandling();
 app.MapControllers();
 
 app.Run();
