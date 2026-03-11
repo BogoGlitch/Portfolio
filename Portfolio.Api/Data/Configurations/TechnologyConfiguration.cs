@@ -8,6 +8,11 @@ public class TechnologyConfiguration : IEntityTypeConfiguration<Technology>
 {
     public void Configure(EntityTypeBuilder<Technology> builder)
     {
+        builder.HasKey(t => t.Id);
+
+        builder.HasIndex(t => t.Slug)
+               .IsUnique();
+
         builder.Property(t => t.Name)
             .IsRequired()
             .HasMaxLength(100);

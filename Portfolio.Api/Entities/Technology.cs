@@ -10,11 +10,11 @@ public class Technology
 
     public string Description { get; set; } = null!;
 
+    public string Category { get; set; } = null!;
+
     public string? LogoUrl { get; set; }
 
     public string? DocumentationUrl { get; set; }
-
-    public string Category { get; set; } = null!;
 
     public bool IsFeatured { get; set; } = false;
 
