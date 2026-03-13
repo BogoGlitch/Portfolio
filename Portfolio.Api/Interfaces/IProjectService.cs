@@ -1,9 +1,10 @@
-﻿using Portfolio.Api.Dtos;
+﻿using Portfolio.Api.Dtos.Projects;
 
 namespace Portfolio.Api.Interfaces;
 
 public interface IProjectService
 {
-    Task<IEnumerable<ProjectDto>> GetProjectsAsync();
-    Task<ProjectDto?> GetProjectBySlugAsync(string slug);
+    Task<IEnumerable<ProjectReadDto>> GetProjectsAsync();
+    Task<ProjectReadDto?> GetProjectBySlugAsync(string slug);
+    Task<ProjectReadDto> CreateProjectAsync(CreateProjectDto createProjectDto);
 }

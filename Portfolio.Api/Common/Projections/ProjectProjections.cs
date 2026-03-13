@@ -1,4 +1,4 @@
-﻿using Portfolio.Api.Dtos;
+﻿using Portfolio.Api.Dtos.Projects;
 using Portfolio.Api.Entities;
 using System.Linq.Expressions;
 
@@ -6,9 +6,9 @@ namespace Portfolio.Api.Common.Projections;
 
 public static class ProjectProjections
 {
-    public static Expression<Func<Project, ProjectDto>> ToDto()
+    public static Expression<Func<Project, ProjectReadDto>> ToDto()
     {
-        return project => new ProjectDto
+        return project => new ProjectReadDto
         {
             Name = project.Name,
             Slug = project.Slug,

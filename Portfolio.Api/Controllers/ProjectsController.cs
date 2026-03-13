@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Portfolio.Api.Dtos;
+using Portfolio.Api.Dtos.Projects;
 using Portfolio.Api.Interfaces;
 
 namespace Portfolio.Api.Controllers;
@@ -20,8 +20,8 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <returns>A collection of projects.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<ProjectDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<ProjectDto>>> GetProjects()
+    [ProducesResponseType(typeof(IEnumerable<ProjectReadDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<ProjectReadDto>>> GetProjects()
     {
         var projects = await _projectService.GetProjectsAsync();
         return Ok(projects);
@@ -33,10 +33,10 @@ public class ProjectsController : ControllerBase
     /// <param name="slug">The unique slug for the project.</param>
     /// <returns>The matching project if found.</returns>
     [HttpGet("{slug}")]
-    [ProducesResponseType(typeof(ProjectDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ProjectDto>> GetProjectBySlug(string slug)
+    public async Task<ActionResult<ProjectReadDto>> GetProjectBySlug(string slug)
     {
 
         if (string.IsNullOrWhiteSpace(slug))
@@ -50,5 +50,16 @@ public class ProjectsController : ControllerBase
             return NotFound();
         }
         return Ok(project);
+    }
+
+    [HttpPost]
+    public async Task<ActionResult<ProjectReadDto>> CreateProject(CreateProjectDto createProjectDto)
+    {
+        var createdProject = await _projectService.CreateProjectAsync(createProjectDto);
+
+        return CreatedAtAction(
+            nameof(GetProjectBySlug),
+            new { slug = createdProject.Slug },
+            createdProject);
     }
 }

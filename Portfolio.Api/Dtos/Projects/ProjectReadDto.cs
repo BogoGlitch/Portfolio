@@ -1,6 +1,6 @@
-﻿namespace Portfolio.Api.Dtos;
+﻿namespace Portfolio.Api.Dtos.Projects;
 
-public class ProjectDto
+public class ProjectReadDto
 {
     public string Name { get; set; } = null!;
 

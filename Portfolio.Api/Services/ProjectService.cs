@@ -1,7 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Common.Projections;
 using Portfolio.Api.Data;
-using Portfolio.Api.Dtos;
+using Portfolio.Api.Dtos.Projects;
+using Portfolio.Api.Entities;
 using Portfolio.Api.Interfaces;
 
 namespace Portfolio.Api.Services;
@@ -18,7 +19,7 @@ public class ProjectService : IProjectService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<ProjectDto>> GetProjectsAsync()
+    public async Task<IEnumerable<ProjectReadDto>> GetProjectsAsync()
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -33,7 +34,7 @@ public class ProjectService : IProjectService
             .ToListAsync();
     }
 
-    public async Task<ProjectDto?> GetProjectBySlugAsync(string slug)
+    public async Task<ProjectReadDto?> GetProjectBySlugAsync(string slug)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -45,5 +46,24 @@ public class ProjectService : IProjectService
             .Where(project => project.Slug == slug)
             .Select(ProjectProjections.ToDto())
             .FirstOrDefaultAsync();
+    }
+
+    public async Task<ProjectReadDto> CreateProjectAsync(CreateProjectDto createProjectDto)
+    {
+        var project = new Project
+        {
+            Name = createProjectDto.Name,
+            Slug = createProjectDto.Slug,
+            ShortDescription = createProjectDto.ShortDescription,
+            FullDescription = createProjectDto.FullDescription,
+            RepoUrl = createProjectDto.RepoUrl,
+            LiveUrl = createProjectDto.LiveUrl,
+            ImageUrl = createProjectDto.ImageUrl,
+            IsFeatured = false,
+            DateCreatedUtc = DateTime.UtcNow
+        };
+        _context.Projects.Add(project);
+        await _context.SaveChangesAsync();
+        return ProjectProjections.ToDto().Compile()(project);
     }
 }
