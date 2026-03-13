@@ -62,4 +62,17 @@ public class ProjectsController : ControllerBase
             new { slug = createdProject.Slug },
             createdProject);
     }
+
+    [HttpPut("{id:int}")]
+    public async Task<ActionResult<ProjectReadDto>> UpdateProject(int id, UpdateProjectDto updateProjectDto)
+    {
+        var updatedProject = await _projectService.UpdateProjectAsync(id, updateProjectDto);
+
+        if (updatedProject is null)
+        {
+            return NotFound();
+        }
+        return Ok(updatedProject);
+    }
+
 }

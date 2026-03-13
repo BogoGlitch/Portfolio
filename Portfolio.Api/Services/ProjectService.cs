@@ -75,4 +75,28 @@ public class ProjectService : IProjectService
         await _context.SaveChangesAsync();
         return ProjectProjections.ToDto().Compile()(project);
     }
+
+    public async Task<ProjectReadDto?> UpdateProjectAsync(int id, UpdateProjectDto updateProjectDto)
+    {
+        var project = await _context.Projects
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project == null)
+        {
+            return null;
+        }
+
+        project.Name = updateProjectDto.Name;
+        project.Slug = updateProjectDto.Slug;
+        project.ShortDescription = updateProjectDto.ShortDescription;
+        project.FullDescription = updateProjectDto.FullDescription;
+        project.RepoUrl = updateProjectDto.RepoUrl;
+        project.LiveUrl = updateProjectDto.LiveUrl;
+        project.ImageUrl = updateProjectDto.ImageUrl;
+
+        await _context.SaveChangesAsync();
+
+        return ProjectProjections.ToDto().Compile()(project);
+
+    }
 }
