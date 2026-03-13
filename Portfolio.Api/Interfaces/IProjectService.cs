@@ -8,4 +8,5 @@ public interface IProjectService
     Task<ProjectReadDto?> GetProjectBySlugAsync(string slug);
     Task<ProjectReadDto> CreateProjectAsync(CreateProjectDto createProjectDto);
     Task<ProjectReadDto?> UpdateProjectAsync(int id, UpdateProjectDto updateProjectDto);
+    Task<bool> DeleteProjectAsync(int id);
 }

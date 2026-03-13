@@ -99,4 +99,22 @@ public class ProjectService : IProjectService
         return ProjectProjections.ToDto().Compile()(project);
 
     }
+
+    public async Task<bool> DeleteProjectAsync(int id)
+    {
+        var project = await _context.Projects
+            .FirstOrDefaultAsync(p => p.Id == id);
+
+        if (project is null)
+        {
+            return false;
+        }
+
+        _context.Projects.Remove(project);
+
+        await _context.SaveChangesAsync();
+
+        return true;
+
+    }
 }
