@@ -60,7 +60,7 @@ public class ProjectsController : ControllerBase
     [HttpPost]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<ProjectReadDto>> CreateProject(CreateProjectDto createProjectDto)
+    public async Task<ActionResult<ProjectReadDto>> CreateProject([FromBody] CreateProjectDto createProjectDto)
     {
         var createdProject = await _projectService.CreateProjectAsync(createProjectDto);
 
@@ -79,7 +79,7 @@ public class ProjectsController : ControllerBase
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<ProjectReadDto>> UpdateProject(int id, UpdateProjectDto updateProjectDto)
+    public async Task<ActionResult<ProjectReadDto>> UpdateProject(int id, [FromBody] UpdateProjectDto updateProjectDto)
     {
         var updatedProject = await _projectService.UpdateProjectAsync(id, updateProjectDto);
 
