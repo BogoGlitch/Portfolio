@@ -50,6 +50,15 @@ public class ProjectService : IProjectService
 
     public async Task<ProjectReadDto> CreateProjectAsync(CreateProjectDto createProjectDto)
     {
+
+        var slugExists = await _context.Projects
+            .AnyAsync(p => p.Slug == createProjectDto.Slug);
+
+        if (slugExists)
+        {
+            throw new InvalidOperationException($"A project with slug '{createProjectDto.Slug}' already exists.");
+        }
+
         var project = new Project
         {
             Name = createProjectDto.Name,
