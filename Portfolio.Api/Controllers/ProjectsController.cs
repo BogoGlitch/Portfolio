@@ -52,7 +52,14 @@ public class ProjectsController : ControllerBase
         return Ok(project);
     }
 
+    /// <summary>
+    /// Creates a new project.
+    /// </summary>
+    /// <param name="createProjectDto">The project data used to create the project.</param>
+    /// <returns>The created project.</returns>
     [HttpPost]
+    [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProjectReadDto>> CreateProject(CreateProjectDto createProjectDto)
     {
         var createdProject = await _projectService.CreateProjectAsync(createProjectDto);
@@ -63,7 +70,15 @@ public class ProjectsController : ControllerBase
             createdProject);
     }
 
+    /// <summary>
+    /// Updates an existing project.
+    /// </summary>
+    /// <param name="id">The unique identifier of the project to update.</param>
+    /// <param name="updateProjectDto">The updated project data.</param>
+    /// <returns>The updated project if found.</returns>
     [HttpPut("{id:int}")]
+    [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<ProjectReadDto>> UpdateProject(int id, UpdateProjectDto updateProjectDto)
     {
         var updatedProject = await _projectService.UpdateProjectAsync(id, updateProjectDto);
@@ -75,7 +90,14 @@ public class ProjectsController : ControllerBase
         return Ok(updatedProject);
     }
 
+    /// <summary>
+    /// Deletes a project by its unique identifier.
+    /// </summary>
+    /// <param name="id">The unique identifier of the project to delete.</param>
+    /// <returns>No content if the project was deleted; otherwise not found.</returns>
     [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<IActionResult> DeleteProject(int id)
     {
         var projectToDelete = await _projectService.DeleteProjectAsync(id);
