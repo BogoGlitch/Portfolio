@@ -6,14 +6,19 @@ namespace Portfolio.Api.Common.Projections;
 
 public static class TechnologyProjections
 {
-    public static readonly Expression<Func<Technology, TechnologyDto>> ToDto = technology => new TechnologyDto
+    public static Expression<Func<Technology, TechnologyReadDto>> ToDto()
     {
-        Name = technology.Name,
-        Slug = technology.Slug,
-        Description = technology.Description,
-        Category = technology.Category,
-        LogoUrl = technology.LogoUrl,
-        DocumentationUrl = technology.DocumentationUrl,
-        IsFeatured = technology.IsFeatured
-    };
+        return technology => new TechnologyReadDto
+        (
+            technology.Id,
+            technology.Name,
+            technology.Slug,
+            technology.Description,
+            technology.Category,
+            technology.LogoUrl,
+            technology.DocumentationUrl,
+            technology.IsFeatured,
+            technology.DisplayOrder
+        );
+    }
 }

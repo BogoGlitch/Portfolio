@@ -18,5 +18,7 @@ public class Technology
 
     public bool IsFeatured { get; set; } = false;
 
+    public int DisplayOrder { get; set; }
+
     public DateTime DateAddedUtc { get; set; }
 }

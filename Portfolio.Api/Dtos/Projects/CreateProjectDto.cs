@@ -8,5 +8,7 @@ public record CreateProjectDto
     string FullDescription,
     string? RepoUrl,
     string? LiveUrl,
-    string? ImageUrl
+    string? ImageUrl,
+    bool IsFeatured,
+    int DisplayOrder
 );

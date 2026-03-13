@@ -69,6 +69,7 @@ public class ProjectService : IProjectService
             LiveUrl = createProjectDto.LiveUrl,
             ImageUrl = createProjectDto.ImageUrl,
             IsFeatured = false,
+            DisplayOrder = createProjectDto.DisplayOrder,
             DateCreatedUtc = DateTime.UtcNow
         };
         _context.Projects.Add(project);
@@ -93,6 +94,8 @@ public class ProjectService : IProjectService
         project.RepoUrl = updateProjectDto.RepoUrl;
         project.LiveUrl = updateProjectDto.LiveUrl;
         project.ImageUrl = updateProjectDto.ImageUrl;
+        project.IsFeatured = updateProjectDto.IsFeatured;
+        project.DisplayOrder = updateProjectDto.DisplayOrder;
 
         await _context.SaveChangesAsync();
 

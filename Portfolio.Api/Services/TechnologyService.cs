@@ -17,7 +17,7 @@ public class TechnologyService : ITechnologyService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<TechnologyDto>> GetTechnologiesAsync()
+    public async Task<IEnumerable<TechnologyReadDto>> GetTechnologiesAsync()
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -27,11 +27,11 @@ public class TechnologyService : ITechnologyService
         return await _context.Technologies
             .AsNoTracking()
             .OrderBy(t => t.Name)
-            .Select(TechnologyProjections.ToDto)
+            .Select(TechnologyProjections.ToDto())
             .ToListAsync();
     }
 
-    public async Task<TechnologyDto?> GetTechnologyBySlugAsync(string slug)
+    public async Task<TechnologyReadDto?> GetTechnologyBySlugAsync(string slug)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
@@ -43,7 +43,7 @@ public class TechnologyService : ITechnologyService
         return await _context.Technologies
             .AsNoTracking()
             .Where(t => t.Slug == slug)
-            .Select(TechnologyProjections.ToDto)
+            .Select(TechnologyProjections.ToDto())
             .FirstOrDefaultAsync();
     }
 }

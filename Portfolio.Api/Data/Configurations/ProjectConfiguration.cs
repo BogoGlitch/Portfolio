@@ -18,7 +18,7 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
         builder.HasIndex(p => p.Slug)
             .IsUnique();
 
-        //Properties
+        // Properties
         builder.Property(p => p.Name)
             .IsRequired()
             .HasMaxLength(150);
@@ -45,6 +45,9 @@ public class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasMaxLength(500);
 
         builder.Property(p => p.IsFeatured)
+            .IsRequired();
+
+        builder.Property(p => p.DisplayOrder)
             .IsRequired();
 
         builder.Property(p => p.DateCreatedUtc)

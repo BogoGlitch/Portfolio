@@ -4,6 +4,6 @@ namespace Portfolio.Api.Interfaces;
 
 public interface ITechnologyService
 {
-    Task<IEnumerable<TechnologyDto>> GetTechnologiesAsync();
-    Task<TechnologyDto?> GetTechnologyBySlugAsync(string slug);
+    Task<IEnumerable<TechnologyReadDto>> GetTechnologiesAsync();
+    Task<TechnologyReadDto?> GetTechnologyBySlugAsync(string slug);
 }

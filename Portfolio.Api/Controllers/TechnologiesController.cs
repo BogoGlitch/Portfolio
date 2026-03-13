@@ -17,27 +17,27 @@ public class TechnologiesController : ControllerBase
     }
 
     /// <summary>
-    /// Gets all technologies.
+    /// Retrieves all technologies.
     /// </summary>
     /// <returns>A list of technologies.</returns>
     [HttpGet]
-    [ProducesResponseType(typeof(IEnumerable<TechnologyDto>), StatusCodes.Status200OK)]
-    public async Task<ActionResult<IEnumerable<TechnologyDto>>> GetTechnologies()
+    [ProducesResponseType(typeof(IEnumerable<TechnologyReadDto>), StatusCodes.Status200OK)]
+    public async Task<ActionResult<IEnumerable<TechnologyReadDto>>> GetTechnologies()
     {
         var technologies = await _technologyService.GetTechnologiesAsync();
         return Ok(technologies);
     }
 
     /// <summary>
-    /// Gets a technology by its slug.
+    /// Retrieves a technology by its slug.
     /// </summary>
     /// <param name="slug">The unique slug for the technology.</param>
     /// <returns>The matching technology if found.</returns>
     [HttpGet("{slug:minlength(1)}")]
-    [ProducesResponseType(typeof(TechnologyDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<TechnologyDto>> GetTechnologyBySlug(string slug)
+    public async Task<ActionResult<TechnologyReadDto>> GetTechnologyBySlug(string slug)
     {
         if (string.IsNullOrWhiteSpace(slug))
         {

@@ -8,11 +8,17 @@ public class TechnologyConfiguration : IEntityTypeConfiguration<Technology>
 {
     public void Configure(EntityTypeBuilder<Technology> builder)
     {
+        // Table
+        builder.ToTable("Technologies");
+
+        // Key(s)
         builder.HasKey(t => t.Id);
 
+        // Index(es)
         builder.HasIndex(t => t.Slug)
-               .IsUnique();
+            .IsUnique();
 
+        // Properties
         builder.Property(t => t.Name)
             .IsRequired()
             .HasMaxLength(100);
@@ -34,6 +40,15 @@ public class TechnologyConfiguration : IEntityTypeConfiguration<Technology>
 
         builder.Property(t => t.DocumentationUrl)
             .HasMaxLength(500);
+
+        builder.Property(t => t.IsFeatured)
+            .IsRequired();
+
+        builder.Property(t => t.DisplayOrder)
+            .IsRequired();
+
+        builder.Property(t => t.DateAddedUtc)
+            .IsRequired();
 
     }
 }
