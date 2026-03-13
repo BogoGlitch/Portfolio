@@ -18,7 +18,7 @@ public class Project
 
     public string? ImageUrl { get; set; }
 
-    public bool IsFeatured { get; set; }
+    public bool IsFeatured { get; set; } = false;
 
     public int DisplayOrder { get; set; }
 

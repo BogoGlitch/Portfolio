@@ -22,6 +22,7 @@ public class TechnologiesController : ControllerBase
     /// <returns>A list of technologies.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TechnologyReadDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<TechnologyReadDto>>> GetTechnologies()
     {
         var technologies = await _technologyService.GetTechnologiesAsync();
@@ -37,6 +38,7 @@ public class TechnologiesController : ControllerBase
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TechnologyReadDto>> GetTechnologyBySlug(string slug)
     {
         if (string.IsNullOrWhiteSpace(slug))

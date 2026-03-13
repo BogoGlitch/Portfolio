@@ -10,7 +10,7 @@ public sealed class GlobalExceptionHandlingMiddleware
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
     };
 
-    private RequestDelegate _next;
+    private readonly RequestDelegate _next;
     private readonly ILogger<GlobalExceptionHandlingMiddleware> _logger;
 
     public GlobalExceptionHandlingMiddleware(
@@ -31,7 +31,7 @@ public sealed class GlobalExceptionHandlingMiddleware
         {
             _logger.LogError(
                 exception,
-                "An unhandled exception occurred while process request {Method} {Path}",
+                "An unhandled exception occurred while processing request {Method} {Path}",
                 context.Request.Method,
                 context.Request.Path);
 

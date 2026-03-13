@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Portfolio.Api.Dtos;
 using Portfolio.Api.Dtos.Projects;
 using Portfolio.Api.Interfaces;
 
@@ -6,6 +7,8 @@ namespace Portfolio.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
+[Produces("application/json")]
+
 public class ProjectsController : ControllerBase
 {
     private readonly IProjectService _projectService;
@@ -21,6 +24,7 @@ public class ProjectsController : ControllerBase
     /// <returns>A collection of projects.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ProjectReadDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<ProjectReadDto>>> GetProjects()
     {
         var projects = await _projectService.GetProjectsAsync();
@@ -32,10 +36,11 @@ public class ProjectsController : ControllerBase
     /// </summary>
     /// <param name="slug">The unique slug for the project.</param>
     /// <returns>The matching project if found.</returns>
-    [HttpGet("{slug}")]
+    [HttpGet("{slug:minlength(1)}")]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProjectReadDto>> GetProjectBySlug(string slug)
     {
 
@@ -59,7 +64,8 @@ public class ProjectsController : ControllerBase
     /// <returns>The created project.</returns>
     [HttpPost]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProjectReadDto>> CreateProject([FromBody] CreateProjectDto createProjectDto)
     {
         var createdProject = await _projectService.CreateProjectAsync(createProjectDto);
@@ -78,7 +84,9 @@ public class ProjectsController : ControllerBase
     /// <returns>The updated project if found.</returns>
     [HttpPut("{id:int}")]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProjectReadDto>> UpdateProject(int id, [FromBody] UpdateProjectDto updateProjectDto)
     {
         var updatedProject = await _projectService.UpdateProjectAsync(id, updateProjectDto);
@@ -98,6 +106,7 @@ public class ProjectsController : ControllerBase
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteProject(int id)
     {
         var projectToDelete = await _projectService.DeleteProjectAsync(id);

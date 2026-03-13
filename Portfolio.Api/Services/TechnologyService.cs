@@ -26,7 +26,8 @@ public class TechnologyService : ITechnologyService
 
         return await _context.Technologies
             .AsNoTracking()
-            .OrderBy(t => t.Name)
+            .OrderBy(t => t.DisplayOrder)
+            .ThenBy(t => t.Name)
             .Select(TechnologyProjections.ToDto())
             .ToListAsync();
     }
@@ -38,7 +39,7 @@ public class TechnologyService : ITechnologyService
             _logger.LogInformation("Fetching technology by slug: {Slug}", slug);
         }
 
-        slug = slug.ToLowerInvariant();
+        slug = slug.Trim().ToLowerInvariant();
 
         return await _context.Technologies
             .AsNoTracking()
