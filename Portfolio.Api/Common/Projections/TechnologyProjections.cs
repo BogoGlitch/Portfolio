@@ -1,4 +1,4 @@
-﻿using Portfolio.Api.Dtos;
+﻿using Portfolio.Api.Dtos.Technologies;
 using Portfolio.Api.Entities;
 using System.Linq.Expressions;
 

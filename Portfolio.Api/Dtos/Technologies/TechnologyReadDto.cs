@@ -1,6 +1,7 @@
-﻿namespace Portfolio.Api.Dtos;
+﻿namespace Portfolio.Api.Dtos.Technologies;
 
-public record TechnologyReadDto(
+public record TechnologyReadDto
+(
     int Id,
     string Name,
     string Slug,
@@ -9,4 +10,5 @@ public record TechnologyReadDto(
     string? LogoUrl,
     string? DocumentationUrl,
     bool IsFeatured,
-    int DisplayOrder);
+    int DisplayOrder
+);
