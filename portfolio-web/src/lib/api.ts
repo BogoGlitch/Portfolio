@@ -19,3 +19,7 @@ async function fetchJson<T>(url: string): Promise<T> {
 export async function getProjects(): Promise<ApiListResponse<Project>> {
   return fetchJson<Project[]>(ENDPOINTS.projects);
 }
+
+export async function getProjectBySlug(slug: string): Promise<Project> {
+  return fetchJson<Project>(`${ENDPOINTS.projects}/${slug}`);
+}
