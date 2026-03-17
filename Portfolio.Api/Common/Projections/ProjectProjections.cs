@@ -30,7 +30,8 @@ public static class ProjectProjections
                         pt.Technology.Name,
                         pt.Technology.Slug
                     )
-                ).ToList()
+                )
+                .ToList()
 
         );
     }
