@@ -25,9 +25,9 @@ public class ProjectsController : ControllerBase
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ProjectReadDto>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
-    public async Task<ActionResult<IEnumerable<ProjectReadDto>>> GetProjects()
+    public async Task<ActionResult<IEnumerable<ProjectReadDto>>> GetProjects([FromQuery] ProjectQueryParametersDto queryParameters)
     {
-        var projects = await _projectService.GetProjectsAsync();
+        var projects = await _projectService.GetProjectsAsync(queryParameters);
         return Ok(projects);
     }
 

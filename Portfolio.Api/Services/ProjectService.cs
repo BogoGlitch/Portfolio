@@ -19,15 +19,45 @@ public class ProjectService : IProjectService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<ProjectReadDto>> GetProjectsAsync()
+    public async Task<IEnumerable<ProjectReadDto>> GetProjectsAsync(ProjectQueryParametersDto queryParameters)
     {
         if (_logger.IsEnabled(LogLevel.Information))
         {
             _logger.LogInformation("Retrieving all projects.");
         }
 
-        return await _context.Projects
-            .AsNoTracking()
+        var technologyIds = new List<int>();
+
+        if (!string.IsNullOrWhiteSpace(queryParameters.TechnologyIds))
+        {
+            foreach (var value in queryParameters.TechnologyIds
+                .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+            )
+            {
+                if (int.TryParse(value, out var technologyId))
+                {
+                    technologyIds.Add(technologyId);
+                }
+            }
+
+            technologyIds = technologyIds
+                .Distinct()
+                .ToList();
+        }
+
+        IQueryable<Project> query = _context.Projects
+            .AsNoTracking();
+
+        if (technologyIds.Count > 0)
+        {
+            query = query.Where(p =>
+                p.ProjectTechnologies.Any(pt =>
+                   technologyIds.Contains(pt.TechnologyId)
+                )
+            );
+        }
+
+        return await query
             .OrderBy(p => p.DisplayOrder)
             .ThenBy(p => p.Name)
             .Select(ProjectProjections.ToDto())
