@@ -23,4 +23,6 @@ public class Project
     public int DisplayOrder { get; set; }
 
     public DateTime DateCreatedUtc { get; set; }
+
+    public ICollection<ProjectTechnology> ProjectTechnologies { get; set; } = [];
 }

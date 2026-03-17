@@ -62,6 +62,15 @@ public class ProjectService : IProjectService
             throw new InvalidOperationException($"A project with slug '{normalizedSlug}' already exists.");
         }
 
+        var technologies = await _context.Technologies
+            .Where(t => createProjectDto.TechnologyIds.Contains(t.Id))
+            .ToListAsync();
+
+        if (technologies.Count != createProjectDto.TechnologyIds.Count)
+        {
+            throw new InvalidOperationException("One or more technology IDs are invalid.");
+        }
+
         var project = new Project
         {
             Name = createProjectDto.Name,
@@ -73,16 +82,31 @@ public class ProjectService : IProjectService
             ImageUrl = createProjectDto.ImageUrl,
             IsFeatured = createProjectDto.IsFeatured,
             DisplayOrder = createProjectDto.DisplayOrder,
-            DateCreatedUtc = DateTime.UtcNow
+            DateCreatedUtc = DateTime.UtcNow,
+
+            ProjectTechnologies = technologies
+                .Select(technologies => new ProjectTechnology
+                {
+                    TechnologyId = technologies.Id,
+                })
+                .ToList()
         };
+
         _context.Projects.Add(project);
         await _context.SaveChangesAsync();
-        return ProjectProjections.ToDto().Compile()(project);
+
+        return await _context.Projects
+            .AsNoTracking()
+            .Where(p => p.Id == project.Id)
+            .Select(ProjectProjections.ToDto())
+            .FirstAsync();
     }
 
     public async Task<ProjectReadDto?> UpdateProjectAsync(int id, UpdateProjectDto updateProjectDto)
     {
-        var project = await _context.Projects.FindAsync(id);
+        var project = await _context.Projects
+            .Include(p => p.ProjectTechnologies)
+            .FirstOrDefaultAsync(p => p.Id == id);
 
         if (project == null)
         {
@@ -99,6 +123,15 @@ public class ProjectService : IProjectService
             throw new InvalidOperationException($"A project with slug '{normalizedSlug}' already exists.");
         }
 
+        var technologies = await _context.Technologies
+            .Where(t => updateProjectDto.TechnologyIds.Contains(t.Id))
+            .ToListAsync();
+
+        if (technologies.Count != updateProjectDto.TechnologyIds.Count)
+        {
+            throw new InvalidOperationException("One or more technology IDs are invalid.");
+        }
+
         project.Name = updateProjectDto.Name;
         project.Slug = normalizedSlug;
         project.ShortDescription = updateProjectDto.ShortDescription;
@@ -109,10 +142,23 @@ public class ProjectService : IProjectService
         project.IsFeatured = updateProjectDto.IsFeatured;
         project.DisplayOrder = updateProjectDto.DisplayOrder;
 
+        project.ProjectTechnologies.Clear();
+        foreach (var technology in technologies)
+        {
+            project.ProjectTechnologies.Add(new ProjectTechnology
+            {
+                ProjectId = project.Id,
+                TechnologyId = technology.Id
+            });
+        }
+
         await _context.SaveChangesAsync();
 
-        return ProjectProjections.ToDto().Compile()(project);
-
+        return await _context.Projects
+            .AsNoTracking()
+            .Where(p => p.Id == project.Id)
+            .Select(ProjectProjections.ToDto())
+            .FirstAsync();
     }
 
     public async Task<bool> DeleteProjectAsync(int id)

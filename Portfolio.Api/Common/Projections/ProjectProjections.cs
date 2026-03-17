@@ -19,7 +19,10 @@ public static class ProjectProjections
             project.LiveUrl,
             project.ImageUrl,
             project.IsFeatured,
-            project.DisplayOrder
+            project.DisplayOrder,
+            project.ProjectTechnologies
+                .Select(pt => pt.Technology.Name)
+                .ToList()
         );
     }
 }

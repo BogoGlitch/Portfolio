@@ -21,4 +21,6 @@ public class Technology
     public int DisplayOrder { get; set; }
 
     public DateTime DateAddedUtc { get; set; }
+
+    public ICollection<ProjectTechnology> ProjectTechnologies { get; set; } = [];
 }

@@ -11,5 +11,6 @@ public record ProjectReadDto
     string? LiveUrl,
     string? ImageUrl,
     bool IsFeatured,
-    int DisplayOrder
+    int DisplayOrder,
+    IReadOnlyList<string> Technologies
 );

@@ -10,5 +10,6 @@ public record UpdateProjectDto
     string? LiveUrl,
     string? ImageUrl,
     bool IsFeatured,
-    int DisplayOrder
+    int DisplayOrder,
+    IReadOnlyList<int> TechnologyIds
 );
