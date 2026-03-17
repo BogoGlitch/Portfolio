@@ -1,4 +1,5 @@
 ﻿using Portfolio.Api.Dtos.Projects;
+using Portfolio.Api.Dtos.Technologies;
 using Portfolio.Api.Entities;
 using System.Linq.Expressions;
 
@@ -21,8 +22,16 @@ public static class ProjectProjections
             project.IsFeatured,
             project.DisplayOrder,
             project.ProjectTechnologies
-                .Select(pt => pt.Technology.Name)
-                .ToList()
+                .OrderBy(pt => pt.Technology.DisplayOrder)
+                .ThenBy(pt => pt.Technology.Name)
+                .Select(pt => new TechnologySummaryDto
+                    (
+                        pt.Technology.Id,
+                        pt.Technology.Name,
+                        pt.Technology.Slug
+                    )
+                ).ToList()
+
         );
     }
 }

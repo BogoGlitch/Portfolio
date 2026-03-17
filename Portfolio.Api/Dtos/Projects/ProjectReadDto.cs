@@ -1,4 +1,6 @@
-﻿namespace Portfolio.Api.Dtos.Projects;
+﻿using Portfolio.Api.Dtos.Technologies;
+
+namespace Portfolio.Api.Dtos.Projects;
 
 public record ProjectReadDto
 (
@@ -12,5 +14,5 @@ public record ProjectReadDto
     string? ImageUrl,
     bool IsFeatured,
     int DisplayOrder,
-    IReadOnlyList<string> Technologies
+    IReadOnlyList<TechnologySummaryDto> Technologies
 );
