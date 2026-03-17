@@ -1,15 +1,5 @@
 import { getProjects } from "@/lib/api";
-
-type Project = {
-  id: number;
-  name: string;
-  shortDescription: string;
-  technologies: {
-    id: number;
-    name: string;
-    slug: string;
-  }[];
-};
+import { Project } from "@/types/project";
 
 export default async function ProjectsPage() {
   const projects: Project[] = await getProjects();
