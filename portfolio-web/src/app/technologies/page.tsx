@@ -1,33 +1,85 @@
 import Link from "next/link";
 import { getTechnologies } from "@/lib/api";
 
-export default async function TechnologiesPage() {
+type TechnologiesPageProps = {
+  searchParams?: Promise<{
+    category?: string | string[];
+  }>;
+};
+
+function parseCategory(value: string | string[] | undefined): string | undefined {
+  const rawValue = Array.isArray(value) ? value[0] : value;
+  const trimmedValue = rawValue?.trim();
+
+  return trimmedValue ? trimmedValue : undefined;
+}
+
+export default async function TechnologiesPage({ searchParams }: TechnologiesPageProps) {
+  const resolvedSearchParams = await searchParams;
+  const selectedCategory = parseCategory(resolvedSearchParams?.category);
+
   const technologies = await getTechnologies();
+  const filteredTechnologies = selectedCategory
+    ? technologies.filter((technology) => technology.category === selectedCategory)
+    : technologies;
+
+  const categories = Array.from(
+    new Set(technologies.map((t) => t.category).filter((c): c is string => Boolean(c))),
+  ).sort();
+
+  const categoryFilterFormKey = selectedCategory ?? "all";
+
+  const categoryFilterSection = (
+    <section>
+      <form method="get" key={categoryFilterFormKey}>
+        <fieldset>
+          <legend>Filter by category</legend>
+
+          <div className="filtersList">
+            {categories.map((category) => (
+              <label key={category}>
+                <input
+                  type="radio"
+                  name="category"
+                  value={category}
+                  defaultChecked={selectedCategory === category}
+                />
+                {category}
+              </label>
+            ))}
+          </div>
+
+          <div className="ctas">
+            <button type="submit">Apply Filter</button>
+            <Link href="/technologies">Clear Filter</Link>
+          </div>
+        </fieldset>
+      </form>
+    </section>
+  );
 
   return (
     <main>
       <h1>Technologies</h1>
-
+      {categoryFilterSection}
       <section>
-        {technologies.length === 0 ? (
-          <p>No technologies found.</p>
+        {filteredTechnologies.length === 0 ? (
+          <p>
+            {selectedCategory
+              ? "No technologies matched the selected category filter."
+              : "No technologies found."}
+          </p>
         ) : (
           <ul>
-            {technologies.map((technology) => (
+            {filteredTechnologies.map((technology) => (
               <li key={technology.id}>
                 <h2>
-                  <Link href={`/technologies/${technology.slug}`}>
-                    {technology.name}
-                  </Link>
+                  <Link href={`/technologies/${technology.slug}`}>{technology.name}</Link>
                 </h2>
 
-                {technology.category ? (
-                  <p>Category: {technology.category}</p>
-                ) : null}
+                {technology.category ? <p>Category: {technology.category}</p> : null}
 
-                {technology.description ? (
-                  <p>{technology.description}</p>
-                ) : null}
+                {technology.description ? <p>{technology.description}</p> : null}
 
                 <p>
                   {technology.projects.length}{" "}

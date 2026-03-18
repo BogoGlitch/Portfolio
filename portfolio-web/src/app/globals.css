@@ -74,3 +74,23 @@ ul {
     color-scheme: dark;
   }
 }
+
+.filtersList {
+  display: flex;
+  gap: 20px;
+  width: fit-content;
+  margin-top: 10px;
+}
+
+.ctas {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  > * {
+    padding: 4px;
+    background-color: gray;
+    border: unset;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
