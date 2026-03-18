@@ -14,3 +14,32 @@
   max-width: 100%;
   height: auto;
 }
+
+.filter {
+  display: flex;
+  gap: 20px;
+  width: fit-content;
+  margin-top: 10px;
+}
+
+.label {
+  display: flex;
+  gap: 5px;
+  cursor: pointer;
+  input {
+    cursor: pointer;
+  }
+}
+
+.ctas {
+  display: flex;
+  gap: 20px;
+  margin-top: 16px;
+  > * {
+    padding: 4px;
+    background-color: gray;
+    border: unset;
+    font-size: 16px;
+    cursor: pointer;
+  }
+}
