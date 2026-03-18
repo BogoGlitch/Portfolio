@@ -30,6 +30,16 @@ body {
   margin: 0;
 }
 
+header {
+  nav {
+    display: flex;
+    gap: 20px;
+    padding: 16px;
+    background-color: var(--background);
+    border-bottom: 1px solid var(--foreground);
+  }
+}
+
 a {
   color: inherit;
   text-decoration: none;
