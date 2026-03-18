@@ -23,8 +23,8 @@ export default async function ProjectDetailPage({
   }
 
   return (
-    <main className={styles.container}>
-      <Link href="/projects">Back to Projects</Link>
+    <main>
+      <Link href="/projects">← Back to Projects</Link>
 
       <section className={styles.section}>
         <h1>{project.name}</h1>
@@ -85,7 +85,7 @@ export default async function ProjectDetailPage({
       {project.technologies.length > 0 && (
         <section className={styles.section}>
           <h2>Technologies</h2>
-          <ul className={styles.list}>
+          <ul>
             {project.technologies.map((tech) => (
               <li key={tech.id}>{tech.name}</li>
             ))}

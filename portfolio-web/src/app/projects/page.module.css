@@ -1,34 +1,8 @@
-.container {
-  padding: 16px;
-}
-
-.section {
-  margin-top: 16px;
-}
-
-.list {
-  padding-left: 20px;
-}
-
-.image {
-  max-width: 100%;
-  height: auto;
-}
-
 .filter {
   display: flex;
   gap: 20px;
   width: fit-content;
   margin-top: 10px;
-}
-
-.label {
-  display: flex;
-  gap: 5px;
-  cursor: pointer;
-  input {
-    cursor: pointer;
-  }
 }
 
 .ctas {

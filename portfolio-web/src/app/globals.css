@@ -35,6 +35,40 @@ a {
   text-decoration: none;
 }
 
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+button {
+  padding: 4px 18px;
+  font-size: 16px;
+}
+
+section {
+  margin-top: 16px;
+}
+
+label {
+  display: flex;
+  gap: 5px;
+  cursor: pointer;
+  input {
+    cursor: pointer;
+  }
+}
+
+main {
+  padding: 16px;
+}
+
+ul {
+  padding-left: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
 @media (prefers-color-scheme: dark) {
   html {
     color-scheme: dark;

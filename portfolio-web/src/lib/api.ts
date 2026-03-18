@@ -24,7 +24,7 @@ export async function getProjects(
   const query = technologyIds?.length
     ? `?technologyIds=${technologyIds.join(",")}`
     : "";
-  return fetchJson<Project[]>(`${ENDPOINTS.projects}${query}`);
+  return fetchJson<ApiListResponse<Project>>(`${ENDPOINTS.projects}${query}`);
 }
 
 export async function getProjectBySlug(slug: string): Promise<Project> {
@@ -33,4 +33,8 @@ export async function getProjectBySlug(slug: string): Promise<Project> {
 
 export async function getTechnologies(): Promise<ApiListResponse<Technology>> {
   return fetchJson<ApiListResponse<Technology>>(ENDPOINTS.technologies);
+}
+
+export async function getTechnologyBySlug(slug: string): Promise<Technology> {
+  return fetchJson<Technology>(`${ENDPOINTS.technologies}/${slug}`);
 }
