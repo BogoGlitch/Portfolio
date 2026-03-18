@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import styles from "../page.module.css";
+import PageLayout from "@/app/components/PageLayout";
 
 type ProjectDetailPageProps = {
   params: Promise<{
@@ -10,9 +11,7 @@ type ProjectDetailPageProps = {
   }>;
 };
 
-export default async function ProjectDetailPage({
-  params,
-}: ProjectDetailPageProps) {
+export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
   const { slug } = await params;
   let project;
 
@@ -23,14 +22,7 @@ export default async function ProjectDetailPage({
   }
 
   return (
-    <main>
-      <Link href="/projects">← Back to Projects</Link>
-
-      <section className={styles.section}>
-        <h1>{project.name}</h1>
-        <p>{project.shortDescription}</p>
-      </section>
-
+    <PageLayout title={project.name} undernav={<Link href="/projects">← Back to Projects</Link>}>
       {project.imageUrl && (
         <section className={styles.section}>
           <Image
@@ -58,11 +50,7 @@ export default async function ProjectDetailPage({
 
           {project.repoUrl && (
             <div>
-              <a
-                href={project.repoUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
                 Repository
               </a>
             </div>
@@ -70,11 +58,7 @@ export default async function ProjectDetailPage({
 
           {project.liveUrl && (
             <div>
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
                 Live Site
               </a>
             </div>
@@ -92,6 +76,6 @@ export default async function ProjectDetailPage({
           </ul>
         </section>
       )}
-    </main>
+    </PageLayout>
   );
 }

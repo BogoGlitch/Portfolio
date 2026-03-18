@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getTechnologies } from "@/lib/api";
+import PageLayout from "../components/PageLayout";
 
 type TechnologiesPageProps = {
   searchParams?: Promise<{
@@ -59,8 +60,11 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
   );
 
   return (
-    <main>
-      <h1>Technologies</h1>
+    <PageLayout
+      undernav={<Link href="/">← Back to Home</Link>}
+      title="Technologies"
+      description="Explore the tools and platforms used across the portfolio, grouped by category."
+    >
       {categoryFilterSection}
       <section>
         {filteredTechnologies.length === 0 ? (
@@ -90,6 +94,6 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
           </ul>
         )}
       </section>
-    </main>
+    </PageLayout>
   );
 }

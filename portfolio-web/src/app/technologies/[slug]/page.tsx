@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getTechnologyBySlug } from "@/lib/api";
 import { notFound } from "next/navigation";
+import PageLayout from "@/app/components/PageLayout";
 
 type TechnologyDetailPageProps = {
   params: Promise<{
@@ -8,9 +9,7 @@ type TechnologyDetailPageProps = {
   }>;
 };
 
-export default async function TechnologyDetailPage({
-  params,
-}: TechnologyDetailPageProps) {
+export default async function TechnologyDetailPage({ params }: TechnologyDetailPageProps) {
   const { slug } = await params;
 
   let technology;
@@ -22,26 +21,16 @@ export default async function TechnologyDetailPage({
   }
 
   return (
-    <main>
-      <p>
-        <Link href="/technologies">← Back to Technologies</Link>
-      </p>
-      <section>
-        <h1>{technology.name}</h1>
-
-        {technology.description ? <p>{technology.description}</p> : null}
-      </section>
-      <section>
-        {technology.category ? <p>Category: {technology.category}</p> : null}
-      </section>
+    <PageLayout
+      undernav={<Link href="/technologies">← Back to Technologies</Link>}
+      title={technology.name}
+      description={technology.description || undefined}
+    >
+      <section>{technology.category ? <p>Category: {technology.category}</p> : null}</section>
       <section>
         {technology.documentationUrl ? (
           <button>
-            <a
-              href={technology.documentationUrl}
-              target="_blank"
-              rel="noreferrer"
-            >
+            <a href={technology.documentationUrl} target="_blank" rel="noreferrer">
               Documentation
             </a>
           </button>
@@ -63,6 +52,6 @@ export default async function TechnologyDetailPage({
           </ul>
         )}
       </section>
-    </main>
+    </PageLayout>
   );
 }

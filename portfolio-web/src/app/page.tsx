@@ -1,7 +1,5 @@
+import PageLayout from "./components/PageLayout";
+
 export default function Home() {
-  return (
-    <main>
-      <h1>Home Page</h1>
-    </main>
-  );
+  return <PageLayout title="Home Page"></PageLayout>;
 }

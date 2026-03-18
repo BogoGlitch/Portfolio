@@ -55,7 +55,7 @@ button {
   font-size: 16px;
 }
 
-section {
+section:not(.page-header) {
   margin-top: 16px;
 }
 
@@ -66,10 +66,6 @@ label {
   input {
     cursor: pointer;
   }
-}
-
-main {
-  padding: 16px;
 }
 
 ul {
@@ -103,4 +99,28 @@ ul {
     font-size: 16px;
     cursor: pointer;
   }
+}
+
+.page-shell {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 1rem 0 3rem;
+}
+
+.page-header {
+  margin-bottom: 2rem;
+  h1 {
+    margin-bottom: 0.75rem;
+  }
+  p {
+    max-width: 70ch;
+  }
+}
+
+.page-content {
+  display: block;
+}
+
+.undernav {
+  margin-bottom: 2rem;
 }
