@@ -82,9 +82,9 @@ All error responses follow the standard shape: `{ type, title, status, detail, t
 - [x] Vertical slice handlers for Technologies (2 queries, 3 commands)
 - [x] Controllers slimmed to HTTP-only, injecting handlers directly
 - [x] Old ProjectService, TechnologyService, and interfaces deleted
+- [x] Serilog structured logging (console + rolling file sinks, EF Core noise suppressed)
 
 ### Immediate Next
-- [ ] Serilog structured logging
 - [ ] Health checks endpoint
 
 ### Planned (not started)
@@ -106,5 +106,6 @@ All error responses follow the standard shape: `{ type, title, status, detail, t
 | `Portfolio.Api/Filters/ValidationFilter.cs` | Generic pre-action validation |
 | `Portfolio.Api/Validators/` | FluentValidation rules per DTO |
 | `Portfolio.Api/Common/Projections/` | EF LINQ projections (entity → DTO) |
+| `Portfolio.Api/Extensions/SerilogConfiguration.cs` | Serilog setup (kept out of Program.cs deliberately) |
 | `portfolio-web/src/app/` | Next.js App Router pages and components |
 | `portfolio-web/src/lib/api.ts` | Frontend API client |
