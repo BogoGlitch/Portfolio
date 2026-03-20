@@ -9,6 +9,9 @@
 # Serilog rolling log files
 logs/
 
+# Claude Code memory files
+.claude/
+
 # User-specific files
 *.rsuser
 *.suo
