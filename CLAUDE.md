@@ -71,14 +71,12 @@ All error responses follow the standard shape: `{ type, title, status, detail, t
 ## Current State
 
 ### Branches
-- `main` — stable
-- `feature/backend-problem-details-validation` — merged (Problem Details + FluentValidation)
-- `feature/backend-vertical-slices` — **current branch**, in progress
+- `main` — stable, all below merged in
 
 ### What's Done
 - [x] EF Core entities: Project, Technology, ProjectTechnology (join)
 - [x] LINQ projections for DTO mapping at query level
-- [x] Problem Details error responses
+- [x] Problem Details error responses (RFC 7807)
 - [x] FluentValidation with ValidationFilter<T>
 - [x] Vertical slice handlers for Projects (2 queries, 3 commands)
 - [x] Vertical slice handlers for Technologies (2 queries, 3 commands)
@@ -86,8 +84,6 @@ All error responses follow the standard shape: `{ type, title, status, detail, t
 - [x] Old ProjectService, TechnologyService, and interfaces deleted
 
 ### Immediate Next
-- [ ] Verify current branch works end-to-end (run + smoke test)
-- [ ] PR and merge `feature/backend-vertical-slices` into main
 - [ ] Serilog structured logging
 - [ ] Health checks endpoint
 
