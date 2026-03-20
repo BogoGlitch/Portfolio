@@ -91,6 +91,7 @@
   max-width: 70ch;
   font-size: 1.05rem;
   line-height: 1.7;
+  text-wrap: balance;
 }
 
 .heroActions {
@@ -258,5 +259,9 @@
 
   .heroText {
     max-width: none;
+  }
+
+  .heroMedia {
+    justify-content: flex-end;
   }
 }

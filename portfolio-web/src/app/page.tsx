@@ -17,10 +17,10 @@ export default function HomePage() {
           <div className={styles.heroText}>
             <p className={styles.kicker}>Senior Software Engineer</p>
             <h1 className={styles.title}>Sean Bogolin</h1>
-            <p className={styles.subtitle}>Backend-first portfolio platform</p>
+            <p className={styles.subtitle}>Backend-first engineering showcase</p>
             <p className={styles.description}>
-              I design and build scalable, maintainable web platforms with a strong focus on API
-              design, application architecture, and full-stack delivery.
+              I design and build scalable, maintainable web platforms with a strong focus on backend
+              architecture, API design, and end-to-end delivery.
             </p>
 
             <div className={styles.heroActions}>
