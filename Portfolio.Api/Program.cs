@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Data;
 using Portfolio.Api.Dtos.Projects;
 using Portfolio.Api.Dtos.Technologies;
+using Portfolio.Api.Extensions;
 using Portfolio.Api.Features.Projects.Commands.CreateProject;
 using Portfolio.Api.Features.Projects.Commands.DeleteProject;
 using Portfolio.Api.Features.Projects.Commands.UpdateProject;
@@ -15,9 +16,15 @@ using Portfolio.Api.Features.Technologies.Queries.GetTechnologies;
 using Portfolio.Api.Features.Technologies.Queries.GetTechnologyBySlug;
 using Portfolio.Api.Filters;
 using Portfolio.Api.Validators;
+using Serilog;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Replace the default .NET logger with Serilog.
+// All ILogger<T> injections throughout the app continue to work unchanged —
+// Serilog plugs in as the underlying provider behind the same interface.
+builder.Host.UseSerilog(SerilogConfiguration.Configure);
 
 builder.Services.AddControllers();
 
