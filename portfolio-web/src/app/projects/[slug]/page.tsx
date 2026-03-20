@@ -1,9 +1,33 @@
+import type { Metadata } from "next";
 import { getProjectBySlug } from "@/lib/api";
 import Link from "next/link";
 import Image from "next/image";
 import { notFound } from "next/navigation";
 import styles from "../page.module.css";
 import PageLayout from "@/app/components/PageLayout";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const project = await getProjectBySlug(slug);
+
+  if (!project) {
+    return {
+      title: "Project Not Found",
+      description: "The requested project could not be found.",
+    };
+  }
+
+  return {
+    title: project.name,
+    description:
+      project.shortDescription ??
+      "Portfolio project highlighting backend design, architecture, and implementation decisions.",
+  };
+}
 
 type ProjectDetailPageProps = {
   params: Promise<{

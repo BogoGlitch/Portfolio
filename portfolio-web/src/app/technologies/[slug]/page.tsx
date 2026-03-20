@@ -1,7 +1,30 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { getTechnologyBySlug } from "@/lib/api";
 import { notFound } from "next/navigation";
 import PageLayout from "@/app/components/PageLayout";
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ slug: string }>;
+}): Promise<Metadata> {
+  const { slug } = await params;
+  const technology = await getTechnologyBySlug(slug);
+
+  if (!technology) {
+    return {
+      title: "Technology Not Found",
+      description: "The requested technology could not be found.",
+    };
+  }
+
+  return {
+    title: technology.name,
+    description:
+      technology.description ?? "Technology and platform details used across the portfolio.",
+  };
+}
 
 type TechnologyDetailPageProps = {
   params: Promise<{

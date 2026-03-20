@@ -1,6 +1,12 @@
 import Link from "next/link";
 import { getTechnologies } from "@/lib/api";
 import PageLayout from "../components/PageLayout";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Technologies",
+  description: "Technologies, frameworks, and platform choices used across the portfolio.",
+};
 
 type TechnologiesPageProps = {
   searchParams?: Promise<{

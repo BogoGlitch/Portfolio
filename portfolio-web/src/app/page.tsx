@@ -1,6 +1,13 @@
 import Image from "next/image";
 import Link from "next/link";
 import styles from "./page.module.css";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Home | Sean Bogolin",
+  description:
+    "Backend-first portfolio platform showcasing projects, technologies, and pragmatic software engineering decisions.",
+};
 
 export default function HomePage() {
   return (

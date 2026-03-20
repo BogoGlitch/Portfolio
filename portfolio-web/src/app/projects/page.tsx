@@ -2,6 +2,13 @@ import { getProjects, getTechnologies } from "@/lib/api";
 import Link from "next/link";
 import styles from "./page.module.css";
 import PageLayout from "../components/PageLayout";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Projects",
+  description:
+    "Portfolio projects highlighting backend design, API architecture, and end-to-end implementation decisions.",
+};
 
 type ProjectsPageProps = {
   searchParams?: Promise<{
