@@ -1,8 +1,12 @@
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Data;
-using Portfolio.Api.Extensions;
+using Portfolio.Api.Dtos.Projects;
+using Portfolio.Api.Dtos.Technologies;
+using Portfolio.Api.Filters;
 using Portfolio.Api.Interfaces;
 using Portfolio.Api.Services;
+using Portfolio.Api.Validators;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -15,7 +19,22 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddScoped<ITechnologyService, TechnologyService>();
 builder.Services.AddScoped<IProjectService, ProjectService>();
 
-// Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+// Validators — one per writable DTO
+builder.Services.AddScoped<IValidator<CreateProjectDto>, CreateProjectValidator>();
+builder.Services.AddScoped<IValidator<UpdateProjectDto>, UpdateProjectValidator>();
+builder.Services.AddScoped<IValidator<CreateTechnologyDto>, CreateTechnologyValidator>();
+builder.Services.AddScoped<IValidator<UpdateTechnologyDto>, UpdateTechnologyValidator>();
+
+// Validation filters — registered so ServiceFilter can resolve them from DI
+builder.Services.AddScoped<ValidationFilter<CreateProjectDto>>();
+builder.Services.AddScoped<ValidationFilter<UpdateProjectDto>>();
+builder.Services.AddScoped<ValidationFilter<CreateTechnologyDto>>();
+builder.Services.AddScoped<ValidationFilter<UpdateTechnologyDto>>();
+
+// Problem Details — standardises all error responses (400, 404, 500, etc.)
+// to the RFC 7807 shape: { type, title, status, detail, traceId }
+builder.Services.AddProblemDetails();
+
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(options =>
@@ -28,7 +47,6 @@ builder.Services.AddSwaggerGen(options =>
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
@@ -36,8 +54,12 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// UseExceptionHandler() catches unhandled exceptions and formats them as Problem Details.
+// UseStatusCodePages() turns raw 404/405 responses into Problem Details too.
+app.UseExceptionHandler();
+app.UseStatusCodePages();
+
 //app.UseHttpsRedirection();
-app.UseGlobalExceptionHandling();
 app.MapControllers();
 
 app.Run();

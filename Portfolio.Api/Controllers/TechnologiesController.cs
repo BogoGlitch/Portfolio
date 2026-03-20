@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Portfolio.Api.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Dtos.Technologies;
+using Portfolio.Api.Filters;
 using Portfolio.Api.Interfaces;
 
 namespace Portfolio.Api.Controllers;
@@ -23,7 +23,7 @@ public class TechnologiesController : ControllerBase
     /// <returns>A list of technologies.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TechnologyReadDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<TechnologyReadDto>>> GetTechnologies()
     {
         var technologies = await _technologyService.GetTechnologiesAsync();
@@ -37,16 +37,10 @@ public class TechnologiesController : ControllerBase
     /// <returns>The matching technology if found.</returns>
     [HttpGet("{slug:minlength(1)}")]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TechnologyReadDto>> GetTechnologyBySlug(string slug)
     {
-        if (string.IsNullOrWhiteSpace(slug))
-        {
-            return BadRequest();
-        }
-
         var technology = await _technologyService.GetTechnologyBySlugAsync(slug);
         if (technology == null)
         {
@@ -61,9 +55,10 @@ public class TechnologiesController : ControllerBase
     /// <param name="createTechnologyDto">The technology data used to create the technology.</param>
     /// <returns>The created technology.</returns>
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilter<CreateTechnologyDto>))]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TechnologyReadDto>> CreateTechnology([FromBody] CreateTechnologyDto createTechnologyDto)
     {
         var createdTechnology = await _technologyService.CreateTechnologyAsync(createTechnologyDto);
@@ -81,10 +76,11 @@ public class TechnologiesController : ControllerBase
     /// <param name="updateTechnologyDto">The updated technology data.</param>
     /// <returns>The updated technology if found.</returns>
     [HttpPut("{id:int}")]
+    [ServiceFilter(typeof(ValidationFilter<UpdateTechnologyDto>))]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TechnologyReadDto>> UpdateTechnology(int id, [FromBody] UpdateTechnologyDto updateTechnologyDto)
     {
         var updatedTechnology = await _technologyService.UpdateTechnologyAsync(id, updateTechnologyDto);
@@ -103,13 +99,13 @@ public class TechnologiesController : ControllerBase
     /// <returns>No content if the technology was deleted; otherwise not found.</returns>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteTechnology(int id)
     {
-        var technologyToDelete = await _technologyService.DeleteTechnologyAsync(id);
+        var deleted = await _technologyService.DeleteTechnologyAsync(id);
 
-        if (!technologyToDelete)
+        if (!deleted)
         {
             return NotFound();
         }
