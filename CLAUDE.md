@@ -83,9 +83,11 @@ All error responses follow the standard shape: `{ type, title, status, detail, t
 - [x] Controllers slimmed to HTTP-only, injecting handlers directly
 - [x] Old ProjectService, TechnologyService, and interfaces deleted
 - [x] Serilog structured logging (console + rolling file sinks, EF Core noise suppressed)
+- [x] Health checks — /health (DB + process) and /health/live (process only), JSON responses
 
 ### Immediate Next
-- [ ] Health checks endpoint
+- [ ] MediatR + pipeline behaviors (logging every handler automatically)
+- [ ] Authentication / authorization
 
 ### Planned (not started)
 - [ ] MediatR + pipeline behaviors (when cross-cutting pain is felt)
