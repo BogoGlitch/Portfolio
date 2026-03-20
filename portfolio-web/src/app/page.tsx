@@ -73,11 +73,11 @@ export default function HomePage() {
               </article>
             </Link>
 
-            <article className={styles.card}>
+            <article className={`${styles.card} ${styles.cardDisabled}`}>
               <h3 className={styles.cardTitle}>Approach</h3>
               <p className={styles.cardText}>
-                Future space for architecture decisions, scalability, maintainability, security, and
-                platform engineering thinking across the portfolio.
+                A future section focused on architecture decisions, tradeoffs, maintainability,
+                scalability, and platform-minded engineering.
               </p>
             </article>
           </div>
