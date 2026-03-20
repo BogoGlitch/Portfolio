@@ -1,121 +1,103 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Portfolio.Api.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Dtos.Projects;
-using Portfolio.Api.Interfaces;
+using Portfolio.Api.Features.Projects.Commands.CreateProject;
+using Portfolio.Api.Features.Projects.Commands.DeleteProject;
+using Portfolio.Api.Features.Projects.Commands.UpdateProject;
+using Portfolio.Api.Features.Projects.Queries.GetProjectBySlug;
+using Portfolio.Api.Features.Projects.Queries.GetProjects;
+using Portfolio.Api.Filters;
 
 namespace Portfolio.Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
 [Produces("application/json")]
-
 public class ProjectsController : ControllerBase
 {
-    private readonly IProjectService _projectService;
+    private readonly GetProjectsQueryHandler _getProjects;
+    private readonly GetProjectBySlugQueryHandler _getProjectBySlug;
+    private readonly CreateProjectCommandHandler _createProject;
+    private readonly UpdateProjectCommandHandler _updateProject;
+    private readonly DeleteProjectCommandHandler _deleteProject;
 
-    public ProjectsController(IProjectService projectService)
+    public ProjectsController(
+        GetProjectsQueryHandler getProjects,
+        GetProjectBySlugQueryHandler getProjectBySlug,
+        CreateProjectCommandHandler createProject,
+        UpdateProjectCommandHandler updateProject,
+        DeleteProjectCommandHandler deleteProject)
     {
-        _projectService = projectService;
+        _getProjects = getProjects;
+        _getProjectBySlug = getProjectBySlug;
+        _createProject = createProject;
+        _updateProject = updateProject;
+        _deleteProject = deleteProject;
     }
 
     /// <summary>
     /// Retrieves all projects.
     /// </summary>
-    /// <returns>A collection of projects.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<ProjectReadDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<ProjectReadDto>>> GetProjects([FromQuery] ProjectQueryParametersDto queryParameters)
     {
-        var projects = await _projectService.GetProjectsAsync(queryParameters);
-        return Ok(projects);
+        var result = await _getProjects.HandleAsync(new GetProjectsQuery(queryParameters));
+        return Ok(result);
     }
 
     /// <summary>
     /// Retrieves a project by its slug.
     /// </summary>
-    /// <param name="slug">The unique slug for the project.</param>
-    /// <returns>The matching project if found.</returns>
     [HttpGet("{slug:minlength(1)}")]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProjectReadDto>> GetProjectBySlug(string slug)
     {
-
-        if (string.IsNullOrWhiteSpace(slug))
-        {
-            return BadRequest();
-        }
-
-        var project = await _projectService.GetProjectBySlugAsync(slug);
-        if (project == null)
-        {
-            return NotFound();
-        }
-        return Ok(project);
+        var result = await _getProjectBySlug.HandleAsync(new GetProjectBySlugQuery(slug));
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
     /// Creates a new project.
     /// </summary>
-    /// <param name="createProjectDto">The project data used to create the project.</param>
-    /// <returns>The created project.</returns>
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilter<CreateProjectDto>))]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProjectReadDto>> CreateProject([FromBody] CreateProjectDto createProjectDto)
     {
-        var createdProject = await _projectService.CreateProjectAsync(createProjectDto);
-
-        return CreatedAtAction(
-            nameof(GetProjectBySlug),
-            new { slug = createdProject.Slug },
-            createdProject);
+        var result = await _createProject.HandleAsync(new CreateProjectCommand(createProjectDto));
+        return CreatedAtAction(nameof(GetProjectBySlug), new { slug = result.Slug }, result);
     }
 
     /// <summary>
     /// Updates an existing project.
     /// </summary>
-    /// <param name="id">The unique identifier of the project to update.</param>
-    /// <param name="updateProjectDto">The updated project data.</param>
-    /// <returns>The updated project if found.</returns>
     [HttpPut("{id:int}")]
+    [ServiceFilter(typeof(ValidationFilter<UpdateProjectDto>))]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<ProjectReadDto>> UpdateProject(int id, [FromBody] UpdateProjectDto updateProjectDto)
     {
-        var updatedProject = await _projectService.UpdateProjectAsync(id, updateProjectDto);
-
-        if (updatedProject is null)
-        {
-            return NotFound();
-        }
-        return Ok(updatedProject);
+        var result = await _updateProject.HandleAsync(new UpdateProjectCommand(id, updateProjectDto));
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
     /// Deletes a project by its unique identifier.
     /// </summary>
-    /// <param name="id">The unique identifier of the project to delete.</param>
-    /// <returns>No content if the project was deleted; otherwise not found.</returns>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteProject(int id)
     {
-        var projectToDelete = await _projectService.DeleteProjectAsync(id);
-
-        if (!projectToDelete)
-        {
-            return NotFound();
-        }
-        return NoContent();
+        var deleted = await _deleteProject.HandleAsync(new DeleteProjectCommand(id));
+        return deleted ? NoContent() : NotFound();
     }
-
 }

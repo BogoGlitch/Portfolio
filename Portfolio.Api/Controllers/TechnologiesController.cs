@@ -1,7 +1,11 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using Portfolio.Api.Dtos;
+using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Dtos.Technologies;
-using Portfolio.Api.Interfaces;
+using Portfolio.Api.Features.Technologies.Commands.CreateTechnology;
+using Portfolio.Api.Features.Technologies.Commands.DeleteTechnology;
+using Portfolio.Api.Features.Technologies.Commands.UpdateTechnology;
+using Portfolio.Api.Features.Technologies.Queries.GetTechnologies;
+using Portfolio.Api.Features.Technologies.Queries.GetTechnologyBySlug;
+using Portfolio.Api.Filters;
 
 namespace Portfolio.Api.Controllers;
 
@@ -10,109 +14,90 @@ namespace Portfolio.Api.Controllers;
 [Produces("application/json")]
 public class TechnologiesController : ControllerBase
 {
-    private readonly ITechnologyService _technologyService;
+    private readonly GetTechnologiesQueryHandler _getTechnologies;
+    private readonly GetTechnologyBySlugQueryHandler _getTechnologyBySlug;
+    private readonly CreateTechnologyCommandHandler _createTechnology;
+    private readonly UpdateTechnologyCommandHandler _updateTechnology;
+    private readonly DeleteTechnologyCommandHandler _deleteTechnology;
 
-    public TechnologiesController(ITechnologyService technologyService)
+    public TechnologiesController(
+        GetTechnologiesQueryHandler getTechnologies,
+        GetTechnologyBySlugQueryHandler getTechnologyBySlug,
+        CreateTechnologyCommandHandler createTechnology,
+        UpdateTechnologyCommandHandler updateTechnology,
+        DeleteTechnologyCommandHandler deleteTechnology)
     {
-        _technologyService = technologyService;
+        _getTechnologies = getTechnologies;
+        _getTechnologyBySlug = getTechnologyBySlug;
+        _createTechnology = createTechnology;
+        _updateTechnology = updateTechnology;
+        _deleteTechnology = deleteTechnology;
     }
 
     /// <summary>
     /// Retrieves all technologies.
     /// </summary>
-    /// <returns>A list of technologies.</returns>
     [HttpGet]
     [ProducesResponseType(typeof(IEnumerable<TechnologyReadDto>), StatusCodes.Status200OK)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<IEnumerable<TechnologyReadDto>>> GetTechnologies()
     {
-        var technologies = await _technologyService.GetTechnologiesAsync();
-        return Ok(technologies);
+        var result = await _getTechnologies.HandleAsync(new GetTechnologiesQuery());
+        return Ok(result);
     }
 
     /// <summary>
     /// Retrieves a technology by its slug.
     /// </summary>
-    /// <param name="slug">The unique slug for the technology.</param>
-    /// <returns>The matching technology if found.</returns>
     [HttpGet("{slug:minlength(1)}")]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TechnologyReadDto>> GetTechnologyBySlug(string slug)
     {
-        if (string.IsNullOrWhiteSpace(slug))
-        {
-            return BadRequest();
-        }
-
-        var technology = await _technologyService.GetTechnologyBySlugAsync(slug);
-        if (technology == null)
-        {
-            return NotFound();
-        }
-        return Ok(technology);
+        var result = await _getTechnologyBySlug.HandleAsync(new GetTechnologyBySlugQuery(slug));
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
     /// Creates a new technology.
     /// </summary>
-    /// <param name="createTechnologyDto">The technology data used to create the technology.</param>
-    /// <returns>The created technology.</returns>
     [HttpPost]
+    [ServiceFilter(typeof(ValidationFilter<CreateTechnologyDto>))]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status201Created)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TechnologyReadDto>> CreateTechnology([FromBody] CreateTechnologyDto createTechnologyDto)
     {
-        var createdTechnology = await _technologyService.CreateTechnologyAsync(createTechnologyDto);
-
-        return CreatedAtAction(
-            nameof(GetTechnologyBySlug),
-            new { slug = createdTechnology.Slug },
-            createdTechnology);
+        var result = await _createTechnology.HandleAsync(new CreateTechnologyCommand(createTechnologyDto));
+        return CreatedAtAction(nameof(GetTechnologyBySlug), new { slug = result.Slug }, result);
     }
 
     /// <summary>
     /// Updates an existing technology.
     /// </summary>
-    /// <param name="id">The unique identifier of the technology to update.</param>
-    /// <param name="updateTechnologyDto">The updated technology data.</param>
-    /// <returns>The updated technology if found.</returns>
     [HttpPut("{id:int}")]
+    [ServiceFilter(typeof(ValidationFilter<UpdateTechnologyDto>))]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status200OK)]
-    [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ValidationProblemDetails), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<ActionResult<TechnologyReadDto>> UpdateTechnology(int id, [FromBody] UpdateTechnologyDto updateTechnologyDto)
     {
-        var updatedTechnology = await _technologyService.UpdateTechnologyAsync(id, updateTechnologyDto);
-
-        if (updatedTechnology is null)
-        {
-            return NotFound();
-        }
-        return Ok(updatedTechnology);
+        var result = await _updateTechnology.HandleAsync(new UpdateTechnologyCommand(id, updateTechnologyDto));
+        return result is null ? NotFound() : Ok(result);
     }
 
     /// <summary>
     /// Deletes a technology by its unique identifier.
     /// </summary>
-    /// <param name="id">The unique identifier of the technology to delete.</param>
-    /// <returns>No content if the technology was deleted; otherwise not found.</returns>
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
-    [ProducesResponseType(StatusCodes.Status404NotFound)]
-    [ProducesResponseType(typeof(ErrorResponseDto), StatusCodes.Status500InternalServerError)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> DeleteTechnology(int id)
     {
-        var technologyToDelete = await _technologyService.DeleteTechnologyAsync(id);
-
-        if (!technologyToDelete)
-        {
-            return NotFound();
-        }
-        return NoContent();
+        var deleted = await _deleteTechnology.HandleAsync(new DeleteTechnologyCommand(id));
+        return deleted ? NoContent() : NotFound();
     }
 }
