@@ -61,6 +61,11 @@ builder.Services.AddScoped<ValidationFilter<UpdateProjectDto>>();
 builder.Services.AddScoped<ValidationFilter<CreateTechnologyDto>>();
 builder.Services.AddScoped<ValidationFilter<UpdateTechnologyDto>>();
 
+// Health checks — /health (full) and /health/live (liveness only)
+// AddDbContextCheck runs a test query against AppDbContext to confirm the DB is reachable.
+builder.Services.AddHealthChecks()
+    .AddDbContextCheck<AppDbContext>("database");
+
 // Problem Details — standardises all error responses (400, 404, 500, etc.)
 // to the RFC 7807 shape: { type, title, status, detail, traceId }
 builder.Services.AddProblemDetails();
@@ -90,6 +95,7 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 //app.UseHttpsRedirection();
+app.MapHealthCheckEndpoints();
 app.MapControllers();
 
 app.Run();
