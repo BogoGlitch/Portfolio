@@ -3,9 +3,17 @@ using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Data;
 using Portfolio.Api.Dtos.Projects;
 using Portfolio.Api.Dtos.Technologies;
+using Portfolio.Api.Features.Projects.Commands.CreateProject;
+using Portfolio.Api.Features.Projects.Commands.DeleteProject;
+using Portfolio.Api.Features.Projects.Commands.UpdateProject;
+using Portfolio.Api.Features.Projects.Queries.GetProjectBySlug;
+using Portfolio.Api.Features.Projects.Queries.GetProjects;
+using Portfolio.Api.Features.Technologies.Commands.CreateTechnology;
+using Portfolio.Api.Features.Technologies.Commands.DeleteTechnology;
+using Portfolio.Api.Features.Technologies.Commands.UpdateTechnology;
+using Portfolio.Api.Features.Technologies.Queries.GetTechnologies;
+using Portfolio.Api.Features.Technologies.Queries.GetTechnologyBySlug;
 using Portfolio.Api.Filters;
-using Portfolio.Api.Interfaces;
-using Portfolio.Api.Services;
 using Portfolio.Api.Validators;
 using System.Reflection;
 
@@ -16,8 +24,23 @@ builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-builder.Services.AddScoped<ITechnologyService, TechnologyService>();
-builder.Services.AddScoped<IProjectService, ProjectService>();
+// Project query handlers
+builder.Services.AddScoped<GetProjectsQueryHandler>();
+builder.Services.AddScoped<GetProjectBySlugQueryHandler>();
+
+// Project command handlers
+builder.Services.AddScoped<CreateProjectCommandHandler>();
+builder.Services.AddScoped<UpdateProjectCommandHandler>();
+builder.Services.AddScoped<DeleteProjectCommandHandler>();
+
+// Technology query handlers
+builder.Services.AddScoped<GetTechnologiesQueryHandler>();
+builder.Services.AddScoped<GetTechnologyBySlugQueryHandler>();
+
+// Technology command handlers
+builder.Services.AddScoped<CreateTechnologyCommandHandler>();
+builder.Services.AddScoped<UpdateTechnologyCommandHandler>();
+builder.Services.AddScoped<DeleteTechnologyCommandHandler>();
 
 // Validators — one per writable DTO
 builder.Services.AddScoped<IValidator<CreateProjectDto>, CreateProjectValidator>();
