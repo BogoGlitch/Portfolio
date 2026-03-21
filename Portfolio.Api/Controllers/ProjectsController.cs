@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Dtos.Projects;
 using Portfolio.Api.Features.Projects.Commands.CreateProject;
@@ -62,6 +63,7 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Creates a new project.
     /// </summary>
+    [Authorize]
     [HttpPost]
     [ServiceFilter(typeof(ValidationFilter<CreateProjectDto>))]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status201Created)]
@@ -76,6 +78,7 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Updates an existing project.
     /// </summary>
+    [Authorize]
     [HttpPut("{id:int}")]
     [ServiceFilter(typeof(ValidationFilter<UpdateProjectDto>))]
     [ProducesResponseType(typeof(ProjectReadDto), StatusCodes.Status200OK)]
@@ -91,6 +94,7 @@ public class ProjectsController : ControllerBase
     /// <summary>
     /// Deletes a project by its unique identifier.
     /// </summary>
+    [Authorize]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

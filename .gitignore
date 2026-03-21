@@ -12,6 +12,9 @@ logs/
 # Claude Code memory files
 .claude/
 
+# Local dev journal — not for source control
+DEVLOG.md
+
 # User-specific files
 *.rsuser
 *.suo

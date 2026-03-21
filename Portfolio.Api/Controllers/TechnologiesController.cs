@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Dtos.Technologies;
 using Portfolio.Api.Features.Technologies.Commands.CreateTechnology;
@@ -62,6 +63,7 @@ public class TechnologiesController : ControllerBase
     /// <summary>
     /// Creates a new technology.
     /// </summary>
+    [Authorize]
     [HttpPost]
     [ServiceFilter(typeof(ValidationFilter<CreateTechnologyDto>))]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status201Created)]
@@ -76,6 +78,7 @@ public class TechnologiesController : ControllerBase
     /// <summary>
     /// Updates an existing technology.
     /// </summary>
+    [Authorize]
     [HttpPut("{id:int}")]
     [ServiceFilter(typeof(ValidationFilter<UpdateTechnologyDto>))]
     [ProducesResponseType(typeof(TechnologyReadDto), StatusCodes.Status200OK)]
@@ -91,6 +94,7 @@ public class TechnologiesController : ControllerBase
     /// <summary>
     /// Deletes a technology by its unique identifier.
     /// </summary>
+    [Authorize]
     [HttpDelete("{id:int}")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(typeof(ProblemDetails), StatusCodes.Status404NotFound)]

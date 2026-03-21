@@ -39,10 +39,8 @@ Features/
 
 **Why:** When a feature changes, you open one folder. No chasing logic across Controllers → Services → Repositories.
 
-### No MediatR (Yet — Intentional)
-Handlers are injected directly into controllers by concrete type. Explicit, readable, no indirection. The user is learning *why* MediatR exists by building without it first.
-
-**When we add it:** When cross-cutting concerns (auto-logging every handler, wrapping commands in transactions) become painful to repeat. MediatR pipeline behaviors solve that — we add it when we feel the friction, not before. This is the agreed approach.
+### No MediatR — Permanent Decision
+Handlers are injected directly into controllers by concrete type. Explicit, readable, no indirection. MediatR was evaluated and rejected — it hides real dependencies behind `IMediator` and makes stack traces harder to follow in production. Cross-cutting concerns are handled via filters and decorators instead.
 
 ### Explicit DI Registration
 Everything in `Program.cs` is registered individually. No assembly scanning. You can read `Program.cs` and know exactly what the app can do.
@@ -94,6 +92,9 @@ Configured in `Extensions/SerilogConfiguration.cs` (kept out of Program.cs delib
 - [x] Controllers: HTTP-only, inject handlers directly by concrete type
 - [x] Serilog: structured logging, console + rolling file, EF noise suppressed
 - [x] Health checks: /health and /health/live with JSON responses
+- [x] JWT Bearer authentication via HttpOnly cookie (SameSite=Strict, Secure in prod)
+- [x] POST /auth/login and POST /auth/logout endpoints
+- [x] [Authorize] on all write endpoints (POST/PUT/DELETE)
 
 ### What's Done (Frontend)
 - [x] Next.js 16 App Router scaffold
@@ -102,10 +103,9 @@ Configured in `Extensions/SerilogConfiguration.cs` (kept out of Program.cs delib
 - [x] API client in src/lib/api.ts
 
 ### Immediate Next
-1. **MediatR + pipeline behaviors** — the natural next backend step. User understands *why* it exists. Add it, then show auto-logging as the first pipeline behavior.
-2. **Authentication** — after MediatR
-3. **Azure deployment** — App Service, Key Vault, CI/CD via GitHub Actions
-4. **AI Job Fit feature** — user pastes job post, Claude/Azure OpenAI responds citing portfolio projects/technologies from DB. Streaming response to frontend.
+1. **Azure deployment** — App Service, Key Vault, CI/CD via GitHub Actions
+2. **AI Job Fit feature** — user pastes job post, Claude/Azure OpenAI responds citing portfolio projects/technologies from DB. Streaming response to frontend.
+3. **Roles + multi-user auth** — add `role` claim to JWT, `[Authorize(Roles = "Admin")]`, Users table
 
 ---
 
@@ -118,7 +118,24 @@ Configured in `Extensions/SerilogConfiguration.cs` (kept out of Program.cs delib
 | `Portfolio.Api/Filters/ValidationFilter.cs` | Generic pre-action validation filter |
 | `Portfolio.Api/Validators/` | FluentValidation rules per DTO |
 | `Portfolio.Api/Common/Projections/` | EF LINQ projections (entity → DTO at DB level) |
+| `Portfolio.Api/Services/ITokenService.cs` | Token generation interface |
+| `Portfolio.Api/Services/JwtTokenService.cs` | JWT signing implementation |
 | `Portfolio.Api/Extensions/SerilogConfiguration.cs` | Serilog setup |
 | `Portfolio.Api/Extensions/HealthCheckExtensions.cs` | Health endpoint mapping |
+| `Portfolio.Api/Extensions/AuthenticationExtensions.cs` | JWT Bearer + cookie auth wiring |
 | `portfolio-web/src/app/` | Next.js App Router pages and components |
 | `portfolio-web/src/lib/api.ts` | Frontend API client |
+| `README.md` | Project overview, setup instructions, endpoint reference |
+| `ARCHITECTURE.md` | Design decisions and reasoning — update when new patterns are introduced |
+| `DEVLOG.md` | Local-only chronological dev journal — not source controlled |
+
+---
+
+## Documentation Maintenance
+
+When completing a feature or making an architectural decision, update the following as appropriate:
+
+- **`CLAUDE.md`** — update Current State (check off completed items, add new ones), update Immediate Next, update Key Files if new files are added
+- **`README.md`** — update if new endpoints are added, setup steps change, or project structure changes
+- **`ARCHITECTURE.md`** — add a new section when a new pattern or significant decision is introduced
+- **`DEVLOG.md`** — append a new entry summarising what was built and any key decisions made
