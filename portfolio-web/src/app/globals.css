@@ -172,6 +172,7 @@ p {
 
 .appMain {
   flex: 1;
+  padding-top: 61px; /* compensates for fixed header height */
 }
 
 /* ============================================================

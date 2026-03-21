@@ -1,13 +1,18 @@
+'use client';
+
 import Image from "next/image";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
 import MobileNav from "./MobileNav";
 import CmdKButton from "./CmdKButton";
+import { useScrollDirection } from "@/hooks/useScrollDirection";
 import styles from "./Header.module.css";
 
 export default function Header() {
+  const hidden = useScrollDirection();
+
   return (
-    <header className={styles.header}>
+    <header className={`${styles.header}${hidden ? ` ${styles.headerHidden}` : ''}`}>
       <div className={styles.inner}>
         <Link href="/" className={styles.brand}>
           <Image
