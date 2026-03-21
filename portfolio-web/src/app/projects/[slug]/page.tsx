@@ -1,44 +1,31 @@
 import type { Metadata } from "next";
 import { getProjectBySlug } from "@/lib/api";
 import Link from "next/link";
-import Image from "next/image";
 import { notFound } from "next/navigation";
-import styles from "../page.module.css";
-import PageLayout from "@/app/components/PageLayout";
+import { TbBrandGithub, TbExternalLink } from "react-icons/tb";
+import GlassCard from "@/app/components/GlassCard";
+import TechTag from "@/app/components/TechTag";
+import GlowButton from "@/app/components/GlowButton";
+import AnimatedSection from "@/app/components/AnimatedSection";
+import styles from "./page.module.css";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ slug: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
-  const project = await getProjectBySlug(slug);
-
-  if (!project) {
+  try {
+    const project = await getProjectBySlug(slug);
     return {
-      title: "Project Not Found",
-      description: "The requested project could not be found.",
+      title: project.name,
+      description: project.shortDescription ?? "Portfolio project",
     };
+  } catch {
+    return { title: "Project Not Found" };
   }
-
-  return {
-    title: project.name,
-    description:
-      project.shortDescription ??
-      "Portfolio project highlighting backend design, architecture, and implementation decisions.",
-  };
 }
 
-type ProjectDetailPageProps = {
-  params: Promise<{
-    slug: string;
-  }>;
-};
-
-export default async function ProjectDetailPage({ params }: ProjectDetailPageProps) {
+export default async function ProjectDetailPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
-  let project;
 
+  let project;
   try {
     project = await getProjectBySlug(slug);
   } catch {
@@ -46,60 +33,78 @@ export default async function ProjectDetailPage({ params }: ProjectDetailPagePro
   }
 
   return (
-    <PageLayout title={project.name} undernav={<Link href="/projects">← Back to Projects</Link>}>
-      {project.imageUrl && (
-        <section className={styles.section}>
-          <Image
-            src={project.imageUrl}
-            alt={project.name}
-            width={600}
-            height={400}
-            className={styles.image}
-            placeholder="blur"
-            blurDataURL="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw=="
-          />
-        </section>
-      )}
-
-      {project.fullDescription && (
-        <section className={styles.section}>
-          <h2>Description</h2>
-          <p>{project.fullDescription}</p>
-        </section>
-      )}
-
-      {(project.repoUrl || project.liveUrl) && (
-        <section className={styles.section}>
-          <h2>Links</h2>
-
-          {project.repoUrl && (
-            <div>
-              <a href={project.repoUrl} target="_blank" rel="noopener noreferrer">
-                Repository
-              </a>
+    <div className={styles.page}>
+      {/* Header band */}
+      <div className={styles.header}>
+        <div className={styles.headerInner}>
+          <Link href="/projects" className={styles.backLink}>← Projects</Link>
+          <div className={styles.titleRow}>
+            <h1 className={styles.title}>{project.name}</h1>
+            {project.isFeatured && <span className={styles.featuredBadge}>Featured</span>}
+          </div>
+          {project.shortDescription && (
+            <p className={styles.subtitle}>{project.shortDescription}</p>
+          )}
+          {project.technologies.length > 0 && (
+            <div className={styles.tags}>
+              {project.technologies.map((t) => (
+                <TechTag key={t.id} name={t.name} slug={t.slug} />
+              ))}
             </div>
           )}
+        </div>
+      </div>
 
-          {project.liveUrl && (
-            <div>
-              <a href={project.liveUrl} target="_blank" rel="noopener noreferrer">
-                Live Site
-              </a>
-            </div>
+      {/* Body */}
+      <div className={styles.body}>
+        <div className={styles.main}>
+          {project.fullDescription && (
+            <AnimatedSection>
+              <GlassCard>
+                <h2 className={styles.sectionTitle}>About this project</h2>
+                <p className={styles.bodyText}>{project.fullDescription}</p>
+              </GlassCard>
+            </AnimatedSection>
           )}
-        </section>
-      )}
 
-      {project.technologies.length > 0 && (
-        <section className={styles.section}>
-          <h2>Technologies</h2>
-          <ul>
-            {project.technologies.map((tech) => (
-              <li key={tech.id}>{tech.name}</li>
-            ))}
-          </ul>
-        </section>
-      )}
-    </PageLayout>
+          {(project.repoUrl || project.liveUrl) && (
+            <AnimatedSection delay={80}>
+              <GlassCard>
+                <h2 className={styles.sectionTitle}>Links</h2>
+                <div className={styles.links}>
+                  {project.repoUrl && (
+                    <GlowButton href={project.repoUrl} variant="secondary" external>
+                      <TbBrandGithub size={17} /> Repository
+                    </GlowButton>
+                  )}
+                  {project.liveUrl && (
+                    <GlowButton href={project.liveUrl} variant="primary" external>
+                      <TbExternalLink size={17} /> Live Site
+                    </GlowButton>
+                  )}
+                </div>
+              </GlassCard>
+            </AnimatedSection>
+          )}
+        </div>
+
+        <aside className={styles.sidebar}>
+          {project.technologies.length > 0 && (
+            <AnimatedSection delay={120}>
+              <GlassCard>
+                <h2 className={styles.sectionTitle}>Technologies</h2>
+                <div className={styles.techList}>
+                  {project.technologies.map((t) => (
+                    <Link key={t.id} href={`/technologies/${t.slug}`} className={styles.techItem}>
+                      {t.name}
+                    </Link>
+                  ))}
+                </div>
+              </GlassCard>
+            </AnimatedSection>
+          )}
+        </aside>
+      </div>
+    </div>
   );
 }
