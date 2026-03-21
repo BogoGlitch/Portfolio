@@ -1,0 +1,55 @@
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.4rem;
+  border-radius: 0.6rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease !important;
+}
+
+.btn:hover {
+  transform: translateY(-2px);
+}
+
+/* Primary — filled accent */
+.primary {
+  background-color: var(--accent);
+  border-color: var(--accent);
+  color: var(--bg);
+}
+
+.primary:hover {
+  box-shadow: 0 0 20px var(--accent-glow), 0 0 40px var(--accent-glow);
+}
+
+/* Secondary — outline accent */
+.secondary {
+  background-color: transparent;
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.secondary:hover {
+  background-color: var(--accent-subtle);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+/* Ghost — minimal */
+.ghost {
+  background-color: var(--bg-surface);
+  border-color: var(--border);
+  color: var(--text-muted);
+}
+
+.ghost:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}

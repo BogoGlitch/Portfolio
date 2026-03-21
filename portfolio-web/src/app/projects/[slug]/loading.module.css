@@ -1,0 +1,24 @@
+.page { min-height: 100vh; }
+
+.header {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 2.5rem 0 2rem;
+}
+
+.inner {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.backLink { height: 0.875rem; width: 5rem; }
+.title    { height: 2.5rem;   width: 50%; }
+.subtitle { height: 1rem;     width: 70%; }
+
+.body {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0;
+}

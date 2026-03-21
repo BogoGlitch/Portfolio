@@ -1,0 +1,104 @@
+/* ── Glitch: typewriter ── */
+
+.typewriter {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.cursorGlitch {
+  display: inline-block;
+  width: 10px;
+  height: 1em;
+  background-color: var(--accent);
+  border-radius: 0;
+  margin-left: 2px;
+  animation: blinkGlitch 380ms steps(1, end) infinite;
+}
+
+@keyframes blinkGlitch {
+  0%,  48% { opacity: 1; }
+  49%, 62% { opacity: 0; }
+  63%, 74% { opacity: 1; }
+  75%, 100% { opacity: 0; }
+}
+
+/* ── Shared cycling container (Ember + Cosmos) ── */
+
+.cycleWrapper {
+  display: inline-block;
+  position: relative;
+  overflow: hidden;
+  /* Height and width driven by the invisible placeholder */
+  color: var(--accent);
+  font-weight: 500;
+  vertical-align: bottom;
+}
+
+/* Invisible longest string — keeps the container from collapsing */
+.placeholder {
+  display: inline-block;
+  visibility: hidden;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+/* Both animated strings sit on top of the placeholder */
+.slot {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+}
+
+/* ── Ember: roll up ── */
+
+.emberExit {
+  animation: emberRollOut 440ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.emberEnter {
+  animation: emberRollIn 440ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+@keyframes emberRollOut {
+  from { transform: translateY(0);     opacity: 1; }
+  to   { transform: translateY(-110%); opacity: 0; }
+}
+
+@keyframes emberRollIn {
+  from { transform: translateY(110%);  opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* ── Cosmos: slide in from left, out to right ── */
+
+.cosmosExit {
+  animation: cosmosSlideOut 440ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.cosmosEnter {
+  animation: cosmosSlideIn 440ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes cosmosSlideOut {
+  from { transform: translateX(0);     opacity: 1; }
+  to   { transform: translateX(110%);  opacity: 0; }
+}
+
+@keyframes cosmosSlideIn {
+  from { transform: translateX(-110%); opacity: 0; }
+  to   { transform: translateX(0);     opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursorGlitch,
+  .emberExit, .emberEnter,
+  .cosmosExit, .cosmosEnter {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+}

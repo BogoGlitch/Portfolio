@@ -1,7 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
+import type { Metadata } from "next";
+import { getProjects, getTechnologies } from "@/lib/api";
+import { TbFolder, TbCpu, TbBrain } from "react-icons/tb";
+import GlassCard from "./components/GlassCard";
+import GlowButton from "./components/GlowButton";
+import AnimatedSection from "./components/AnimatedSection";
+import TechTag from "./components/TechTag";
+import HeroTypewriter from "./components/HeroTypewriter";
 import styles from "./page.module.css";
-import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Home | Sean Bogolin",
@@ -9,150 +16,160 @@ export const metadata: Metadata = {
     "Backend-first portfolio platform showcasing projects, technologies, and pragmatic software engineering decisions.",
 };
 
-export default function HomePage() {
+export default async function HomePage() {
+  const [projects, technologies] = await Promise.allSettled([
+    getProjects(),
+    getTechnologies(),
+  ]);
+
+  const projectCount = projects.status === "fulfilled" ? projects.value.length : 0;
+  const techCount = technologies.status === "fulfilled" ? technologies.value.length : 0;
+  const featuredProjects = projects.status === "fulfilled"
+    ? projects.value.filter((p) => p.isFeatured).slice(0, 3)
+    : [];
+
   return (
-    <main className={styles.page}>
+    <div className={styles.page}>
+      {/* ── Hero ── */}
       <section className={styles.hero}>
-        <div className={styles.heroContent}>
+        <div className={styles.heroInner}>
           <div className={styles.heroText}>
             <p className={styles.kicker}>Senior Software Engineer</p>
-            <h1 className={styles.title}>Sean Bogolin</h1>
-            <p className={styles.subtitle}>Backend-first engineering showcase</p>
-            <p className={styles.description}>
-              I design and build scalable, maintainable web platforms with a strong focus on backend
-              architecture, API design, and end-to-end delivery.
+            <h1 className={styles.name}>Sean Bogolin</h1>
+            <p className={styles.typewriterLine}>
+              <HeroTypewriter />
             </p>
-
+            <p className={styles.description}>
+              I design and build scalable, maintainable web platforms with a strong focus on
+              backend architecture, API design, and end-to-end delivery.
+            </p>
             <div className={styles.heroActions}>
-              <Link href="/projects" className={styles.primaryAction}>
-                View Projects
-              </Link>
-              <Link href="/technologies" className={styles.secondaryAction}>
-                Browse Technologies
-              </Link>
+              <GlowButton href="/projects" variant="primary">View Projects</GlowButton>
+              <GlowButton href="/technologies" variant="secondary">Browse Technologies</GlowButton>
             </div>
           </div>
 
           <div className={styles.heroMedia}>
-            <Image
-              src="/images/headshot-placeholder.jpg"
-              alt="Portrait of Sean Bogolin"
-              width={420}
-              height={420}
-              className={styles.heroImage}
-              priority
-            />
+            <div className={styles.avatarWrapper}>
+              <Image
+                src="/images/headshot-placeholder.jpg"
+                alt="Portrait of Sean Bogolin"
+                width={320}
+                height={320}
+                className={styles.avatar}
+                priority
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Stats bar */}
+        <div className={styles.statsBar}>
+          <div className={styles.statsInner}>
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{projectCount}</span>
+              <span className={styles.statLabel}>Projects</span>
+            </div>
+            <div className={styles.statDivider} />
+            <div className={styles.stat}>
+              <span className={styles.statValue}>{techCount}</span>
+              <span className={styles.statLabel}>Technologies</span>
+            </div>
+            <div className={styles.statDivider} />
+            <div className={styles.stat}>
+              <span className={styles.statValue}>.NET 10</span>
+              <span className={styles.statLabel}>Backend</span>
+            </div>
+            <div className={styles.statDivider} />
+            <div className={styles.stat}>
+              <span className={styles.statValue}>Next.js 16</span>
+              <span className={styles.statLabel}>Frontend</span>
+            </div>
           </div>
         </div>
       </section>
 
       <div className={styles.content}>
-        <section className={styles.section}>
+        {/* ── What this demonstrates ── */}
+        <AnimatedSection as="section" className={styles.section}>
           <h2 className={styles.sectionTitle}>What this portfolio demonstrates</h2>
+          <p className={styles.sectionSubtitle}>
+            More than finished screens — this platform highlights how I think through backend
+            architecture, API contracts, data modeling, and pragmatic delivery.
+          </p>
+          <div className={styles.highlightGrid}>
+            {[
+              { title: "Backend-first design", body: "Clear service boundaries, DTO-driven APIs, and data access shaped for maintainability." },
+              { title: "Pragmatic architecture", body: "Decisions grounded in tradeoffs — scalability, readability, and delivery maturity." },
+              { title: "End-to-end ownership", body: "Database and API design through frontend integration and deployment readiness." },
+              { title: "Enterprise mindset", body: "Structured patterns, explicit configuration, and systems built for long-term evolution." },
+            ].map((item, i) => (
+              <AnimatedSection key={item.title} delay={i * 80}>
+                <GlassCard className={styles.highlightCard}>
+                  <h3 className={styles.highlightTitle}>{item.title}</h3>
+                  <p className={styles.highlightBody}>{item.body}</p>
+                </GlassCard>
+              </AnimatedSection>
+            ))}
+          </div>
+        </AnimatedSection>
 
-          <div className={styles.highlightPanel}>
-            <p className={styles.highlightIntro}>
-              This platform is designed to show more than finished screens. It highlights how I
-              think through backend architecture, API contracts, data modeling, and pragmatic
-              delivery.
-            </p>
-
-            <div className={styles.highlightGrid}>
-              <article className={styles.highlightItem}>
-                <h3 className={styles.highlightTitle}>Backend-first design</h3>
-                <p className={styles.highlightText}>
-                  Clear service boundaries, DTO-driven APIs, and data access shaped for
-                  maintainability.
-                </p>
-              </article>
-
-              <article className={styles.highlightItem}>
-                <h3 className={styles.highlightTitle}>Pragmatic architecture</h3>
-                <p className={styles.highlightText}>
-                  Decisions grounded in tradeoffs, scalability, readability, and delivery maturity.
-                </p>
-              </article>
-
-              <article className={styles.highlightItem}>
-                <h3 className={styles.highlightTitle}>End-to-end ownership</h3>
-                <p className={styles.highlightText}>
-                  From database and API design through frontend integration and deployment
-                  readiness.
-                </p>
-              </article>
-
-              <article className={styles.highlightItem}>
-                <h3 className={styles.highlightTitle}>Enterprise mindset</h3>
-                <p className={styles.highlightText}>
-                  Structured patterns, explicit configuration, and systems built for long-term
-                  evolution.
-                </p>
-              </article>
+        {/* ── Featured projects ── */}
+        {featuredProjects.length > 0 && (
+          <AnimatedSection as="section" className={styles.section}>
+            <div className={styles.sectionHeader}>
+              <h2 className={styles.sectionTitle}>Featured projects</h2>
+              <Link href="/projects" className={styles.sectionLink}>View all →</Link>
             </div>
-          </div>
-        </section>
+            <div className={styles.featuredGrid}>
+              {featuredProjects.map((project, i) => (
+                <GlassCard key={project.id} href={`/projects/${project.slug}`} featured={i === 0}>
+                  <div className={styles.projectCard}>
+                    <div className={styles.projectMeta}>
+                      <h3 className={styles.projectTitle}>{project.name}</h3>
+                      <p className={styles.projectDesc}>{project.shortDescription}</p>
+                    </div>
+                    {project.technologies.length > 0 && (
+                      <div className={styles.projectTags}>
+                        {project.technologies.slice(0, 4).map((t) => (
+                          <TechTag key={t.id} name={t.name} />
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </GlassCard>
+              ))}
+            </div>
+          </AnimatedSection>
+        )}
 
-        <section className={styles.section}>
+        {/* ── Explore ── */}
+        <AnimatedSection as="section" className={styles.section}>
           <h2 className={styles.sectionTitle}>Explore</h2>
-
-          <div className={styles.cardGrid}>
-            <Link href="/projects" className={styles.card}>
-              <article>
-                <div className={styles.cardMedia}>
-                  <Image
-                    src="https://picsum.photos/seed/projects-card/800/450"
-                    alt=""
-                    width={800}
-                    height={450}
-                    className={styles.cardImage}
-                  />
-                </div>
-                <h3 className={styles.cardTitle}>Projects</h3>
-                <p className={styles.cardText}>
-                  Review portfolio work that highlights backend design, API architecture, and
-                  end-to-end implementation decisions.
-                </p>
-              </article>
-            </Link>
-
-            <Link href="/technologies" className={styles.card}>
-              <article>
-                <div className={styles.cardMedia}>
-                  <Image
-                    src="https://picsum.photos/seed/technologies-card/800/450"
-                    alt=""
-                    width={800}
-                    height={450}
-                    className={styles.cardImage}
-                  />
-                </div>
-                <h3 className={styles.cardTitle}>Technologies</h3>
-                <p className={styles.cardText}>
-                  Browse the technologies, frameworks, and platform choices used across the
-                  portfolio.
-                </p>
-              </article>
-            </Link>
-
-            <article className={`${styles.card} ${styles.cardDisabled}`}>
-              <div className={styles.cardMedia}>
-                <Image
-                  src="https://picsum.photos/seed/approach-card/800/450"
-                  alt=""
-                  width={800}
-                  height={450}
-                  className={styles.cardImage}
-                />
+          <div className={styles.exploreGrid}>
+            <GlassCard href="/projects" featured>
+              <div className={styles.exploreCard}>
+                <span className={styles.exploreLabel}><TbFolder size={14} />Projects</span>
+                <h3 className={styles.exploreTitle}>Backend design, API architecture, implementation decisions</h3>
+                <span className={styles.exploreArrow}>→</span>
               </div>
-              <h3 className={styles.cardTitle}>Approach</h3>
-              <p className={styles.cardText}>
-                A future section focused on architecture decisions, tradeoffs, maintainability,
-                scalability, and platform-minded engineering.
-              </p>
-            </article>
+            </GlassCard>
+            <GlassCard href="/technologies">
+              <div className={styles.exploreCard}>
+                <span className={styles.exploreLabel}><TbCpu size={14} />Technologies</span>
+                <h3 className={styles.exploreTitle}>Frameworks, platforms, and tooling choices</h3>
+                <span className={styles.exploreArrow}>→</span>
+              </div>
+            </GlassCard>
+            <GlassCard className={styles.exploreCardDisabled}>
+              <div className={styles.exploreCard}>
+                <span className={styles.exploreLabel}><TbBrain size={14} />Approach <span className={styles.comingSoon}>soon</span></span>
+                <h3 className={styles.exploreTitle}>Architecture decisions, tradeoffs, platform-minded engineering</h3>
+              </div>
+            </GlassCard>
           </div>
-        </section>
+        </AnimatedSection>
       </div>
-    </main>
+    </div>
   );
 }

@@ -162,3 +162,36 @@ Configured in `Extensions/SerilogConfiguration.cs`, not in `Program.cs`.
 - `GET /health/live` — liveness only: process up, no dependency checks
 
 **Why two endpoints:** Liveness (`/health/live`) tells an orchestrator the process is running. Readiness (`/health`) tells it the process can serve traffic. These are different questions and should have different answers during startup or DB outages.
+
+---
+
+## Frontend Design System
+
+### Three-Theme System
+
+All colors are oklch() tokens set as CSS custom properties on `[data-theme]` selectors in `globals.css`. Three themes: `glitch` (blue/pink), `ember` (amber/crimson), `cosmos` (cyan/lavender). `useTheme` writes `data-theme` to the DOM and localStorage. Components read the theme via `data-theme` CSS selectors or the `useDocumentTheme` hook.
+
+### FOUC Prevention
+
+An inline `<script>` in `layout.tsx` reads localStorage and sets `data-theme` before React hydrates — the page renders in the correct theme immediately. `suppressHydrationWarning` on `<html>` suppresses the React mismatch warning this causes (intentional, not a bug).
+
+### Hydration Strategy
+
+`useTheme` uses `useIsomorphicLayoutEffect` (useLayoutEffect on client, useEffect on server) to sync from localStorage before first paint — eliminates the theme pill flash. `useDocumentTheme` uses `useState('glitch')` + `useEffect` to avoid React hydration mismatches from reading the DOM during render.
+
+### Scroll-Reveal Animations (AnimatedSection)
+
+`AnimatedSection` wraps `IntersectionObserver` with directional awareness:
+- Elements animate in when entering from below (threshold 0.1, rootMargin -40px bottom)
+- Elements reset when they exit via the bottom (user scrolled back up)
+- Elements that scroll off the top stay visible — only one direction resets
+- Theme switch replays animations only on currently-visible elements
+
+Per-theme keyframes in `globals.css`: glitch (slide-up + X snap), ember (perspective tilt), cosmos (clean fade-up). Animation-name change on the element triggers browser replay — no JS needed to restart the animation.
+
+### Per-Theme HeroTypewriter
+
+Three completely different text effects driven by `useDocumentTheme`:
+- **Glitch** — character-by-character typewriter, block cursor, periodic symbol scramble
+- **Ember** — sentences roll up and out, next rolls in from below (`useCycler` hook)
+- **Cosmos** — sentences slide out right, next slides in from left (`useCycler` hook)

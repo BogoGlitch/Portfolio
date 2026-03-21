@@ -1,0 +1,26 @@
+.tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  background-color: var(--accent-subtle);
+  border: 1px solid var(--accent-2-glow);
+  border-radius: 999px;
+  color: var(--accent-2);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.7rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  /* Isolate stacking context so card transform doesn't repaint the pill */
+  isolation: isolate;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease !important;
+}
+
+a.tag:hover {
+  background-color: var(--accent-2-glow);
+  border-color: var(--accent-2);
+  color: var(--text);
+}

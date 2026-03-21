@@ -1,5 +1,8 @@
 import Image from "next/image";
 import Link from "next/link";
+import ThemeToggle from "./ThemeToggle";
+import MobileNav from "./MobileNav";
+import CmdKButton from "./CmdKButton";
 import styles from "./Header.module.css";
 
 export default function Header() {
@@ -10,8 +13,8 @@ export default function Header() {
           <Image
             src="/images/BogoLogo_GLITCH(b).png"
             alt="Sean Bogolin logo"
-            width={40}
-            height={40}
+            width={36}
+            height={36}
             className={styles.brandImage}
             priority
           />
@@ -19,16 +22,18 @@ export default function Header() {
         </Link>
 
         <nav className={styles.nav} aria-label="Main navigation">
-          <Link href="/projects" className={styles.navLink}>
-            Projects
-          </Link>
-          <Link href="/technologies" className={styles.navLink}>
-            Technologies
-          </Link>
+          <Link href="/projects" className={styles.navLink}>Projects</Link>
+          <Link href="/technologies" className={styles.navLink}>Technologies</Link>
           <span className={`${styles.navLink} ${styles.navLinkDisabled}`} aria-disabled="true">
             Approach
           </span>
         </nav>
+
+        <div className={styles.actions}>
+          <CmdKButton />
+          <ThemeToggle />
+          <MobileNav />
+        </div>
       </div>
     </header>
   );

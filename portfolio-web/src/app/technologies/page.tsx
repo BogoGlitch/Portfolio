@@ -1,7 +1,11 @@
 import Link from "next/link";
 import { getTechnologies } from "@/lib/api";
-import PageLayout from "../components/PageLayout";
 import type { Metadata } from "next";
+import GlassCard from "../components/GlassCard";
+import AnimatedSection from "../components/AnimatedSection";
+import CategoryTabs from "../components/CategoryTabs";
+import TechIcon from "../components/TechIcon";
+import styles from "./page.module.css";
 
 export const metadata: Metadata = {
   title: "Technologies",
@@ -9,97 +13,82 @@ export const metadata: Metadata = {
 };
 
 type TechnologiesPageProps = {
-  searchParams?: Promise<{
-    category?: string | string[];
-  }>;
+  searchParams?: Promise<{ category?: string | string[] }>;
 };
 
 function parseCategory(value: string | string[] | undefined): string | undefined {
-  const rawValue = Array.isArray(value) ? value[0] : value;
-  const trimmedValue = rawValue?.trim();
-
-  return trimmedValue ? trimmedValue : undefined;
+  const raw = Array.isArray(value) ? value[0] : value;
+  return raw?.trim() || undefined;
 }
 
 export default async function TechnologiesPage({ searchParams }: TechnologiesPageProps) {
-  const resolvedSearchParams = await searchParams;
-  const selectedCategory = parseCategory(resolvedSearchParams?.category);
+  const resolved = await searchParams;
+  const selectedCategory = parseCategory(resolved?.category);
 
   const technologies = await getTechnologies();
-  const filteredTechnologies = selectedCategory
-    ? technologies.filter((technology) => technology.category === selectedCategory)
-    : technologies;
 
   const categories = Array.from(
     new Set(technologies.map((t) => t.category).filter((c): c is string => Boolean(c))),
   ).sort();
 
-  const categoryFilterFormKey = selectedCategory ?? "all";
-
-  const categoryFilterSection = (
-    <section>
-      <form method="get" key={categoryFilterFormKey}>
-        <fieldset>
-          <legend>Filter by category</legend>
-
-          <div className="filtersList">
-            {categories.map((category) => (
-              <label key={category}>
-                <input
-                  type="radio"
-                  name="category"
-                  value={category}
-                  defaultChecked={selectedCategory === category}
-                />
-                {category}
-              </label>
-            ))}
-          </div>
-
-          <div className="ctas">
-            <button type="submit">Apply Filter</button>
-            <Link href="/technologies">Clear Filter</Link>
-          </div>
-        </fieldset>
-      </form>
-    </section>
-  );
+  const filtered = selectedCategory
+    ? technologies.filter((t) => t.category === selectedCategory)
+    : technologies;
 
   return (
-    <PageLayout
-      undernav={<Link href="/">← Back to Home</Link>}
-      title="Technologies"
-      description="Explore the tools and platforms used across the portfolio, grouped by category."
-    >
-      {categoryFilterSection}
-      <section>
-        {filteredTechnologies.length === 0 ? (
-          <p>
-            {selectedCategory
-              ? "No technologies matched the selected category filter."
-              : "No technologies found."}
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div className={styles.headerInner}>
+          <Link href="/" className={styles.backLink}>← Home</Link>
+          <h1 className={styles.title}>Technologies</h1>
+          <p className={styles.subtitle}>
+            Explore the tools and platforms used across the portfolio.
           </p>
-        ) : (
-          <ul>
-            {filteredTechnologies.map((technology) => (
-              <li key={technology.id}>
-                <h2>
-                  <Link href={`/technologies/${technology.slug}`}>{technology.name}</Link>
-                </h2>
+        </div>
+      </div>
 
-                {technology.category ? <p>Category: {technology.category}</p> : null}
+      <div className={styles.body}>
+        <CategoryTabs
+          categories={categories}
+          selected={selectedCategory}
+          basePath="/technologies"
+          paramName="category"
+        />
 
-                {technology.description ? <p>{technology.description}</p> : null}
+        <div className={styles.grid}>
+          {filtered.map((tech, i) => (
+            <AnimatedSection key={tech.id} delay={i * 50}>
+              <GlassCard href={`/technologies/${tech.slug}`} featured={tech.isFeatured}>
+                <div className={styles.cardInner}>
+                  <div className={styles.cardTop}>
+                    <div className={styles.cardHeader}>
+                      <TechIcon slug={tech.slug} size={24} className={styles.cardIcon} />
+                      {tech.category && (
+                        <span className={styles.category}>{tech.category}</span>
+                      )}
+                    </div>
+                    <h2 className={styles.cardTitle}>{tech.name}</h2>
+                    {tech.description && (
+                      <p className={styles.cardDesc}>{tech.description}</p>
+                    )}
+                  </div>
+                  <div className={styles.cardFooter}>
+                    <span className={styles.projectCount}>
+                      {tech.projects.length} {tech.projects.length === 1 ? 'project' : 'projects'}
+                    </span>
+                  </div>
+                </div>
+              </GlassCard>
+            </AnimatedSection>
+          ))}
+        </div>
 
-                <p>
-                  {technology.projects.length}{" "}
-                  {technology.projects.length === 1 ? "project" : "projects"}
-                </p>
-              </li>
-            ))}
-          </ul>
+        {filtered.length === 0 && (
+          <div className={styles.empty}>
+            <p>No technologies in this category.</p>
+          </div>
         )}
-      </section>
-    </PageLayout>
+      </div>
+    </div>
   );
 }
