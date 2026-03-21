@@ -195,3 +195,53 @@ Three completely different text effects driven by `useDocumentTheme`:
 - **Glitch** — character-by-character typewriter, block cursor, periodic symbol scramble
 - **Ember** — sentences roll up and out, next rolls in from below (`useCycler` hook)
 - **Cosmos** — sentences slide out right, next slides in from left (`useCycler` hook)
+
+---
+
+## Header Scroll Behavior
+
+Header is `position: fixed` (not `position: sticky`). Sticky + `backdrop-filter` breaks `transform` — the backdrop compositing layer ignores the transform, so only the content moves while the background stays put. Fixed avoids this entirely.
+
+`useScrollDirection` hook attaches a passive scroll listener, compares `window.scrollY` delta against an 8px threshold, and returns a `hidden` boolean. Header applies `transform: translateY(-110%)` when hidden. `appMain` has `padding-top: var(--header-height)` to compensate for the fixed header.
+
+`--header-height: 61px` is defined in `:root` as a single source of truth — used by both `appMain` and the mobile drawer's `top` value.
+
+---
+
+## MobileNav Architecture
+
+### Portal out of header stacking context
+
+The header has `position: fixed`, `z-index: 400`, and `backdrop-filter: blur(12px)`. This combination creates a stacking context AND a compositing layer. Any `position: fixed` child of the header is contained within that stacking context and affected by the backdrop-filter, causing the drawer background to render transparently.
+
+Fix: backdrop and drawer are rendered via `createPortal(overlay, document.body)` — directly in `<body>`, outside the header's stacking context entirely. The hamburger button stays in the header (it belongs there visually). `mounted` state guards the portal from running during SSR.
+
+### Z-index layering
+
+| Element | z-index | Why |
+|---|---|---|
+| Backdrop | 200 | Above page content |
+| Drawer | 300 | Above backdrop |
+| Header | 400 | Above drawer — hamburger always visible |
+
+### Scroll lock (iOS Safari)
+
+`overflow: hidden` on body does not prevent scroll on iOS Safari. The reliable cross-browser solution: save `window.scrollY`, set `body { position: fixed; top: -${y}px; width: 100% }`. On close, restore position and `window.scrollTo(0, y)`. This also prevents the page-jump that a naive position restore would cause.
+
+### Hamburger animation state machine
+
+Two independent states:
+- **`open`** — controls drawer visibility and backdrop. Set true immediately on open, false immediately on close (drawer starts sliding out right away).
+- **`closing`** — controls hamburger reverse animation only. Set true on close, cleared after `CLOSE_DURATION[theme]` ms.
+
+`data-open={open && !closing}` and `data-closing={closing}` drive CSS selectors. This keeps drawer and hamburger animation decoupled — they run in parallel, each at their own speed.
+
+`CLOSE_DURATION` is a per-theme record (`glitch: 280, ember: 420, cosmos: 520`) so the `closing` state clears precisely when each animation ends. Using `useDocumentTheme` (not `useTheme`) in MobileNav ensures `data-theme` on the button always matches the active theme — `useTheme` instances are isolated and don't receive updates from other components calling `cycleTheme`.
+
+### Per-theme hamburger keyframes
+
+All three use `animation-timing-function` inside keyframes for per-segment easing — different curves for each phase of the motion:
+
+- **Glitch** — bars slide apart horizontally (top right, bottom left, middle fades), then cross back diagonally into X. The cross path is a single keyframe jump from horizontal-offset to X-center, so the diagonal motion is the natural interpolation between those two points.
+- **Ember** — top 2 bars gather down to the bottom bar position (ease-in "fall"), then all spring up into X with `cubic-bezier(0.34, 1.56, 0.64, 1)` overshoot. Mirrors the Ember spring personality.
+- **Cosmos** — bars blast off (top+bottom left, middle right, all fade). Invisible teleport: at 38% opacity is 0, at 39% bars are repositioned at X-center with `scaleX(0)`. From 39→100% they grow outward from a single dot via `cubic-bezier(0.16, 1, 0.3, 1)`. Both X bars share the same center point at `scaleX(0)` so they genuinely collapse to one dot.

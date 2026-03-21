@@ -123,6 +123,6 @@ Portfolio.Api/
 
 portfolio-web/
   src/app/            Next.js App Router pages and components
-  src/hooks/          useTheme, useDocumentTheme, useTypewriter, useIntersectionObserver
+  src/hooks/          useTheme, useDocumentTheme, useScrollDirection, useTypewriter, useIntersectionObserver
   src/lib/api.ts      Typed API client
 ```

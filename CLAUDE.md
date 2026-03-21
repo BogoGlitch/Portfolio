@@ -70,6 +70,17 @@ Theme switching: `data-theme` on `<html>`. FOUC prevented via inline `<script>` 
 
 **Hydration** — `useDocumentTheme` uses `useState('glitch')` + `useEffect` to avoid hydration mismatches. `suppressHydrationWarning` on `<html>` suppresses the FOUC script attribute diff.
 
+**Header scroll behavior** — `position: fixed` (not sticky — sticky + backdrop-filter breaks transform). Hides on scroll down, reveals on any upward scroll via `useScrollDirection` hook (8px threshold). z-index: 400 so it always sits above the mobile drawer (300) and backdrop (200). `--header-height: 61px` in `:root` used by both `appMain` padding-top and drawer `top`.
+
+**MobileNav** — Backdrop and drawer portaled to `document.body` via `createPortal` to escape the header's `backdrop-filter` stacking context (which caused the drawer background to render transparent). Scroll lock uses `position: fixed` on body + saves/restores `scrollY` — works on iOS Safari where `overflow: hidden` does not. Uses `useDocumentTheme` (not `useTheme`) so `data-theme` on the button stays in sync with the active theme — `useTheme` has isolated per-component state that doesn't update when another component calls `cycleTheme`.
+
+**Hamburger animations** — Three completely different per-theme open+close keyframe animations. All use `animation-timing-function` inside keyframes for per-segment easing:
+- **Glitch** — bars slide apart horizontally (top right, bottom left), middle fades, then cross diagonally back into X. Close reverses exactly.
+- **Ember** — top 2 bars gather down to bottom bar (ease-in), then all spring up into X with overshoot (`cubic-bezier(0.34, 1.56, 0.64, 1)`). Close reverses.
+- **Cosmos** — top+bottom slide left, middle slides right (all fade), invisible teleport to X-center at `scaleX(0)`, then X grows from a center dot. Close reverses (X shrinks to dot, bars shoot back out).
+
+`data-open` / `data-closing` attributes on the button drive CSS selectors. JS state machine: `open` controls drawer/backdrop, `closing` controls hamburger reverse animation. `CLOSE_DURATION` record is theme-aware (`glitch: 280, ember: 420, cosmos: 520`) so the closing state clears precisely when each animation ends.
+
 ---
 
 ## Coding Conventions
@@ -106,10 +117,10 @@ Theme switching: `data-theme` on `<html>`. FOUC prevented via inline `<script>` 
 - [x] Three-theme design system (glitch/ember/cosmos) with oklch() tokens
 - [x] FOUC prevention, theme persistence via localStorage
 - [x] Pages: Home, Projects (list + [slug]), Technologies (list + [slug])
-- [x] Header (sticky, blur backdrop), Footer
+- [x] Header: fixed position, hide-on-scroll-down / reveal-on-scroll-up (useScrollDirection), z-index 400
 - [x] ThemeToggle: cycles themes, shows bolt/flame/moon-stars icon
 - [x] CommandPalette: Cmd+K, server-fetched data, keyboard nav — also triggered by ⌘K button in header
-- [x] MobileNav: animated hamburger (per-theme bar animations) + slide-in drawer (per-theme easing)
+- [x] MobileNav: portaled drawer, scroll lock (iOS-safe), hamburger animates open+close per theme (glitch/ember/cosmos each unique)
 - [x] AnimatedSection: directional scroll-reveal per theme, replays on theme switch (visible only), resets on scroll-up
 - [x] GlassCard: backdrop-filter, noise texture, hover lift
 - [x] TechTag: accent-2 pill, isolated stacking context (no hover flicker)
@@ -125,10 +136,9 @@ Theme switching: `data-theme` on `<html>`. FOUC prevented via inline `<script>` 
 ### Frontend — Still To Do
 - [ ] Active nav link highlighting (current page underline stays visible)
 - [ ] Headshot: actual photo (placeholder currently in use)
-- [ ] Mobile nav: further polish (next up)
 
 ### Immediate Next
-1. **Mobile nav polish** — active on `feature/frontend-redesign` branch
+1. **PR + merge** — open PR for `feature/frontend-redesign`, merge to main
 2. **Azure deployment** — App Service, Key Vault, CI/CD via GitHub Actions
 3. **AI Job Fit feature** — user pastes job post, Claude/Azure OpenAI responds citing portfolio projects/technologies. Streaming response to frontend.
 4. **Roles + multi-user auth** — add `role` claim to JWT, `[Authorize(Roles = "Admin")]`, Users table
@@ -152,7 +162,8 @@ Theme switching: `data-theme` on `<html>`. FOUC prevented via inline `<script>` 
 | `portfolio-web/src/app/layout.tsx` | Root layout: FOUC script, CommandPalette data fetch |
 | `portfolio-web/src/app/page.tsx` | Home page: hero, stats bar, featured projects, explore grid |
 | `portfolio-web/src/hooks/useTheme.ts` | Theme state + cycleTheme (writes data-theme + localStorage) |
-| `portfolio-web/src/hooks/useDocumentTheme.ts` | Read-only theme via MutationObserver (used in AnimatedSection) |
+| `portfolio-web/src/hooks/useDocumentTheme.ts` | Read-only theme via MutationObserver — use this (not useTheme) in any component that doesn't call cycleTheme |
+| `portfolio-web/src/hooks/useScrollDirection.ts` | Returns `hidden: boolean` — true when scrolling down, false on any upward scroll |
 | `portfolio-web/src/app/components/` | All shared UI components |
 | `portfolio-web/src/lib/api.ts` | Frontend API client |
 | `README.md` | Project overview, setup instructions, endpoint reference |
