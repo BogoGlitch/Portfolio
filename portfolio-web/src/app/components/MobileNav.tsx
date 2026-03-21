@@ -1,9 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
-import { TbFolder, TbCpu, TbBrain, TbX } from 'react-icons/tb';
-import { useTheme } from '@/hooks/useTheme';
+import { TbFolder, TbCpu, TbBrain } from 'react-icons/tb';
+import { useDocumentTheme } from '@/hooks/useDocumentTheme';
 import styles from './MobileNav.module.css';
 
 const NAV_LINKS = [
@@ -12,11 +13,46 @@ const NAV_LINKS = [
   { href: null,            label: 'Approach',     Icon: TbBrain, disabled: true },
 ];
 
+const ANIM_DURATION_OPEN = 460;
+const CLOSE_DURATION: Record<string, number> = {
+  glitch: 280,
+  ember:  420,
+  cosmos: 520,
+};
+
 export default function MobileNav() {
   const [open, setOpen] = useState(false);
-  const { theme } = useTheme();
+  const [closing, setClosing] = useState(false);
+  const [mounted, setMounted] = useState(false);
+  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const theme = useDocumentTheme();
 
-  const close = () => setOpen(false);
+  // Immediate close — used by links and resize (no reverse animation needed)
+  const close = () => {
+    if (closeTimer.current) clearTimeout(closeTimer.current);
+    setClosing(false);
+    setOpen(false);
+  };
+
+  // Animated close — drawer closes immediately, hamburger animates in parallel
+  const animatedClose = () => {
+    setOpen(false);
+    setClosing(true);
+    closeTimer.current = setTimeout(() => {
+      setClosing(false);
+    }, CLOSE_DURATION[theme] ?? 420);
+  };
+
+  const handleToggle = () => {
+    if (!open) {
+      setOpen(true);
+    } else if (!closing) {
+      animatedClose();
+    }
+  };
+
+  // Wait for client mount before portaling (SSR safety)
+  useEffect(() => { setMounted(true); }, []);
 
   // Close if the viewport grows past the mobile breakpoint
   useEffect(() => {
@@ -25,28 +61,33 @@ export default function MobileNav() {
     return () => window.removeEventListener('resize', onResize);
   }, []);
 
-  // Prevent body scroll when drawer is open
+  // Cleanup timer on unmount
+  useEffect(() => () => { if (closeTimer.current) clearTimeout(closeTimer.current); }, []);
+
+  // Prevent body scroll when drawer is open (works on iOS Safari too)
   useEffect(() => {
-    document.body.style.overflow = open ? 'hidden' : '';
-    return () => { document.body.style.overflow = ''; };
+    if (open) {
+      const y = window.scrollY;
+      document.body.style.position = 'fixed';
+      document.body.style.top = `-${y}px`;
+      document.body.style.width = '100%';
+    } else {
+      const y = Math.abs(parseInt(document.body.style.top || '0', 10));
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+      if (y) window.scrollTo(0, y);
+    }
+    return () => {
+      const y = Math.abs(parseInt(document.body.style.top || '0', 10));
+      document.body.style.position = '';
+      document.body.style.top = '';
+      document.body.style.width = '';
+    };
   }, [open]);
 
-  return (
+  const overlay = (
     <>
-      {/* ── Hamburger button ── */}
-      <button
-        className={styles.toggle}
-        data-open={open || undefined}
-        data-theme={theme}
-        onClick={() => setOpen(prev => !prev)}
-        aria-label={open ? 'Close menu' : 'Open menu'}
-        aria-expanded={open}
-      >
-        <span className={styles.bar} />
-        <span className={styles.bar} />
-        <span className={styles.bar} />
-      </button>
-
       {/* ── Backdrop ── */}
       <div
         className={`${styles.backdrop} ${open ? styles.backdropOpen : ''}`}
@@ -61,13 +102,6 @@ export default function MobileNav() {
         aria-label="Mobile navigation"
         aria-hidden={!open}
       >
-        <div className={styles.drawerHeader}>
-          <span className={styles.drawerBrand}>Menu</span>
-          <button className={styles.closeBtn} onClick={close} aria-label="Close menu">
-            <TbX size={20} />
-          </button>
-        </div>
-
         <div className={styles.drawerLinks}>
           {NAV_LINKS.map(({ href, label, Icon, disabled }) =>
             disabled || !href ? (
@@ -86,6 +120,28 @@ export default function MobileNav() {
           )}
         </div>
       </nav>
+    </>
+  );
+
+  return (
+    <>
+      {/* ── Hamburger button — stays inside the header ── */}
+      <button
+        className={styles.toggle}
+        data-open={open && !closing ? true : undefined}
+        data-closing={closing ? true : undefined}
+        data-theme={theme}
+        onClick={handleToggle}
+        aria-label={open ? 'Close menu' : 'Open menu'}
+        aria-expanded={open}
+      >
+        <span className={styles.bar} />
+        <span className={styles.bar} />
+        <span className={styles.bar} />
+      </button>
+
+      {/* ── Backdrop + Drawer portaled to body, outside header stacking context ── */}
+      {mounted && createPortal(overlay, document.body)}
     </>
   );
 }

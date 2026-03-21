@@ -4,6 +4,10 @@
    Theme switching: set data-theme on <html>.
    ============================================================ */
 
+:root {
+  --header-height: 61px;
+}
+
 [data-theme="glitch"],
 :root {
   --bg:               oklch(8%  0.012 250);
@@ -172,7 +176,7 @@ p {
 
 .appMain {
   flex: 1;
-  padding-top: 61px; /* compensates for fixed header height */
+  padding-top: var(--header-height);
 }
 
 /* ============================================================
