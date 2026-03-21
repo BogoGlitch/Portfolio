@@ -28,6 +28,8 @@ builder.Host.UseSerilog(SerilogConfiguration.Configure);
 
 builder.Services.AddControllers();
 
+builder.Services.AddJwtCookieAuthentication(builder.Configuration);
+
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
@@ -95,6 +97,8 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 //app.UseHttpsRedirection();
+app.UseAuthentication();
+app.UseAuthorization();
 app.MapHealthCheckEndpoints();
 app.MapControllers();
 
