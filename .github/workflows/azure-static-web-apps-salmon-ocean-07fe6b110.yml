@@ -31,6 +31,8 @@ jobs:
           app_location: "/portfolio-web" # App source code path
           api_location: "" # Api source code path - optional
           output_location: "" # Built app content directory - optional
+        env:
+          NEXT_PUBLIC_API_BASE_URL: https://portfolio-api-sb-cnhnaphafdawgubj.centralus-01.azurewebsites.net
           ###### End of Repository/Build Configurations ######
 
   close_pull_request_job:
