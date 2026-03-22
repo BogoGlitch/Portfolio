@@ -16,6 +16,29 @@ Personal portfolio site + living proof of enterprise-level full-stack engineerin
 | Frontend | Next.js 16 (App Router), React 19, TypeScript |
 | Styling | CSS Modules, oklch() color space |
 | Icons | react-icons (tb, si sets) |
+| Hosting | Azure — everything (API, frontend, DB, auth, secrets) |
+| CI/CD | GitHub Actions → Azure (build, test, deploy pipelines) |
+
+---
+
+## Hosting Strategy — Azure Everything
+
+**All infrastructure lives in Azure. No third-party hosting (no Vercel, no Netlify, no Railway).** This mirrors what large enterprises actually run and is the deliberate learning goal.
+
+| Service | Azure Resource | Est. Cost |
+|---|---|---|
+| API | App Service (B1 Linux) | ~$13/mo |
+| Frontend | Static Web Apps (Standard) | ~$9/mo |
+| Database | Azure SQL (Basic, 5 DTU) | ~$5/mo |
+| Secrets | Key Vault | ~$0/mo (free ops volume) |
+| Auth (future) | Azure AD B2C or Entra ID | free tier sufficient |
+| **Total** | | **~$27/mo** |
+
+**Target: enterprise-grade Azure fluency for under $50/month.**
+
+Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standardized infra use. It integrates natively with GitHub Actions, Azure AD, and the rest of the Azure ecosystem. The friction is higher than Vercel but that's the point — learning the real thing.
+
+**CI/CD philosophy:** Azure Pipelines YAML (or GitHub Actions targeting Azure) for every deployment. No manual `az` deploys after initial setup. Build → test → deploy on every merge to `main`.
 
 ---
 
@@ -65,9 +88,9 @@ Personal portfolio site + living proof of enterprise-level full-stack engineerin
 - [ ] Headshot: actual photo (placeholder in use)
 
 ### Immediate Next
-1. **Azure deployment** — App Service (API), Azure SQL, Key Vault, Static Web App (frontend), GitHub Actions CI/CD
-2. **AI Job Fit feature** — user pastes job post, Claude/Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
-3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table
+1. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
+2. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
+3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ---
 
