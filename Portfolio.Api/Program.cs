@@ -1,3 +1,4 @@
+using Azure.Identity;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Data;
@@ -20,6 +21,15 @@ using Serilog;
 using System.Reflection;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// In production, pull secrets from Azure Key Vault using the App Service's managed identity.
+// DefaultAzureCredential automatically uses the managed identity when running in Azure,
+// and falls back to developer credentials (VS, CLI) when running locally.
+if (!builder.Environment.IsDevelopment())
+{
+    var keyVaultUri = new Uri(builder.Configuration["KeyVaultUri"]!);
+    builder.Configuration.AddAzureKeyVault(keyVaultUri, new DefaultAzureCredential());
+}
 
 // Replace the default .NET logger with Serilog.
 // All ILogger<T> injections throughout the app continue to work unchanged —
