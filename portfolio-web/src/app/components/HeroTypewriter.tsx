@@ -42,7 +42,7 @@ export default function HeroTypewriter() {
   // Glitch scramble state
   const [glitchOverlay, setGlitchOverlay] = useState<string | null>(null);
   const displayedRef = useRef('');
-  const glitchTimer = useRef<ReturnType<typeof setTimeout>>();
+  const glitchTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)');
