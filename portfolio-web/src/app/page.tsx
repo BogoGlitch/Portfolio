@@ -67,8 +67,8 @@ export default async function HomePage() {
               <Image
                 src="/images/headshot-placeholder.jpg"
                 alt="Portrait of Sean Bogolin"
-                width={320}
-                height={320}
+                fill
+                sizes="264px"
                 className={styles.avatar}
                 priority
               />
