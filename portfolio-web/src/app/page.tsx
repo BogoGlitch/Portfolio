@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getProjects, getTechnologies } from "@/lib/api";
-import { TbFolder, TbCpu, TbBrain } from "react-icons/tb";
+import { TbFolder, TbCpu, TbBrain, TbPhoto } from "react-icons/tb";
 import GlassCard from "./components/GlassCard";
 import GlowButton from "./components/GlowButton";
 import AnimatedSection from "./components/AnimatedSection";
@@ -89,9 +89,9 @@ export default async function HomePage() {
         </div>
       </section>
 
+      {/* ── What this demonstrates ── constrained, no band, no outer animation */}
       <div className={styles.content}>
-        {/* ── What this demonstrates ── */}
-        <AnimatedSection as="section" className={styles.section}>
+        <section className={styles.section}>
           <h2 className={styles.sectionTitle}>What this portfolio demonstrates</h2>
           <p className={styles.sectionSubtitle}>
             More than finished screens — this platform highlights how I think through backend
@@ -112,42 +112,96 @@ export default async function HomePage() {
               </AnimatedSection>
             ))}
           </div>
-        </AnimatedSection>
+        </section>
+      </div>
 
-        {/* ── Featured projects ── */}
-        {featuredProjects.length > 0 && (
-          <AnimatedSection as="section" className={styles.section}>
+      {/* ── Featured projects ── full-width band */}
+      {featuredProjects.length > 0 && (
+        <AnimatedSection as="section" className={styles.featuredBand}>
+          <div className={styles.bandInner}>
             <div className={styles.sectionHeader}>
               <h2 className={styles.sectionTitle}>Featured projects</h2>
               <Link href="/projects" className={styles.sectionLink}>View all →</Link>
             </div>
             <div className={styles.featuredGrid}>
               {featuredProjects.map((project, i) => (
-                <GlassCard key={project.id} href={`/projects/${project.slug}`} featured={i === 0}>
-                  <div className={styles.projectCard}>
-                    <div className={styles.projectMeta}>
-                      <h3 className={styles.projectTitle}>{project.name}</h3>
-                      <p className={styles.projectDesc}>{project.shortDescription}</p>
-                    </div>
-                    {project.technologies.length > 0 && (
-                      <div className={styles.projectTags}>
-                        {project.technologies.slice(0, 4).map((t) => (
-                          <TechTag key={t.id} name={t.name} />
-                        ))}
+                <GlassCard key={project.id} href={`/projects/${project.slug}`}>
+                  {i === 0 ? (
+                    /* Wide hero card — image + content side by side */
+                    <div className={styles.featuredHeroCard}>
+                      <div className={styles.projectImageWrap}>
+                        {project.imageUrl ? (
+                          <Image
+                            src={project.imageUrl}
+                            alt={`${project.name} screenshot`}
+                            fill
+                            className={styles.projectImage}
+                          />
+                        ) : (
+                          <div className={styles.projectImagePlaceholder}>
+                            <TbPhoto size={28} />
+                            <span>screenshot</span>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
+                      <div className={styles.projectMeta}>
+                        <h3 className={styles.projectTitle}>{project.name}</h3>
+                        <p className={styles.projectDesc}>{project.shortDescription}</p>
+                        {project.technologies.length > 0 && (
+                          <div className={styles.projectTags}>
+                            {project.technologies.slice(0, 6).map((t) => (
+                              <TechTag key={t.id} name={t.name} />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ) : (
+                    /* Smaller cards — image left on wide, image top on narrow */
+                    <div className={styles.projectCard}>
+                      <div className={styles.projectCardImage}>
+                        {project.imageUrl ? (
+                          <Image
+                            src={project.imageUrl}
+                            alt={`${project.name} screenshot`}
+                            fill
+                            className={styles.projectImage}
+                          />
+                        ) : (
+                          <div className={styles.projectImagePlaceholder}>
+                            <TbPhoto size={20} />
+                            <span>screenshot</span>
+                          </div>
+                        )}
+                      </div>
+                      <div className={styles.projectCardContent}>
+                        <div className={styles.projectMeta}>
+                          <h3 className={styles.projectTitle}>{project.name}</h3>
+                          <p className={styles.projectDesc}>{project.shortDescription}</p>
+                        </div>
+                        {project.technologies.length > 0 && (
+                          <div className={styles.projectTags}>
+                            {project.technologies.slice(0, 4).map((t) => (
+                              <TechTag key={t.id} name={t.name} />
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </GlassCard>
               ))}
             </div>
-          </AnimatedSection>
-        )}
+          </div>
+        </AnimatedSection>
+      )}
 
-        {/* ── Explore ── */}
-        <AnimatedSection as="section" className={styles.section}>
+      {/* ── Explore ── full-width band */}
+      <AnimatedSection as="section" className={styles.exploreBand}>
+        <div className={styles.bandInner}>
           <h2 className={styles.sectionTitle}>Explore</h2>
           <div className={styles.exploreGrid}>
-            <GlassCard href="/projects" featured>
+            <GlassCard href="/projects">
               <div className={styles.exploreCard}>
                 <span className={styles.exploreLabel}><TbFolder size={14} />Projects</span>
                 <h3 className={styles.exploreTitle}>Backend design, API architecture, implementation decisions</h3>
@@ -168,8 +222,8 @@ export default async function HomePage() {
               </div>
             </GlassCard>
           </div>
-        </AnimatedSection>
-      </div>
+        </div>
+      </AnimatedSection>
     </div>
   );
 }

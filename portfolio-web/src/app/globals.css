@@ -25,6 +25,10 @@
   --accent-glow:      oklch(65% 0.220 250 / 0.30);
   --accent-2-glow:    oklch(68% 0.240 340 / 0.30);
   --accent-subtle:    oklch(65% 0.220 250 / 0.10);
+
+  /* Section band backgrounds — clear lightness steps, near-zero chroma */
+  --bg-band-featured: oklch(26% 0.008 250);
+  --bg-band-explore:  oklch(17% 0.008 250);
 }
 
 [data-theme="ember"] {
@@ -42,6 +46,10 @@
   --accent-glow:      oklch(72% 0.180  65 / 0.30);
   --accent-2-glow:    oklch(65% 0.200  25 / 0.30);
   --accent-subtle:    oklch(72% 0.180  65 / 0.10);
+
+  /* Section band backgrounds — clear lightness steps, near-zero chroma */
+  --bg-band-featured: oklch(26% 0.008  55);
+  --bg-band-explore:  oklch(17% 0.008  55);
 }
 
 [data-theme="cosmos"] {
@@ -59,6 +67,10 @@
   --accent-glow:      oklch(75% 0.110 195 / 0.25);
   --accent-2-glow:    oklch(78% 0.080 265 / 0.25);
   --accent-subtle:    oklch(75% 0.110 195 / 0.08);
+
+  /* Section band backgrounds — clear lightness steps, near-zero chroma */
+  --bg-band-featured: oklch(24% 0.008 220);
+  --bg-band-explore:  oklch(16% 0.008 220);
 }
 
 /* ============================================================

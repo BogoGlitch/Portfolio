@@ -2,8 +2,10 @@
   position: relative;
   display: block;
   padding: 1.5rem;
-  background-color: var(--bg-surface);
-  border: 1px solid var(--border-subtle);
+  /* --card-surface and --card-border cascade from band containers in page.module.css,
+     falling back to base tokens when no band ancestor is present. */
+  background-color: var(--card-surface, var(--bg-surface));
+  border: 1px solid var(--card-border, var(--border-subtle));
   border-radius: 1rem;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);

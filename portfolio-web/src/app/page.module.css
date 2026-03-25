@@ -213,9 +213,7 @@
 .content {
   width: min(1200px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 4rem 0;
-  display: grid;
-  gap: 5rem;
+  padding: 2.5rem 0 4rem;
 }
 
 .section {
@@ -286,16 +284,7 @@
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .featuredGrid > :first-child {
-    grid-column: span 2;
-  }
-}
-
-@media (min-width: 900px) {
-  .featuredGrid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-
+  /* First card always spans full width */
   .featuredGrid > :first-child {
     grid-column: span 2;
   }
@@ -306,6 +295,40 @@
   flex-direction: column;
   gap: 1rem;
   height: 100%;
+}
+
+/* On wide screens, smaller cards go image-left / content-right */
+@media (min-width: 860px) {
+  .projectCard {
+    flex-direction: row;
+    align-items: flex-start;
+  }
+}
+
+/* Image container for smaller project cards */
+.projectCardImage {
+  position: relative;
+  flex-shrink: 0;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.625rem;
+  overflow: hidden;
+  background-color: var(--bg-raised);
+}
+
+@media (min-width: 860px) {
+  .projectCardImage {
+    width: 38%;
+  }
+}
+
+/* Text + tags wrapper (right side in horizontal layout) */
+.projectCardContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  flex: 1;
+  min-width: 0;
 }
 
 .projectMeta {
@@ -391,4 +414,139 @@
   border-radius: 999px;
   color: var(--accent-2);
   font-size: 0.6rem;
+}
+
+/* ── Full-width section bands ── */
+.featuredBand,
+.exploreBand {
+  position: relative;
+  padding: 4rem 0;
+}
+
+/* Accent gradient line at the top of each band */
+.featuredBand::before,
+.exploreBand::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent) 30%,
+    var(--accent-2) 70%,
+    transparent 100%
+  );
+}
+
+.featuredBand {
+  background-color: var(--bg-band-featured);
+  /* Default (glitch) — card surface darker than band (inset), border meets WCAG 1.4.11 3:1 */
+  --card-surface: oklch(20% 0.012 250);
+  --card-border:  oklch(58% 0.012 250); /* 3.17:1 against 26% L band */
+}
+
+.exploreBand {
+  background-color: var(--bg-band-explore);
+  /* Default (glitch) — card surface lighter than band (raised), border meets WCAG 1.4.11 3:1 */
+  --card-surface: oklch(25% 0.012 250);
+  --card-border:  oklch(50% 0.012 250); /* 3.21:1 against 17% L band */
+}
+
+/* Ember overrides */
+:global([data-theme="ember"]) .featuredBand {
+  --card-surface: oklch(20% 0.015  55);
+  --card-border:  oklch(58% 0.015  55); /* 3.17:1 against 26% L band */
+}
+:global([data-theme="ember"]) .exploreBand {
+  --card-surface: oklch(25% 0.015  55);
+  --card-border:  oklch(50% 0.015  55); /* 3.21:1 against 17% L band */
+}
+
+/* Cosmos overrides — bands are 2% L lighter than glitch/ember */
+:global([data-theme="cosmos"]) .featuredBand {
+  --card-surface: oklch(18% 0.010 220);
+  --card-border:  oklch(56% 0.010 220); /* 3.18:1 against 24% L band */
+}
+:global([data-theme="cosmos"]) .exploreBand {
+  --card-surface: oklch(24% 0.010 220);
+  --card-border:  oklch(49% 0.010 220); /* 3.18:1 against 16% L band */
+}
+
+/* Constrained inner content for bands */
+.bandInner {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  display: grid;
+  gap: 1.5rem;
+}
+
+/* Wider screens — more breathing room in bands; content top stays tight */
+@media (min-width: 860px) {
+  .content {
+    padding-bottom: 5rem;
+  }
+
+  .featuredBand,
+  .exploreBand {
+    padding: 5.5rem 0;
+  }
+
+  .bandInner {
+    gap: 2rem;
+  }
+}
+
+/* ── Featured hero card (first project — full width with image) ── */
+.featuredHeroCard {
+  display: grid;
+  gap: 1.5rem;
+  height: 100%;
+}
+
+@media (min-width: 640px) {
+  .featuredHeroCard {
+    grid-template-columns: 5fr 6fr;
+    align-items: center;
+    gap: 2rem;
+  }
+}
+
+/* Image container — maintains 16:9 aspect ratio */
+.projectImageWrap {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 0.75rem;
+  overflow: hidden;
+  background-color: var(--bg-raised);
+}
+
+/* Actual project image (when imageUrl is set) */
+.projectImage {
+  object-fit: cover;
+  border-radius: inherit;
+}
+
+/* Placeholder shown when no imageUrl is available */
+.projectImagePlaceholder {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border: 1px dashed var(--border);
+  border-radius: inherit;
+  color: var(--accent);
+}
+
+.projectImagePlaceholder span {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
 }
