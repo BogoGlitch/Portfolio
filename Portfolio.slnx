@@ -3,4 +3,5 @@
     <File Path=".editorconfig" />
   </Folder>
   <Project Path="Portfolio.Api/Portfolio.Api.csproj" />
+  <Project Path="Portfolio.Tests/Portfolio.Tests.csproj" />
 </Solution>

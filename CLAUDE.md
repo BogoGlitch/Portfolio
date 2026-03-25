@@ -83,14 +83,20 @@ Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standa
 
 ## Current State
 
+### Backend Test Suite — 130 passing
+- All handlers tested: Create, Update, Delete, GetBySlug for both Projects and Technologies; Login
+- All validators tested: CreateProject, CreateTechnology, UpdateProject, UpdateTechnology, LoginRequest
+- **Known issue:** 3 tests commented out — in-memory DB name conflicts when the same method name exists in two test classes. Root cause: `DbContextFactory.Create(nameof(MethodName))` shares state across classes that have the same method name. Fix: prefix db names with the class name (e.g. `$"{nameof(UpdateProjectCommandHandlerTests)}_{nameof(Slug_IsTrimmedAndLowercased)}"`). Affected tests: `UpdateTechnologyCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `UpdateProjectCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `CreateProjectCommandHandlerTests.MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException`.
+
 ### Still To Do (Frontend)
 - [ ] Active nav link highlighting (current page underline)
 - [ ] Headshot: actual photo (placeholder in use)
 
 ### Immediate Next
-1. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
-2. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
-3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
+1. **Fix commented-out tests** — prefix db names with class name to eliminate in-memory DB name conflicts
+2. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
+3. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
+4. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ---
 
