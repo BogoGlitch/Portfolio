@@ -151,9 +151,24 @@
 .statsBar {
   position: relative;
   z-index: 3;
-  border-top: 1px solid oklch(100% 0 0 / 0.08);
   background-color: oklch(0% 0 0 / 0.25);
   backdrop-filter: blur(8px);
+}
+
+.statsBar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--accent) 30%,
+    var(--accent-2) 70%,
+    transparent 100%
+  );
 }
 
 .statsInner {
@@ -222,7 +237,7 @@
 .content {
   width: min(1200px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 2.5rem 0 4rem;
+  padding: 4rem 0;
 }
 
 .section {
@@ -492,10 +507,10 @@
   gap: 1.5rem;
 }
 
-/* Wider screens — more breathing room in bands; content top stays tight */
+/* Wider screens — more breathing room in bands and content */
 @media (min-width: 860px) {
   .content {
-    padding-bottom: 5rem;
+    padding: 5.5rem 0;
   }
 
   .featuredBand,
