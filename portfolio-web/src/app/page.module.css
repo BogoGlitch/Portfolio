@@ -5,20 +5,31 @@
 /* ── Hero ── */
 .hero {
   position: relative;
-  background-image:
-    linear-gradient(to bottom, oklch(0% 0 0 / 0.55), oklch(0% 0 0 / 0.7)),
-    url("/images/home-hero-banner.png");
-  background-size: cover;
-  background-position: center;
-  background-repeat: no-repeat;
+  overflow: hidden;
   border-bottom: 1px solid var(--border-subtle);
 }
 
-/* Noise overlay */
+/* Banner image — rendered as <Image fill priority> in JSX, z-index 0 */
+.heroBgImage {
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Gradient overlay — sits above the image, darkens it for text legibility */
+.heroBgOverlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom, oklch(0% 0 0 / 0.55), oklch(0% 0 0 / 0.7));
+  pointer-events: none;
+}
+
+/* Noise overlay — above gradient */
 .hero::after {
   content: '';
   position: absolute;
   inset: 0;
+  z-index: 2;
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   background-size: 256px 256px;
   opacity: 0.04;
@@ -27,7 +38,7 @@
 
 .heroInner {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   width: min(1200px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 5rem 0 4rem;
@@ -141,7 +152,7 @@
 /* Stats bar */
 .statsBar {
   position: relative;
-  z-index: 1;
+  z-index: 3;
   border-top: 1px solid oklch(100% 0 0 / 0.08);
   background-color: oklch(0% 0 0 / 0.25);
   backdrop-filter: blur(8px);
