@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getProjects, getTechnologies } from "@/lib/api";
-import { TbFolder, TbCpu, TbBrain, TbPhoto } from "react-icons/tb";
+import { TbFolder, TbCpu, TbBrain } from "react-icons/tb";
 import GlassCard from "./components/GlassCard";
 import GlowButton from "./components/GlowButton";
 import AnimatedSection from "./components/AnimatedSection";
@@ -65,7 +65,7 @@ export default async function HomePage() {
           <div className={styles.heroMedia}>
             <div className={styles.avatarWrapper}>
               <Image
-                src="/images/headshot-placeholder.jpg"
+                src="/images/headshot.jpg"
                 alt="Portrait of Sean Bogolin"
                 fill
                 sizes="264px"
@@ -143,19 +143,12 @@ export default async function HomePage() {
                     /* Wide hero card — image + content side by side */
                     <div className={styles.featuredHeroCard}>
                       <div className={styles.projectImageWrap}>
-                        {project.imageUrl ? (
-                          <Image
-                            src={project.imageUrl}
-                            alt={`${project.name} screenshot`}
-                            fill
-                            className={styles.projectImage}
-                          />
-                        ) : (
-                          <div className={styles.projectImagePlaceholder}>
-                            <TbPhoto size={28} />
-                            <span>screenshot</span>
-                          </div>
-                        )}
+                        <Image
+                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                          alt={`${project.name} screenshot`}
+                          fill
+                          className={styles.projectImage}
+                        />
                       </div>
                       <div className={styles.projectMeta}>
                         <h3 className={styles.projectTitle}>{project.name}</h3>
@@ -173,19 +166,12 @@ export default async function HomePage() {
                     /* Smaller cards — image left on wide, image top on narrow */
                     <div className={styles.projectCard}>
                       <div className={styles.projectCardImage}>
-                        {project.imageUrl ? (
-                          <Image
-                            src={project.imageUrl}
-                            alt={`${project.name} screenshot`}
-                            fill
-                            className={styles.projectImage}
-                          />
-                        ) : (
-                          <div className={styles.projectImagePlaceholder}>
-                            <TbPhoto size={20} />
-                            <span>screenshot</span>
-                          </div>
-                        )}
+                        <Image
+                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                          alt={`${project.name} screenshot`}
+                          fill
+                          className={styles.projectImage}
+                        />
                       </div>
                       <div className={styles.projectCardContent}>
                         <div className={styles.projectMeta}>
