@@ -119,6 +119,9 @@ AI: Claude
 3. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
 4. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
+### Completed
+- **AuthContext refactor** — `AuthProvider` at admin layout level; single `checkAuth()` call eliminates per-page auth waterfall; `AdminGuard` handles redirect; admin pages fire `load()` on mount unconditionally
+
 ---
 
 ## Key Files
@@ -137,6 +140,8 @@ AI: Claude
 | `portfolio-web/src/hooks/useScrollDirection.ts` | Returns `hidden: boolean` for header hide/reveal |
 | `portfolio-web/src/app/components/MobileNav.tsx` | Portaled drawer, scroll lock, hamburger state machine |
 | `portfolio-web/src/lib/api.ts` | Typed frontend API client — includes `TechnologyWriteDto`, `ProjectWriteDto`, and all mutation fns |
+| `portfolio-web/src/context/AuthContext.tsx` | Shared auth state (AuthProvider + useAuthContext) — consumed by admin layout |
+| `portfolio-web/src/app/admin/layout.tsx` | Admin layout — mounts AuthProvider, redirects unauthenticated users via AdminGuard |
 | `portfolio-web/src/app/admin/technologies/page.tsx` | Admin CRUD for technologies — list table + modal form |
 | `portfolio-web/src/app/admin/projects/page.tsx` | Admin CRUD for projects — list table + modal form with technology multi-select |
 | `ARCHITECTURE.md` | Full design decision explanations with reasoning |

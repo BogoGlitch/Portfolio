@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { TbArrowDown, TbArrowLeft, TbArrowUp, TbEdit, TbPlus, TbTrash } from 'react-icons/tb';
-import { useAuth } from '@/hooks/useAuth';
 import {
   createTechnology,
   deleteTechnology,
@@ -64,9 +62,6 @@ function formToDto(f: FormState): TechnologyWriteDto {
 }
 
 export default function TechnologiesAdminPage() {
-  const { isLoggedIn, isLoading } = useAuth();
-  const router = useRouter();
-
   const [technologies, setTechnologies] = useState<Technology[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [sortKey, setSortKey] = useState<TechSortKey>('discipline');
@@ -79,12 +74,8 @@ export default function TechnologiesAdminPage() {
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!isLoading && !isLoggedIn) router.push('/');
-  }, [isLoading, isLoggedIn, router]);
-
-  useEffect(() => {
-    if (isLoggedIn) load();
-  }, [isLoggedIn]);
+    load();
+  }, []);
 
   async function load() {
     setDataLoading(true);
@@ -187,8 +178,6 @@ export default function TechnologiesAdminPage() {
     return 0;
   });
 
-  if (!isLoading && !isLoggedIn) return null;
-
   return (
     <main className={styles.page}>
       <div className={styles.pageHeader}>
@@ -203,7 +192,7 @@ export default function TechnologiesAdminPage() {
         </button>
       </div>
 
-      {!dataLoading && !isLoading && technologies.length === 0 ? (
+      {!dataLoading && technologies.length === 0 ? (
         <p className={styles.empty}>No technologies yet. Add one to get started.</p>
       ) : (
         <table className={styles.table}>
@@ -219,7 +208,7 @@ export default function TechnologiesAdminPage() {
             </tr>
           </thead>
           <tbody>
-            {isLoading || dataLoading ? (
+            {dataLoading ? (
               <SkeletonTableRows rows={6} cols={7} />
             ) : sorted.map(tech => (
               <tr key={tech.id}>

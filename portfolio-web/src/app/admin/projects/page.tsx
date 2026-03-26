@@ -1,10 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { TbArrowDown, TbArrowLeft, TbArrowUp, TbEdit, TbPlus, TbTrash } from 'react-icons/tb';
-import { useAuth } from '@/hooks/useAuth';
 import {
   createProject,
   deleteProject,
@@ -66,9 +64,6 @@ function formToDto(f: FormState): ProjectWriteDto {
 }
 
 export default function ProjectsAdminPage() {
-  const { isLoggedIn, isLoading } = useAuth();
-  const router = useRouter();
-
   const [projects, setProjects] = useState<Project[]>([]);
   const [allTechs, setAllTechs] = useState<Technology[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
@@ -82,12 +77,8 @@ export default function ProjectsAdminPage() {
   const [confirmDelete, setConfirmDelete] = useState<number | null>(null);
 
   useEffect(() => {
-    if (!isLoading && !isLoggedIn) router.push('/');
-  }, [isLoading, isLoggedIn, router]);
-
-  useEffect(() => {
-    if (isLoggedIn) load();
-  }, [isLoggedIn]);
+    load();
+  }, []);
 
   async function load() {
     setDataLoading(true);
@@ -200,8 +191,6 @@ export default function ProjectsAdminPage() {
     return 0;
   });
 
-  if (!isLoading && !isLoggedIn) return null;
-
   return (
     <main className={styles.page}>
       <div className={styles.pageHeader}>
@@ -216,7 +205,7 @@ export default function ProjectsAdminPage() {
         </button>
       </div>
 
-      {!dataLoading && !isLoading && projects.length === 0 ? (
+      {!dataLoading && projects.length === 0 ? (
         <p className={styles.empty}>No projects yet. Add one to get started.</p>
       ) : (
         <table className={styles.table}>
@@ -231,7 +220,7 @@ export default function ProjectsAdminPage() {
             </tr>
           </thead>
           <tbody>
-            {isLoading || dataLoading ? (
+            {dataLoading ? (
               <SkeletonTableRows rows={6} cols={6} />
             ) : sorted.map(project => (
               <tr key={project.id}>
