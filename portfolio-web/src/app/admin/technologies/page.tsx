@@ -67,7 +67,7 @@ export default function TechnologiesAdminPage() {
   const router = useRouter();
 
   const [technologies, setTechnologies] = useState<Technology[]>([]);
-  const [sortKey, setSortKey] = useState<TechSortKey>('displayOrder');
+  const [sortKey, setSortKey] = useState<TechSortKey>('discipline');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; tech?: Technology } | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
@@ -176,6 +176,7 @@ export default function TechnologiesAdminPage() {
     const bl = typeof bv === 'string' ? bv.toLowerCase() : bv;
     if (al < bl) return sortDir === 'asc' ? -1 : 1;
     if (al > bl) return sortDir === 'asc' ? 1 : -1;
+    if (sortKey !== 'displayOrder') return a.displayOrder - b.displayOrder;
     return 0;
   });
 
