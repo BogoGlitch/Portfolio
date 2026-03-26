@@ -95,6 +95,21 @@
   border-bottom: none;
 }
 
+.sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.sortable:hover .thContent {
+  color: var(--accent);
+}
+
+.thContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
 .nameCell {
   font-weight: 500;
 }

@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TbArrowLeft, TbEdit, TbPlus, TbTrash } from 'react-icons/tb';
+import { TbArrowDown, TbArrowLeft, TbArrowUp, TbEdit, TbPlus, TbTrash } from 'react-icons/tb';
 import { useAuth } from '@/hooks/useAuth';
 import {
   createTechnology,
@@ -16,6 +16,8 @@ import { Technology } from '@/types/technology';
 import styles from './technologies.module.css';
 
 const DISCIPLINES = ['Frontend', 'Backend', 'Database', 'Cloud', 'DevOps', 'AI'] as const;
+
+type TechSortKey = 'name' | 'category' | 'discipline' | 'slug' | 'displayOrder' | 'isFeatured';
 type Discipline = typeof DISCIPLINES[number];
 
 type FormState = {
@@ -65,6 +67,8 @@ export default function TechnologiesAdminPage() {
   const router = useRouter();
 
   const [technologies, setTechnologies] = useState<Technology[]>([]);
+  const [sortKey, setSortKey] = useState<TechSortKey>('displayOrder');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; tech?: Technology } | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [slugManual, setSlugManual] = useState(false);
@@ -151,6 +155,30 @@ export default function TechnologiesAdminPage() {
     }
   }
 
+  function handleSort(key: TechSortKey) {
+    if (key === sortKey) {
+      setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  }
+
+  function sortIcon(key: TechSortKey) {
+    if (sortKey !== key) return null;
+    return sortDir === 'asc' ? <TbArrowUp size={11} /> : <TbArrowDown size={11} />;
+  }
+
+  const sorted = [...technologies].sort((a, b) => {
+    const av = (a[sortKey] ?? '') as string | number | boolean;
+    const bv = (b[sortKey] ?? '') as string | number | boolean;
+    const al = typeof av === 'string' ? av.toLowerCase() : av;
+    const bl = typeof bv === 'string' ? bv.toLowerCase() : bv;
+    if (al < bl) return sortDir === 'asc' ? -1 : 1;
+    if (al > bl) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   if (isLoading || !isLoggedIn) return null;
 
   return (
@@ -173,17 +201,17 @@ export default function TechnologiesAdminPage() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Discipline</th>
-              <th>Slug</th>
-              <th>Order</th>
-              <th>Featured</th>
+              <th className={styles.sortable} onClick={() => handleSort('name')}><span className={styles.thContent}>Name{sortIcon('name')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('category')}><span className={styles.thContent}>Category{sortIcon('category')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('discipline')}><span className={styles.thContent}>Discipline{sortIcon('discipline')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('slug')}><span className={styles.thContent}>Slug{sortIcon('slug')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('displayOrder')}><span className={styles.thContent}>Order{sortIcon('displayOrder')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('isFeatured')}><span className={styles.thContent}>Featured{sortIcon('isFeatured')}</span></th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {technologies.map(tech => (
+            {sorted.map(tech => (
               <tr key={tech.id}>
                 <td className={styles.nameCell}>{tech.name}</td>
                 <td>{tech.category ?? '—'}</td>

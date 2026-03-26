@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { TbArrowLeft, TbEdit, TbPlus, TbTrash } from 'react-icons/tb';
+import { TbArrowDown, TbArrowLeft, TbArrowUp, TbEdit, TbPlus, TbTrash } from 'react-icons/tb';
 import { useAuth } from '@/hooks/useAuth';
 import {
   createProject,
@@ -16,6 +16,8 @@ import {
 import { Project, TechnologySummary } from '@/types/project';
 import { Technology } from '@/types/technology';
 import styles from './projects.module.css';
+
+type ProjectSortKey = 'name' | 'slug' | 'techCount' | 'displayOrder' | 'isFeatured';
 
 type FormState = {
   name: string;
@@ -68,6 +70,8 @@ export default function ProjectsAdminPage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [allTechs, setAllTechs] = useState<Technology[]>([]);
+  const [sortKey, setSortKey] = useState<ProjectSortKey>('displayOrder');
+  const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; project?: Project } | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [slugManual, setSlugManual] = useState(false);
@@ -165,6 +169,30 @@ export default function ProjectsAdminPage() {
     }
   }
 
+  function handleSort(key: ProjectSortKey) {
+    if (key === sortKey) {
+      setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
+    } else {
+      setSortKey(key);
+      setSortDir('asc');
+    }
+  }
+
+  function sortIcon(key: ProjectSortKey) {
+    if (sortKey !== key) return null;
+    return sortDir === 'asc' ? <TbArrowUp size={11} /> : <TbArrowDown size={11} />;
+  }
+
+  const sorted = [...projects].sort((a, b) => {
+    const av = sortKey === 'techCount' ? a.technologies.length : (a[sortKey] ?? '') as string | number | boolean;
+    const bv = sortKey === 'techCount' ? b.technologies.length : (b[sortKey] ?? '') as string | number | boolean;
+    const al = typeof av === 'string' ? av.toLowerCase() : av;
+    const bl = typeof bv === 'string' ? bv.toLowerCase() : bv;
+    if (al < bl) return sortDir === 'asc' ? -1 : 1;
+    if (al > bl) return sortDir === 'asc' ? 1 : -1;
+    return 0;
+  });
+
   if (isLoading || !isLoggedIn) return null;
 
   return (
@@ -187,16 +215,16 @@ export default function ProjectsAdminPage() {
         <table className={styles.table}>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Slug</th>
-              <th>Technologies</th>
-              <th>Order</th>
-              <th>Featured</th>
+              <th className={styles.sortable} onClick={() => handleSort('name')}><span className={styles.thContent}>Name{sortIcon('name')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('slug')}><span className={styles.thContent}>Slug{sortIcon('slug')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('techCount')}><span className={styles.thContent}>Technologies{sortIcon('techCount')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('displayOrder')}><span className={styles.thContent}>Order{sortIcon('displayOrder')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('isFeatured')}><span className={styles.thContent}>Featured{sortIcon('isFeatured')}</span></th>
               <th></th>
             </tr>
           </thead>
           <tbody>
-            {projects.map(project => (
+            {sorted.map(project => (
               <tr key={project.id}>
                 <td className={styles.nameCell}>{project.name}</td>
                 <td className={styles.slugCell}>{project.slug}</td>
