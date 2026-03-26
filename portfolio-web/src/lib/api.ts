@@ -101,3 +101,28 @@ export async function updateTechnology(id: number, dto: TechnologyWriteDto): Pro
 export async function deleteTechnology(id: number): Promise<void> {
   return mutateJson<void>(`${ENDPOINTS.technologies}/${id}`, 'DELETE');
 }
+
+export type ProjectWriteDto = {
+  name: string;
+  slug: string;
+  shortDescription: string;
+  fullDescription: string;
+  repoUrl: string | null;
+  liveUrl: string | null;
+  imageUrl: string | null;
+  isFeatured: boolean;
+  displayOrder: number;
+  technologyIds: number[];
+};
+
+export async function createProject(dto: ProjectWriteDto): Promise<Project> {
+  return mutateJson<Project>(ENDPOINTS.projects, 'POST', dto);
+}
+
+export async function updateProject(id: number, dto: ProjectWriteDto): Promise<Project> {
+  return mutateJson<Project>(`${ENDPOINTS.projects}/${id}`, 'PUT', dto);
+}
+
+export async function deleteProject(id: number): Promise<void> {
+  return mutateJson<void>(`${ENDPOINTS.projects}/${id}`, 'DELETE');
+}
