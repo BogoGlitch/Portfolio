@@ -50,6 +50,13 @@ public class GetProjectsQueryHandler
                 p.ProjectTechnologies.Any(pt => technologyIds.Contains(pt.TechnologyId)));
         }
 
+        if (!string.IsNullOrWhiteSpace(query.QueryParameters.Discipline))
+        {
+            var discipline = query.QueryParameters.Discipline.Trim();
+            dbQuery = dbQuery.Where(p =>
+                p.ProjectTechnologies.Any(pt => pt.Technology.Discipline == discipline));
+        }
+
         return await dbQuery
             .OrderBy(p => p.DisplayOrder)
             .ThenBy(p => p.Name)

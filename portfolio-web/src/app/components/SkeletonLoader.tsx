@@ -39,7 +39,7 @@ export function SkeletonTableRows({
               <div className={`skeleton ${styles.cellBar}`} style={{ width: widths[c] ?? '10%' }} />
             </td>
           ))}
-          <td /> {/* actions column */}
+          {/* actions column */}<td />
         </tr>
       ))}
     </>

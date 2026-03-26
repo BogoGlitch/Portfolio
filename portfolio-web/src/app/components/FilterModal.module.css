@@ -1,0 +1,258 @@
+/* ── Trigger pill ──────────────────────────────────────────────────────────── */
+
+.trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.4375rem 1rem;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 999px;
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.8125rem;
+  letter-spacing: 0.03em;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 150ms ease, color 150ms ease;
+}
+
+.trigger:hover {
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.triggerActive {
+  border-color: var(--accent-glow);
+  color: var(--accent);
+}
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.125rem;
+  height: 1.125rem;
+  padding: 0 0.25rem;
+  background: var(--accent);
+  color: var(--bg);
+  border-radius: 999px;
+  font-size: 0.625rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+/* ── Overlay ───────────────────────────────────────────────────────────────── */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: oklch(0% 0 0 / 0.55);
+  backdrop-filter: blur(2px);
+  z-index: 600;
+}
+
+/* ── Modal card ────────────────────────────────────────────────────────────── */
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 601;
+  width: min(500px, calc(100vw - 2rem));
+  max-height: min(680px, calc(100vh - 4rem));
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  box-shadow: 0 24px 64px oklch(0% 0 0 / 0.5);
+  overflow: hidden;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.125rem 1.25rem;
+  border-bottom: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.modalTitle {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--text);
+}
+
+.closeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  transition: background 150ms ease, color 150ms ease;
+}
+
+.closeBtn:hover {
+  background: var(--bg-surface);
+  color: var(--text);
+}
+
+/* ── Modal body ────────────────────────────────────────────────────────────── */
+
+.modalBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  transition: opacity 200ms ease;
+}
+
+.groupDimmed {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ── Group header (label + help text) ──────────────────────────────────────── */
+
+.groupHeader {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.groupLabel {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.6875rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.groupHelp {
+  font-size: 0.6875rem;
+  font-style: italic;
+  color: var(--text-muted);
+  opacity: 0.55;
+}
+
+/* ── Cards ─────────────────────────────────────────────────────────────────── */
+
+/* bg-band-featured sits at ~26% lightness vs modal's ~17% — enough to pop */
+.groupCard {
+  background: var(--bg-band-featured);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.groupCards {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.groupCardLabel {
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.5625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.65;
+}
+
+.groupCardWaiting {
+  background: var(--bg-band-featured);
+  border: 1px dashed var(--border-subtle);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+}
+
+.groupCardEmpty {
+  font-size: 0.8125rem;
+  font-style: italic;
+  color: var(--text-muted);
+  opacity: 0.5;
+}
+
+/* ── Pills ─────────────────────────────────────────────────────────────────── */
+
+.groupItems {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+}
+
+/* Pills sit on bg-band-featured cards, so use bg-raised (17%) for contrast */
+.item {
+  padding: 0.3125rem 0.75rem;
+  background: var(--bg-raised);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: border-color 150ms ease, background 150ms ease, color 150ms ease;
+}
+
+.item:hover {
+  border-color: var(--accent-glow);
+  color: var(--text);
+}
+
+.itemActive {
+  background: var(--accent-subtle);
+  border-color: var(--accent-glow);
+  color: var(--accent);
+}
+
+/* ── Modal footer ──────────────────────────────────────────────────────────── */
+
+.modalFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-top: 1px solid var(--border-subtle);
+  flex-shrink: 0;
+}
+
+.clearBtn {
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  transition: color 150ms ease;
+}
+
+.clearBtn:hover {
+  color: var(--text);
+}
+
+.applyBtn {
+  padding: 0.5rem 1.375rem;
+  background: var(--accent);
+  border-radius: 999px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: var(--bg);
+  transition: opacity 150ms ease;
+}
+
+.applyBtn:hover {
+  opacity: 0.85;
+}

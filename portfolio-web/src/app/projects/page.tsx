@@ -6,7 +6,7 @@ import TechTag from "../components/TechTag";
 import TechIcon from "../components/TechIcon";
 import AnimatedSection from "../components/AnimatedSection";
 import GlowButton from "../components/GlowButton";
-import FilterPills from "../components/FilterPills";
+import ProjectFilterModal from "../components/ProjectFilterModal";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -15,20 +15,17 @@ export const metadata: Metadata = {
 };
 
 type ProjectsPageProps = {
-  searchParams?: Promise<{ technologyIds?: string | string[] }>;
+  searchParams?: Promise<{ technologyIds?: string }>;
 };
-
-function parseTechnologyIds(value: string | string[] | undefined): string[] {
-  const raw = Array.isArray(value) ? value : value ? [value] : [];
-  return raw.flatMap((v) => v.split(",")).map((v) => v.trim()).filter(Boolean);
-}
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
   const resolved = await searchParams;
-  const selectedIds = parseTechnologyIds(resolved?.technologyIds);
+  const selectedTechIds = resolved?.technologyIds
+    ? resolved.technologyIds.split(',').map(s => s.trim()).filter(Boolean)
+    : [];
 
   const [projects, technologies] = await Promise.all([
-    getProjects(selectedIds),
+    getProjects({ technologyIds: selectedTechIds }),
     getTechnologies(),
   ]);
 
@@ -39,21 +36,18 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           <Link href="/" className={styles.backLink}>← Home</Link>
           <h1 className={styles.title}>Projects</h1>
           <p className={styles.subtitle}>
-            Browse portfolio projects and filter by the technologies used.
+            Browse portfolio projects and filter by technology.
           </p>
         </div>
       </div>
 
       <div className={styles.body}>
-        {/* Filter pills — client component for instant feedback */}
-        <FilterPills
-          technologies={technologies.map((t) => ({ id: t.id, name: t.name }))}
-          selectedIds={selectedIds}
+        <ProjectFilterModal
+          technologies={technologies}
+          currentTechIds={selectedTechIds}
           basePath="/projects"
-          paramName="technologyIds"
         />
 
-        {/* Grid */}
         {projects.length === 0 ? (
           <div className={styles.empty}>
             <p>No projects matched the selected filters.</p>

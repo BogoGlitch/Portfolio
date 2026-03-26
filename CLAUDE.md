@@ -114,13 +114,18 @@ AI: Claude
 - [ ] Public skills/technologies page with discipline filter pills (All · Frontend · Backend · Database · Cloud · DevOps · AI)
 
 ### Immediate Next
-1. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
-2. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
-3. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
-4. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
+1. **Filter polish (3 known issues)** — see memory `project_filter_system.md` for details:
+   - Text readability: pill text too low-contrast, needs `var(--text)` or similar
+   - Modal top border: permanent 2px accent gradient `::after`, matching GlassCard hover pattern
+   - Filter selection bug: unknown repro — investigate on next session
+2. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
+3. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
+4. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
+5. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ### Completed
 - **AuthContext refactor** — `AuthProvider` at admin layout level; single `checkAuth()` call eliminates per-page auth waterfall; `AdminGuard` handles redirect; admin pages fire `load()` on mount unconditionally
+- **Filter system** — `FilterModal` (Technologies page: discipline + category multi-select, AND logic) + `ProjectFilterModal` (Projects page: cascading Discipline → Category → Technology drill-down; only technologyIds written to URL)
 
 ---
 
@@ -144,6 +149,9 @@ AI: Claude
 | `portfolio-web/src/app/admin/layout.tsx` | Admin layout — mounts AuthProvider, redirects unauthenticated users via AdminGuard |
 | `portfolio-web/src/app/admin/technologies/page.tsx` | Admin CRUD for technologies — list table + modal form |
 | `portfolio-web/src/app/admin/projects/page.tsx` | Admin CRUD for projects — list table + modal form with technology multi-select |
+| `portfolio-web/src/app/components/FilterModal.tsx` | Generic filter modal (Technologies page) — multi-select groups, shared CSS module |
+| `portfolio-web/src/app/components/ProjectFilterModal.tsx` | Cascading filter modal (Projects page) — Discipline → Category → Technology drill-down |
+| `portfolio-web/src/app/components/FilterModal.module.css` | Shared styles for both filter modals |
 | `ARCHITECTURE.md` | Full design decision explanations with reasoning |
 
 ---

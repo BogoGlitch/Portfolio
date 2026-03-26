@@ -57,12 +57,14 @@ export async function logout(): Promise<void> {
   });
 }
 
-export async function getProjects(
-  technologyIds?: string[],
-): Promise<ApiListResponse<Project>> {
-  const query = technologyIds?.length
-    ? `?technologyIds=${technologyIds.join(",")}`
-    : "";
+export async function getProjects(options?: {
+  technologyIds?: string[];
+  discipline?: string;
+}): Promise<ApiListResponse<Project>> {
+  const params = new URLSearchParams();
+  if (options?.technologyIds?.length) params.set("technologyIds", options.technologyIds.join(","));
+  if (options?.discipline) params.set("discipline", options.discipline);
+  const query = params.size > 0 ? `?${params.toString()}` : "";
   return fetchJson<ApiListResponse<Project>>(`${ENDPOINTS.projects}${query}`);
 }
 
