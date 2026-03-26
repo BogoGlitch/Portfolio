@@ -20,6 +20,21 @@ async function fetchJson<T>(url: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
+async function mutateJson<T>(url: string, method: string, body?: unknown): Promise<T> {
+  const res = await fetch(url, {
+    method,
+    credentials: 'include',
+    headers: body ? { 'Content-Type': 'application/json' } : {},
+    body: body ? JSON.stringify(body) : undefined,
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new Error(`${res.status} - ${text}`);
+  }
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
+}
+
 export async function checkAuth(): Promise<void> {
   const res = await fetch(`${ENDPOINTS.auth}/me`, { credentials: 'include' });
   if (!res.ok) throw new Error('Not authenticated');
@@ -62,3 +77,27 @@ export async function getTechnologies(): Promise<ApiListResponse<Technology>> {
 export const getTechnologyBySlug = cache(async (slug: string): Promise<Technology> => {
   return fetchJson<Technology>(`${ENDPOINTS.technologies}/${slug}`);
 });
+
+export type TechnologyWriteDto = {
+  name: string;
+  slug: string;
+  description: string;
+  category: string;
+  discipline: string;
+  logoUrl: string | null;
+  documentationUrl: string | null;
+  isFeatured: boolean;
+  displayOrder: number;
+};
+
+export async function createTechnology(dto: TechnologyWriteDto): Promise<Technology> {
+  return mutateJson<Technology>(ENDPOINTS.technologies, 'POST', dto);
+}
+
+export async function updateTechnology(id: number, dto: TechnologyWriteDto): Promise<Technology> {
+  return mutateJson<Technology>(`${ENDPOINTS.technologies}/${id}`, 'PUT', dto);
+}
+
+export async function deleteTechnology(id: number): Promise<void> {
+  return mutateJson<void>(`${ENDPOINTS.technologies}/${id}`, 'DELETE');
+}

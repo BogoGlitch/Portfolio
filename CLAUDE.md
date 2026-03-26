@@ -87,16 +87,38 @@ Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standa
 - All handlers tested: Create, Update, Delete, GetBySlug for both Projects and Technologies; Login
 - All validators tested: CreateProject, CreateTechnology, UpdateProject, UpdateTechnology, LoginRequest
 - **Known issue:** 3 tests commented out — in-memory DB name conflicts when the same method name exists in two test classes. Root cause: `DbContextFactory.Create(nameof(MethodName))` shares state across classes that have the same method name. Fix: prefix db names with the class name (e.g. `$"{nameof(UpdateProjectCommandHandlerTests)}_{nameof(Slug_IsTrimmedAndLowercased)}"`). Affected tests: `UpdateTechnologyCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `UpdateProjectCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `CreateProjectCommandHandlerTests.MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException`.
+- **Note:** `Discipline` field was added to Technology after the test suite was written. Validator tests for CreateTechnology and UpdateTechnology will need updating to include `Discipline` in test payloads.
+
+### Technology — Discipline Field
+`Technology` has a `Discipline` field (required, max 50 chars). Valid values enforced by FluentValidation:
+`Frontend` | `Backend` | `Database` | `Cloud` | `DevOps` | `AI`
+
+This is separate from `Category` (which describes the *type*: Language, Framework, Library, ORM, Tool, Cloud Service, CI/CD, AI Assistant, etc.). Discipline is the search/filter facet; Category is the display grouping.
+
+### Admin UI
+- `/admin` — landing page with links to Technologies and Projects
+- `/admin/technologies` — full CRUD: list table, modal form (create/edit), inline delete confirm
+- `/admin/projects` — **not yet built**
+
+### Seeded Technologies (19 total, local DB)
+Frontend: Next.js, React, TypeScript, CSS Modules, react-icons
+Backend: C#, ASP.NET Core, FluentValidation, Serilog, Scalar
+Database: Entity Framework Core, SQL Server
+Cloud: Azure App Service, Azure Static Web Apps, Azure SQL, Azure Key Vault, Azure Managed Identity
+DevOps: GitHub Actions
+AI: Claude
 
 ### Still To Do (Frontend)
 - [ ] Active nav link highlighting (current page underline)
 - [ ] Headshot: actual photo (placeholder in use)
+- [ ] Public skills/technologies page with discipline filter pills (All · Frontend · Backend · Database · Cloud · DevOps · AI)
 
 ### Immediate Next
-1. **Fix commented-out tests** — prefix db names with class name to eliminate in-memory DB name conflicts
-2. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
-3. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
-4. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
+1. **Build `/admin/projects`** — list + modal form with technology multi-select (same pattern as `/admin/technologies`)
+2. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
+3. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
+4. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
+5. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ---
 
@@ -115,7 +137,8 @@ Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standa
 | `portfolio-web/src/hooks/useDocumentTheme.ts` | Read-only theme via MutationObserver — use everywhere else |
 | `portfolio-web/src/hooks/useScrollDirection.ts` | Returns `hidden: boolean` for header hide/reveal |
 | `portfolio-web/src/app/components/MobileNav.tsx` | Portaled drawer, scroll lock, hamburger state machine |
-| `portfolio-web/src/lib/api.ts` | Typed frontend API client |
+| `portfolio-web/src/lib/api.ts` | Typed frontend API client — includes `TechnologyWriteDto` and mutation fns |
+| `portfolio-web/src/app/admin/technologies/page.tsx` | Admin CRUD for technologies — list table + modal form |
 | `ARCHITECTURE.md` | Full design decision explanations with reasoning |
 
 ---
