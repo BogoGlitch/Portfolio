@@ -111,14 +111,16 @@
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 6px;
+  border: 1px solid var(--accent);
+  background: transparent;
   font-size: 0.75rem;
-  color: var(--text-muted);
-  transition: background 150ms ease, color 150ms ease;
+  color: var(--accent);
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
 .closeBtn:hover {
-  background: var(--bg-surface);
-  color: var(--text);
+  background: var(--accent-subtle);
+  box-shadow: 0 0 8px var(--accent-glow);
 }
 
 /* ── Modal body ────────────────────────────────────────────────────────────── */
@@ -185,6 +187,23 @@
   gap: 0.5rem;
 }
 
+/* Inline-wrapping variant: cards sit side-by-side when 2+ fit, else full-width */
+.groupCardsWrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.groupCardsWrap .groupCard {
+  flex: 1 1 calc(50% - 0.25rem);
+}
+
+@media (max-width: 480px) {
+  .groupCardsWrap .groupCard {
+    flex: 1 1 100%;
+  }
+}
+
 .groupCardLabel {
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.5625rem;
@@ -216,7 +235,7 @@
 
 /* Pills sit on bg-band-featured cards, so use bg-raised (17%) for contrast */
 .item {
-  padding: 0.3125rem 0.75rem;
+  padding: 0 0.5rem;
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: 999px;
@@ -249,13 +268,23 @@
 }
 
 .clearBtn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 0.6rem;
+  background: transparent;
   font-size: 0.8125rem;
-  color: var(--text-muted);
-  transition: color 150ms ease;
+  color: var(--accent);
+  transition: background 150ms ease, box-shadow 150ms ease;
 }
 
-.clearBtn:hover {
-  color: var(--text);
+.clearBtn:hover:not(:disabled) {
+  background: var(--accent-subtle);
+  box-shadow: 0 0 12px var(--accent-glow);
+}
+
+.clearBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
 
 .applyBtn {
@@ -268,6 +297,11 @@
   transition: opacity 150ms ease;
 }
 
-.applyBtn:hover {
+.applyBtn:hover:not(:disabled) {
   opacity: 0.85;
+}
+
+.applyBtn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
 }
