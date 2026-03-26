@@ -98,7 +98,7 @@ This is separate from `Category` (which describes the *type*: Language, Framewor
 ### Admin UI
 - `/admin` — landing page with links to Technologies and Projects
 - `/admin/technologies` — full CRUD: list table, modal form (create/edit), inline delete confirm
-- `/admin/projects` — **not yet built**
+- `/admin/projects` — full CRUD: list table, modal form with technology multi-select (checkbox grid), inline delete confirm
 
 ### Seeded Technologies (19 total, local DB)
 Frontend: Next.js, React, TypeScript, CSS Modules, react-icons
@@ -114,11 +114,10 @@ AI: Claude
 - [ ] Public skills/technologies page with discipline filter pills (All · Frontend · Backend · Database · Cloud · DevOps · AI)
 
 ### Immediate Next
-1. **Build `/admin/projects`** — list + modal form with technology multi-select (same pattern as `/admin/technologies`)
-2. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
-3. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
-4. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
-5. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
+1. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
+2. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
+3. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
+4. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ---
 
@@ -137,8 +136,9 @@ AI: Claude
 | `portfolio-web/src/hooks/useDocumentTheme.ts` | Read-only theme via MutationObserver — use everywhere else |
 | `portfolio-web/src/hooks/useScrollDirection.ts` | Returns `hidden: boolean` for header hide/reveal |
 | `portfolio-web/src/app/components/MobileNav.tsx` | Portaled drawer, scroll lock, hamburger state machine |
-| `portfolio-web/src/lib/api.ts` | Typed frontend API client — includes `TechnologyWriteDto` and mutation fns |
+| `portfolio-web/src/lib/api.ts` | Typed frontend API client — includes `TechnologyWriteDto`, `ProjectWriteDto`, and all mutation fns |
 | `portfolio-web/src/app/admin/technologies/page.tsx` | Admin CRUD for technologies — list table + modal form |
+| `portfolio-web/src/app/admin/projects/page.tsx` | Admin CRUD for projects — list table + modal form with technology multi-select |
 | `ARCHITECTURE.md` | Full design decision explanations with reasoning |
 
 ---
