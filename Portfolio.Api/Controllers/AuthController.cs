@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Portfolio.Api.Dtos.Auth;
 using Portfolio.Api.Features.Auth.Commands.Login;
@@ -20,6 +21,16 @@ public class AuthController : ControllerBase
         _configuration = configuration;
         _environment = environment;
     }
+
+    /// <summary>
+    /// Returns 200 if the current request carries a valid JWT cookie, 401 otherwise.
+    /// Used by the frontend to check auth state on load.
+    /// </summary>
+    [HttpGet("me")]
+    [Authorize]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public IActionResult Me() => Ok();
 
     /// <summary>
     /// Authenticates the admin user and issues a JWT in an HttpOnly cookie.

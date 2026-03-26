@@ -1,0 +1,20 @@
+.iconBtn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 0.4rem;
+  color: var(--text-muted);
+  cursor: pointer;
+  text-decoration: none;
+  transition: color 180ms ease, border-color 180ms ease, background-color 180ms ease;
+}
+
+.iconBtn:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+  background-color: var(--accent-subtle);
+}

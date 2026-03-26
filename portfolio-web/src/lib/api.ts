@@ -7,6 +7,7 @@ const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
 const ENDPOINTS = {
   projects: `${API_BASE_URL}/api/projects`,
   technologies: `${API_BASE_URL}/api/technologies`,
+  auth: `${API_BASE_URL}/api/auth`,
 } as const;
 
 async function fetchJson<T>(url: string): Promise<T> {
@@ -16,6 +17,28 @@ async function fetchJson<T>(url: string): Promise<T> {
     throw new Error(`Failed to fetch projects: ${res.status} - ${text}`);
   }
   return res.json() as Promise<T>;
+}
+
+export async function checkAuth(): Promise<void> {
+  const res = await fetch(`${ENDPOINTS.auth}/me`, { credentials: 'include' });
+  if (!res.ok) throw new Error('Not authenticated');
+}
+
+export async function login(username: string, password: string): Promise<void> {
+  const res = await fetch(`${ENDPOINTS.auth}/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    credentials: 'include',
+    body: JSON.stringify({ username, password }),
+  });
+  if (!res.ok) throw new Error('Invalid credentials');
+}
+
+export async function logout(): Promise<void> {
+  await fetch(`${ENDPOINTS.auth}/logout`, {
+    method: 'POST',
+    credentials: 'include',
+  });
 }
 
 export async function getProjects(

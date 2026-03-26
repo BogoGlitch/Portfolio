@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import ThemeToggle from "./ThemeToggle";
+import AuthButton from "./AuthButton";
 import MobileNav from "./MobileNav";
 import CmdKButton from "./CmdKButton";
 import { useScrollDirection } from "@/hooks/useScrollDirection";
@@ -37,6 +38,7 @@ export default function Header() {
         <div className={styles.actions}>
           <CmdKButton />
           <ThemeToggle />
+          <AuthButton />
           <MobileNav />
         </div>
       </div>

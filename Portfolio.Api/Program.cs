@@ -2,6 +2,7 @@ using Azure.Identity;
 using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Data;
+using Portfolio.Api.Dtos.Auth;
 using Portfolio.Api.Dtos.Projects;
 using Portfolio.Api.Dtos.Technologies;
 using Portfolio.Api.Extensions;
@@ -17,6 +18,7 @@ using Portfolio.Api.Features.Technologies.Queries.GetTechnologies;
 using Portfolio.Api.Features.Technologies.Queries.GetTechnologyBySlug;
 using Portfolio.Api.Filters;
 using Portfolio.Api.Validators;
+using Portfolio.Api.Features.Auth.Commands.Login;
 using Serilog;
 using System.Reflection;
 
@@ -38,10 +40,21 @@ builder.Host.UseSerilog(SerilogConfiguration.Configure);
 
 builder.Services.AddControllers();
 
+var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];
+builder.Services.AddCors(options =>
+    options.AddDefaultPolicy(policy => policy
+        .WithOrigins(allowedOrigins)
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials()));
+
 builder.Services.AddJwtCookieAuthentication(builder.Configuration);
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Auth handlers
+builder.Services.AddScoped<LoginCommandHandler>();
 
 // Project query handlers
 builder.Services.AddScoped<GetProjectsQueryHandler>();
@@ -62,12 +75,14 @@ builder.Services.AddScoped<UpdateTechnologyCommandHandler>();
 builder.Services.AddScoped<DeleteTechnologyCommandHandler>();
 
 // Validators — one per writable DTO
+builder.Services.AddScoped<IValidator<LoginRequestDto>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateProjectDto>, CreateProjectValidator>();
 builder.Services.AddScoped<IValidator<UpdateProjectDto>, UpdateProjectValidator>();
 builder.Services.AddScoped<IValidator<CreateTechnologyDto>, CreateTechnologyValidator>();
 builder.Services.AddScoped<IValidator<UpdateTechnologyDto>, UpdateTechnologyValidator>();
 
 // Validation filters — registered so ServiceFilter can resolve them from DI
+builder.Services.AddScoped<ValidationFilter<LoginRequestDto>>();
 builder.Services.AddScoped<ValidationFilter<CreateProjectDto>>();
 builder.Services.AddScoped<ValidationFilter<UpdateProjectDto>>();
 builder.Services.AddScoped<ValidationFilter<CreateTechnologyDto>>();
@@ -107,6 +122,7 @@ app.UseExceptionHandler();
 app.UseStatusCodePages();
 
 //app.UseHttpsRedirection();
+app.UseCors();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapHealthCheckEndpoints();
