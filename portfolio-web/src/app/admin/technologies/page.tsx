@@ -12,6 +12,7 @@ import {
   TechnologyWriteDto,
   updateTechnology,
 } from '@/lib/api';
+import { SkeletonTableRows } from '@/app/components/SkeletonLoader';
 import { Technology } from '@/types/technology';
 import styles from './technologies.module.css';
 
@@ -67,6 +68,7 @@ export default function TechnologiesAdminPage() {
   const router = useRouter();
 
   const [technologies, setTechnologies] = useState<Technology[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
   const [sortKey, setSortKey] = useState<TechSortKey>('discipline');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; tech?: Technology } | null>(null);
@@ -85,8 +87,13 @@ export default function TechnologiesAdminPage() {
   }, [isLoggedIn]);
 
   async function load() {
-    const items = await getTechnologies();
-    setTechnologies(items as Technology[]);
+    setDataLoading(true);
+    try {
+      const items = await getTechnologies();
+      setTechnologies(items as Technology[]);
+    } finally {
+      setDataLoading(false);
+    }
   }
 
   function openCreate() {
@@ -180,7 +187,7 @@ export default function TechnologiesAdminPage() {
     return 0;
   });
 
-  if (isLoading || !isLoggedIn) return null;
+  if (!isLoading && !isLoggedIn) return null;
 
   return (
     <main className={styles.page}>
@@ -196,7 +203,7 @@ export default function TechnologiesAdminPage() {
         </button>
       </div>
 
-      {technologies.length === 0 ? (
+      {!dataLoading && !isLoading && technologies.length === 0 ? (
         <p className={styles.empty}>No technologies yet. Add one to get started.</p>
       ) : (
         <table className={styles.table}>
@@ -212,7 +219,9 @@ export default function TechnologiesAdminPage() {
             </tr>
           </thead>
           <tbody>
-            {sorted.map(tech => (
+            {isLoading || dataLoading ? (
+              <SkeletonTableRows rows={6} cols={7} />
+            ) : sorted.map(tech => (
               <tr key={tech.id}>
                 <td className={styles.nameCell}>{tech.name}</td>
                 <td>{tech.category ?? '—'}</td>

@@ -35,6 +35,9 @@
 
 .tag { height: 1.4rem; width: 4rem; border-radius: 999px; }
 
+/* Table skeleton rows (used via SkeletonTableRows inside an existing <tbody>) */
+.cellBar { height: 0.875rem; }
+
 /* Detail skeleton */
 .detail {
   display: grid;

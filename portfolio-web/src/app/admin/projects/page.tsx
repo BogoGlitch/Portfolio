@@ -15,6 +15,7 @@ import {
 } from '@/lib/api';
 import { Project, TechnologySummary } from '@/types/project';
 import { Technology } from '@/types/technology';
+import { SkeletonTableRows } from '@/app/components/SkeletonLoader';
 import styles from './projects.module.css';
 
 type ProjectSortKey = 'name' | 'slug' | 'techCount' | 'displayOrder' | 'isFeatured';
@@ -70,6 +71,7 @@ export default function ProjectsAdminPage() {
 
   const [projects, setProjects] = useState<Project[]>([]);
   const [allTechs, setAllTechs] = useState<Technology[]>([]);
+  const [dataLoading, setDataLoading] = useState(true);
   const [sortKey, setSortKey] = useState<ProjectSortKey>('displayOrder');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const [modal, setModal] = useState<{ mode: 'create' | 'edit'; project?: Project } | null>(null);
@@ -88,9 +90,14 @@ export default function ProjectsAdminPage() {
   }, [isLoggedIn]);
 
   async function load() {
-    const [projectsRes, techsRes] = await Promise.all([getProjects(), getTechnologies()]);
-    setProjects(projectsRes as Project[]);
-    setAllTechs(techsRes as Technology[]);
+    setDataLoading(true);
+    try {
+      const [projectsRes, techsRes] = await Promise.all([getProjects(), getTechnologies()]);
+      setProjects(projectsRes as Project[]);
+      setAllTechs(techsRes as Technology[]);
+    } finally {
+      setDataLoading(false);
+    }
   }
 
   function openCreate() {
@@ -193,7 +200,7 @@ export default function ProjectsAdminPage() {
     return 0;
   });
 
-  if (isLoading || !isLoggedIn) return null;
+  if (!isLoading && !isLoggedIn) return null;
 
   return (
     <main className={styles.page}>
@@ -209,7 +216,7 @@ export default function ProjectsAdminPage() {
         </button>
       </div>
 
-      {projects.length === 0 ? (
+      {!dataLoading && !isLoading && projects.length === 0 ? (
         <p className={styles.empty}>No projects yet. Add one to get started.</p>
       ) : (
         <table className={styles.table}>
@@ -224,7 +231,9 @@ export default function ProjectsAdminPage() {
             </tr>
           </thead>
           <tbody>
-            {sorted.map(project => (
+            {isLoading || dataLoading ? (
+              <SkeletonTableRows rows={6} cols={6} />
+            ) : sorted.map(project => (
               <tr key={project.id}>
                 <td className={styles.nameCell}>{project.name}</td>
                 <td className={styles.slugCell}>{project.slug}</td>
