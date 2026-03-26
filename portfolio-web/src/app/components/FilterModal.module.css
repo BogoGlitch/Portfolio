@@ -66,8 +66,26 @@
   background: var(--bg-raised);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 24px 64px oklch(0% 0 0 / 0.5);
+  box-shadow:
+    0 2px 6px   oklch(0% 0 0 / 0.50),
+    0 10px 32px oklch(0% 0 0 / 0.40),
+    0 24px 64px oklch(0% 0 0 / 0.50),
+    0 0  24px   var(--accent-glow);
   overflow: hidden;
+}
+
+/* Top accent bar — permanent, full opacity (mirrors GlassCard featured) */
+.modal::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius: 14px 14px 0 0;
+  pointer-events: none;
+  z-index: 1;
 }
 
 .modalHeader {
@@ -139,14 +157,13 @@
   font-size: 0.6875rem;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: var(--text);
 }
 
 .groupHelp {
   font-size: 0.6875rem;
   font-style: italic;
   color: var(--text-muted);
-  opacity: 0.55;
 }
 
 /* ── Cards ─────────────────────────────────────────────────────────────────── */
@@ -174,7 +191,6 @@
   letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--text-muted);
-  opacity: 0.65;
 }
 
 .groupCardWaiting {
@@ -188,7 +204,6 @@
   font-size: 0.8125rem;
   font-style: italic;
   color: var(--text-muted);
-  opacity: 0.5;
 }
 
 /* ── Pills ─────────────────────────────────────────────────────────────────── */
