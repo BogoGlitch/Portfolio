@@ -23,7 +23,11 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
   const openModal = () => {
     const selectedTechs = technologies.filter(t => currentTechIds.includes(String(t.id)));
     setPendingDisciplines([...new Set(selectedTechs.map(t => t.discipline))]);
-    setPendingCategories([...new Set(selectedTechs.map(t => t.category).filter((c): c is string => c !== null))]);
+    setPendingCategories([...new Set(
+      selectedTechs
+        .filter((t): t is typeof t & { category: string } => t.category !== null)
+        .map(t => `${t.discipline}::${t.category}`),
+    )]);
     setPendingTechIds(currentTechIds);
     setOpen(true);
   };
@@ -40,48 +44,50 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
     return result;
   }, [technologies, pendingDisciplines]);
 
-  // For each selected category, which technologies are available (filtered by selected disciplines)
+  // For each selected discipline::category composite key, which technologies are available
   const techsByCategory = useMemo(() => {
     const result: Record<string, Technology[]> = {};
-    for (const c of pendingCategories) {
+    for (const key of pendingCategories) {
+      const [discipline, category] = key.split('::');
       const techs = technologies.filter(
-        t => pendingDisciplines.includes(t.discipline) && t.category === c,
+        t => t.discipline === discipline && t.category === category,
       );
-      if (techs.length > 0) result[c] = techs;
+      if (techs.length > 0) result[key] = techs;
     }
     return result;
-  }, [technologies, pendingDisciplines, pendingCategories]);
+  }, [technologies, pendingCategories]);
 
   const toggleDiscipline = (discipline: string) => {
     const next = pendingDisciplines.includes(discipline)
       ? pendingDisciplines.filter(d => d !== discipline)
       : [...pendingDisciplines, discipline];
 
-    const availCats = new Set(
-      technologies.filter(t => next.includes(t.discipline) && t.category).map(t => t.category as string),
-    );
-    const availTechIds = new Set(
-      technologies.filter(t => next.includes(t.discipline)).map(t => String(t.id)),
-    );
+    const nextCategories = pendingCategories.filter(key => next.includes(key.split('::')[0]));
+    const validComposites = new Set(nextCategories);
+    const nextTechIds = pendingTechIds.filter(id => {
+      const tech = technologies.find(t => String(t.id) === id);
+      return tech ? validComposites.has(`${tech.discipline}::${tech.category}`) : false;
+    });
 
     setPendingDisciplines(next);
-    setPendingCategories(prev => prev.filter(c => availCats.has(c)));
-    setPendingTechIds(prev => prev.filter(id => availTechIds.has(id)));
+    setPendingCategories(nextCategories);
+    setPendingTechIds(nextTechIds);
   };
 
-  const toggleCategory = (category: string) => {
-    const next = pendingCategories.includes(category)
-      ? pendingCategories.filter(c => c !== category)
-      : [...pendingCategories, category];
+  const toggleCategory = (discipline: string, category: string) => {
+    const key = `${discipline}::${category}`;
+    const next = pendingCategories.includes(key)
+      ? pendingCategories.filter(k => k !== key)
+      : [...pendingCategories, key];
 
-    const availTechIds = new Set(
-      technologies
-        .filter(t => pendingDisciplines.includes(t.discipline) && next.includes(t.category ?? ''))
-        .map(t => String(t.id)),
-    );
+    const validComposites = new Set(next);
+    const nextTechIds = pendingTechIds.filter(id => {
+      const tech = technologies.find(t => String(t.id) === id);
+      return tech ? validComposites.has(`${tech.discipline}::${tech.category}`) : false;
+    });
 
     setPendingCategories(next);
-    setPendingTechIds(prev => prev.filter(id => availTechIds.has(id)));
+    setPendingTechIds(nextTechIds);
   };
 
   const toggleTech = (techId: string) => {
@@ -168,8 +174,8 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
                           {(categoriesByDiscipline[d] ?? []).map(c => (
                             <button
                               key={c}
-                              className={`${styles.item} ${pendingCategories.includes(c) ? styles.itemActive : ''}`}
-                              onClick={() => toggleCategory(c)}
+                              className={`${styles.item} ${pendingCategories.includes(`${d}::${c}`) ? styles.itemActive : ''}`}
+                              onClick={() => toggleCategory(d, c)}
                             >
                               {c}
                             </button>
@@ -193,11 +199,13 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
                   </div>
                 ) : (
                   <div className={styles.groupCards}>
-                    {pendingCategories.map(c => (
-                      <div key={c} className={styles.groupCard}>
-                        <div className={styles.groupCardLabel}>{c}</div>
+                    {pendingCategories.map(key => {
+                      const [, category] = key.split('::');
+                      return (
+                      <div key={key} className={styles.groupCard}>
+                        <div className={styles.groupCardLabel}>{category}</div>
                         <div className={styles.groupItems}>
-                          {(techsByCategory[c] ?? []).map(t => (
+                          {(techsByCategory[key] ?? []).map(t => (
                             <button
                               key={t.id}
                               className={`${styles.item} ${pendingTechIds.includes(String(t.id)) ? styles.itemActive : ''}`}
@@ -208,7 +216,8 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
                           ))}
                         </div>
                       </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 )}
               </div>
