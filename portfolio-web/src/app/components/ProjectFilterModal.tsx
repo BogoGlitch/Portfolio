@@ -103,8 +103,12 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
   };
 
   const apply = () => {
-    const query = pendingTechIds.length > 0 ? `?technologyIds=${pendingTechIds.join(',')}` : '';
-    router.push(`${basePath}${query}`);
+    const prev = [...currentTechIds].sort().join(',');
+    const next = [...pendingTechIds].sort().join(',');
+    if (prev !== next) {
+      const query = pendingTechIds.length > 0 ? `?technologyIds=${pendingTechIds.join(',')}` : '';
+      router.push(`${basePath}${query}`);
+    }
     setOpen(false);
   };
 
@@ -112,6 +116,7 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
   const hasDisciplines = pendingDisciplines.length > 0;
   const hasCategories = pendingCategories.length > 0;
   const activeCount = currentTechIds.length;
+  const hasChanged = [...currentTechIds].sort().join(',') !== [...pendingTechIds].sort().join(',');
 
   return (
     <>
@@ -125,11 +130,11 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
 
       {open && (
         <>
-          <div className={styles.overlay} onClick={() => setOpen(false)} />
+          <div className={styles.overlay} onClick={apply} />
           <div className={styles.modal} role="dialog" aria-modal="true" aria-label="Filter projects">
             <div className={styles.modalHeader}>
               <span className={styles.modalTitle}>Filters</span>
-              <button className={styles.closeBtn} onClick={() => setOpen(false)} aria-label="Close filters">✕</button>
+              <button className={styles.closeBtn} onClick={apply} aria-label="Close filters">✕</button>
             </div>
 
             <div className={styles.modalBody}>
@@ -198,7 +203,7 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
                     <span className={styles.groupCardEmpty}>Select a category above to see technologies.</span>
                   </div>
                 ) : (
-                  <div className={styles.groupCards}>
+                  <div className={styles.groupCardsWrap}>
                     {pendingCategories.map(key => {
                       const [, category] = key.split('::');
                       return (
@@ -225,9 +230,9 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
             </div>
 
             <div className={styles.modalFooter}>
-              <button className={styles.clearBtn} onClick={clearAll}>Clear all</button>
+              <button className={styles.clearBtn} onClick={clearAll} disabled={pendingDisciplines.length === 0}>Clear all</button>
               <button className={styles.applyBtn} onClick={apply}>
-                Apply{pendingTechIds.length > 0 ? ` (${pendingTechIds.length})` : ''}
+                {hasChanged ? `Apply (${pendingTechIds.length})` : 'Close'}
               </button>
             </div>
           </div>
