@@ -10,6 +10,7 @@ export type Technology = {
   slug: string;
   description: string | null;
   category: string | null;
+  discipline: string;
   logoUrl: string | null;
   documentationUrl: string | null;
   isFeatured: boolean;

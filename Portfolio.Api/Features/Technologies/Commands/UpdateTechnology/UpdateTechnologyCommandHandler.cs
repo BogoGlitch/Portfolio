@@ -46,6 +46,7 @@ public class UpdateTechnologyCommandHandler
         technology.Slug = normalizedSlug;
         technology.Description = dto.Description;
         technology.Category = dto.Category;
+        technology.Discipline = dto.Discipline;
         technology.LogoUrl = dto.LogoUrl;
         technology.DocumentationUrl = dto.DocumentationUrl;
         technology.IsFeatured = dto.IsFeatured;

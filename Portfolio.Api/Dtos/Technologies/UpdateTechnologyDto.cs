@@ -6,6 +6,7 @@ public record UpdateTechnologyDto
     string Slug,
     string Description,
     string Category,
+    string Discipline,
     string? LogoUrl,
     string? DocumentationUrl,
     bool IsFeatured,

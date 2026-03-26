@@ -35,6 +35,10 @@ public class TechnologyConfiguration : IEntityTypeConfiguration<Technology>
             .IsRequired()
             .HasMaxLength(50);
 
+        builder.Property(t => t.Discipline)
+            .IsRequired()
+            .HasMaxLength(50);
+
         builder.Property(t => t.LogoUrl)
             .HasMaxLength(500);
 

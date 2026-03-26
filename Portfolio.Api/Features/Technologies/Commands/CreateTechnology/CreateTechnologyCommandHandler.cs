@@ -40,6 +40,7 @@ public class CreateTechnologyCommandHandler
             Slug = normalizedSlug,
             Description = dto.Description,
             Category = dto.Category,
+            Discipline = dto.Discipline,
             LogoUrl = dto.LogoUrl,
             DocumentationUrl = dto.DocumentationUrl,
             IsFeatured = dto.IsFeatured,

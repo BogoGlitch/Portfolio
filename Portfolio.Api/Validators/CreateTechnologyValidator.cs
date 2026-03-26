@@ -5,6 +5,8 @@ namespace Portfolio.Api.Validators;
 
 public class CreateTechnologyValidator : AbstractValidator<CreateTechnologyDto>
 {
+    private static readonly string[] ValidDisciplines = ["Frontend", "Backend", "Database", "Cloud", "DevOps", "AI"];
+
     public CreateTechnologyValidator()
     {
         RuleFor(x => x.Name)
@@ -24,6 +26,11 @@ public class CreateTechnologyValidator : AbstractValidator<CreateTechnologyDto>
         RuleFor(x => x.Category)
             .NotEmpty()
             .MaximumLength(50);
+
+        RuleFor(x => x.Discipline)
+            .NotEmpty()
+            .Must(d => ValidDisciplines.Contains(d))
+            .WithMessage($"Discipline must be one of: {string.Join(", ", ValidDisciplines)}.");
 
         RuleFor(x => x.LogoUrl)
             .MaximumLength(500)

@@ -16,6 +16,7 @@ public static class TechnologyProjections
             technology.Slug,
             technology.Description,
             technology.Category,
+            technology.Discipline,
             technology.LogoUrl,
             technology.DocumentationUrl,
             technology.IsFeatured,

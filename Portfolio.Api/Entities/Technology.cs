@@ -12,6 +12,8 @@ public class Technology
 
     public string Category { get; set; } = null!;
 
+    public string Discipline { get; set; } = null!;
+
     public string? LogoUrl { get; set; }
 
     public string? DocumentationUrl { get; set; }
