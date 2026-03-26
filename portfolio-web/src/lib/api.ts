@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { ApiListResponse } from "@/types/api";
 import { Project } from "@/types/project";
 import { Technology } from "@/types/technology";
@@ -50,14 +51,14 @@ export async function getProjects(
   return fetchJson<ApiListResponse<Project>>(`${ENDPOINTS.projects}${query}`);
 }
 
-export async function getProjectBySlug(slug: string): Promise<Project> {
+export const getProjectBySlug = cache(async (slug: string): Promise<Project> => {
   return fetchJson<Project>(`${ENDPOINTS.projects}/${slug}`);
-}
+});
 
 export async function getTechnologies(): Promise<ApiListResponse<Technology>> {
   return fetchJson<ApiListResponse<Technology>>(ENDPOINTS.technologies);
 }
 
-export async function getTechnologyBySlug(slug: string): Promise<Technology> {
+export const getTechnologyBySlug = cache(async (slug: string): Promise<Technology> => {
   return fetchJson<Technology>(`${ENDPOINTS.technologies}/${slug}`);
-}
+});
