@@ -1,0 +1,83 @@
+.page { min-height: 100vh; }
+
+.header {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+  padding: 2.5rem 0 2rem;
+}
+
+.inner {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  display: grid;
+  gap: 0.5rem;
+}
+
+.backLink { height: 0.875rem; width: 5rem; }
+.title    { height: 2.5rem;   width: 45%; }
+.subtitle { height: 1rem;     width: 60%; }
+
+/* ── Discipline filter band ── */
+.filterBand {
+  background-color: var(--bg-surface);
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.filterBandInner {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 0.75rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  flex-wrap: wrap;
+}
+
+.pill {
+  height: 1.875rem;
+  border-radius: 999px;
+}
+
+/* ── Body ── */
+.body {
+  width: min(1200px, calc(100% - 2rem));
+  margin: 0 auto;
+  padding: 2rem 0 4rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+/* ── Tech card skeleton ── */
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: 1rem;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  min-height: 130px;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cardIcon     { height: 1.5rem; width: 1.5rem; border-radius: 0.25rem; }
+.cardCategory { height: 0.75rem; width: 4rem; }
+.cardTitle    { height: 1rem;    width: 65%; margin-top: 0.125rem; }
+.cardText     { height: 0.8125rem; width: 100%; }
+
+.cardFooter {
+  margin-top: auto;
+  padding-top: 0.625rem;
+  border-top: 1px solid var(--border-subtle);
+}
+
+.cardCount { height: 0.7rem; width: 4.5rem; }
