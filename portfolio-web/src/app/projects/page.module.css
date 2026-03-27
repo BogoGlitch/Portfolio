@@ -90,8 +90,10 @@
   aspect-ratio: 16 / 9;
   border-radius: 0.625rem;
   overflow: hidden;
-  background-color: var(--bg-raised);
   flex-shrink: 0;
+  /* skeleton class (applied in TSX) provides the shimmer; this sets the
+     fallback background and overrides skeleton's default border-radius */
+  background-color: var(--bg-raised);
 }
 
 .cardImage {
