@@ -6,6 +6,7 @@ import { TbBook } from "react-icons/tb";
 import GlassCard from "@/app/components/GlassCard";
 import GlowButton from "@/app/components/GlowButton";
 import AnimatedSection from "@/app/components/AnimatedSection";
+import TechIcon from "@/app/components/TechIcon";
 import styles from "./page.module.css";
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
@@ -34,6 +35,7 @@ export default async function TechnologyDetailPage({ params }: { params: Promise
         <div className={styles.headerInner}>
           <Link href="/technologies" className={styles.backLink}>← Technologies</Link>
           <div className={styles.titleRow}>
+            <TechIcon slug={technology.slug} size={36} className={styles.titleIcon} />
             <h1 className={styles.title}>{technology.name}</h1>
             {technology.category && (
               <span className={styles.category}>{technology.category}</span>

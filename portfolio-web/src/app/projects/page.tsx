@@ -1,9 +1,9 @@
 import { getProjects, getTechnologies } from "@/lib/api";
 import Link from "next/link";
+import Image from "next/image";
 import type { Metadata } from "next";
 import GlassCard from "../components/GlassCard";
 import TechTag from "../components/TechTag";
-import TechIcon from "../components/TechIcon";
 import AnimatedSection from "../components/AnimatedSection";
 import GlowButton from "../components/GlowButton";
 import ProjectFilterModal from "../components/ProjectFilterModal";
@@ -29,6 +29,12 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
     getTechnologies(),
   ]);
 
+  // Featured projects rise to the top, then sort by displayOrder
+  const sorted = [...projects].sort((a, b) => {
+    if (a.isFeatured !== b.isFeatured) return a.isFeatured ? -1 : 1;
+    return a.displayOrder - b.displayOrder;
+  });
+
   return (
     <div className={styles.page}>
       <div className={styles.header}>
@@ -48,49 +54,78 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           basePath="/projects"
         />
 
-        {projects.length === 0 ? (
+        {sorted.length === 0 ? (
           <div className={styles.empty}>
             <p>No projects matched the selected filters.</p>
             <GlowButton href="/projects" variant="ghost">Clear filters</GlowButton>
           </div>
         ) : (
           <div className={styles.grid}>
-            {projects.map((project, i) => (
-              <AnimatedSection key={project.id} delay={i * 60}>
-                <GlassCard
-                  href={`/projects/${project.slug}`}
-                  featured={project.isFeatured}
-                  className={project.isFeatured ? styles.featuredCard : ''}
-                >
-                  <div className={styles.cardInner}>
-                    <div className={styles.cardTop}>
-                      {project.isFeatured && (
-                        <span className={styles.featuredBadge}>Featured</span>
-                      )}
-                      <h2 className={styles.cardTitle}>{project.name}</h2>
-                      <p className={styles.cardDesc}>{project.shortDescription}</p>
+            {sorted.map((project, i) => (
+              <AnimatedSection
+                key={project.id}
+                delay={i * 60}
+                className={project.isFeatured ? styles.featuredItem : ''}
+              >
+                <GlassCard href={`/projects/${project.slug}`} featured={project.isFeatured}>
+                  {project.isFeatured ? (
+                    /* Featured — full-width horizontal layout */
+                    <div className={styles.featuredCardInner}>
+                      <div className={styles.cardImageWrap}>
+                        <Image
+                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                          alt={`${project.name} screenshot`}
+                          fill
+                          className={styles.cardImage}
+                        />
+                      </div>
+                      <div className={styles.cardContent}>
+                        <div className={styles.cardTop}>
+                          <span className={styles.featuredBadge}>Featured</span>
+                          <h2 className={styles.cardTitle}>{project.name}</h2>
+                          <p className={styles.cardDesc}>{project.shortDescription}</p>
+                        </div>
+                        {project.technologies.length > 0 && (
+                          <div className={styles.cardTags}>
+                            {project.technologies.slice(0, 6).map((t) => (
+                              <TechTag key={t.id} name={t.name} />
+                            ))}
+                            {project.technologies.length > 6 && (
+                              <span className={styles.moreTags}>+{project.technologies.length - 6}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
                     </div>
-                    {project.technologies.length > 0 && (
-                      <>
-                        <div className={styles.cardIcons}>
-                          {project.technologies.slice(0, 6).map((t) => (
-                            <TechIcon key={t.id} slug={t.slug} size={16} className={styles.techIconItem} />
-                          ))}
-                          {project.technologies.length > 6 && (
-                            <span className={styles.moreIcons}>+{project.technologies.length - 6}</span>
-                          )}
+                  ) : (
+                    /* Regular — vertical layout with image on top */
+                    <div className={styles.regularCardInner}>
+                      <div className={styles.cardImageWrap}>
+                        <Image
+                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                          alt={`${project.name} screenshot`}
+                          fill
+                          className={styles.cardImage}
+                        />
+                      </div>
+                      <div className={styles.cardContent}>
+                        <div className={styles.cardTop}>
+                          <h2 className={styles.cardTitle}>{project.name}</h2>
+                          <p className={styles.cardDesc}>{project.shortDescription}</p>
                         </div>
-                        <div className={styles.cardTags}>
-                          {project.technologies.slice(0, 4).map((t) => (
-                            <TechTag key={t.id} name={t.name} />
-                          ))}
-                          {project.technologies.length > 4 && (
-                            <span className={styles.moreTags}>+{project.technologies.length - 4}</span>
-                          )}
-                        </div>
-                      </>
-                    )}
-                  </div>
+                        {project.technologies.length > 0 && (
+                          <div className={styles.cardTags}>
+                            {project.technologies.slice(0, 4).map((t) => (
+                              <TechTag key={t.id} name={t.name} />
+                            ))}
+                            {project.technologies.length > 4 && (
+                              <span className={styles.moreTags}>+{project.technologies.length - 4}</span>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
                 </GlassCard>
               </AnimatedSection>
             ))}

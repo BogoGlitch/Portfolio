@@ -29,6 +29,11 @@
   gap: 0.75rem;
 }
 
+.titleIcon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
 .title {
   font-size: clamp(1.75rem, 4vw, 2.75rem);
   font-weight: 700;
