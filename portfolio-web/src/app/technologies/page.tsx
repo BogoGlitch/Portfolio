@@ -85,7 +85,7 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
       <div className={styles.body}>
         <div className={styles.grid}>
           {filtered.map((tech, i) => (
-            <AnimatedSection key={tech.id} delay={i * 50}>
+            <AnimatedSection key={tech.id} delay={i * 25} instant={i < 5}>
               <GlassCard href={`/technologies/${tech.slug}`}>
                 <div className={styles.cardInner}>
                   <div className={styles.cardTop}>

@@ -12,7 +12,7 @@ export function useIntersectionObserver(options?: IntersectionObserverInit) {
 
     const observer = new IntersectionObserver(
       ([e]) => setEntry(e),
-      { threshold: 0.1, rootMargin: '0px 0px -40px 0px', ...options },
+      { threshold: 0, rootMargin: '0px 0px 100px 0px', ...options },
     );
 
     observer.observe(el);
