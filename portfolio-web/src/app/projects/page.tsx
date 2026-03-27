@@ -1,6 +1,6 @@
 import { getProjects, getTechnologies } from "@/lib/api";
 import Link from "next/link";
-import Image from "next/image";
+import ImageWithSkeleton from "../components/ImageWithSkeleton";
 import type { Metadata } from "next";
 import GlassCard from "../components/GlassCard";
 import TechTag from "../components/TechTag";
@@ -64,21 +64,21 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
             {sorted.map((project, i) => (
               <AnimatedSection
                 key={project.id}
-                delay={i * 60}
+                delay={i * 30}
+                instant={i < 3}
                 className={project.isFeatured ? styles.featuredItem : ''}
               >
                 <GlassCard href={`/projects/${project.slug}`} featured={project.isFeatured}>
                   {project.isFeatured ? (
                     /* Featured — full-width horizontal layout */
                     <div className={styles.featuredCardInner}>
-                      <div className={styles.cardImageWrap}>
-                        <Image
-                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
-                          alt={`${project.name} screenshot`}
-                          fill
-                          className={styles.cardImage}
-                        />
-                      </div>
+                      <ImageWithSkeleton
+                        src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                        alt={`${project.name} screenshot`}
+                        fill
+                        className={styles.cardImageWrap}
+                        imgClassName={styles.cardImage}
+                      />
                       <div className={styles.cardContent}>
                         <div className={styles.cardTop}>
                           <span className={styles.featuredBadge}>Featured</span>
@@ -100,14 +100,13 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                   ) : (
                     /* Regular — vertical layout with image on top */
                     <div className={styles.regularCardInner}>
-                      <div className={styles.cardImageWrap}>
-                        <Image
-                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
-                          alt={`${project.name} screenshot`}
-                          fill
-                          className={styles.cardImage}
-                        />
-                      </div>
+                      <ImageWithSkeleton
+                        src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                        alt={`${project.name} screenshot`}
+                        fill
+                        className={styles.cardImageWrap}
+                        imgClassName={styles.cardImage}
+                      />
                       <div className={styles.cardContent}>
                         <div className={styles.cardTop}>
                           <h2 className={styles.cardTitle}>{project.name}</h2>

@@ -1,4 +1,5 @@
 import Image from "next/image";
+import ImageWithSkeleton from "./components/ImageWithSkeleton";
 import Link from "next/link";
 import type { Metadata } from "next";
 import { getProjects, getTechnologies } from "@/lib/api";
@@ -63,16 +64,15 @@ export default async function HomePage() {
           </div>
 
           <div className={styles.heroMedia}>
-            <div className={styles.avatarWrapper}>
-              <Image
-                src="/images/headshot.jpg"
-                alt="Portrait of Sean Bogolin"
-                fill
-                sizes="264px"
-                className={styles.avatar}
-                priority
-              />
-            </div>
+            <ImageWithSkeleton
+              src="/images/headshot.jpg"
+              alt="Portrait of Sean Bogolin"
+              fill
+              sizes="264px"
+              priority
+              className={styles.avatarWrapper}
+              imgClassName={styles.avatar}
+            />
           </div>
         </div>
 
@@ -117,7 +117,7 @@ export default async function HomePage() {
               { title: "End-to-end ownership", body: "Database and API design through frontend integration and deployment readiness." },
               { title: "Enterprise mindset", body: "Structured patterns, explicit configuration, and systems built for long-term evolution." },
             ].map((item, i) => (
-              <AnimatedSection key={item.title} delay={i * 80}>
+              <AnimatedSection key={item.title} delay={i * 40}>
                 <GlassCard className={styles.highlightCard}>
                   <h3 className={styles.highlightTitle}>{item.title}</h3>
                   <p className={styles.highlightBody}>{item.body}</p>
@@ -142,14 +142,13 @@ export default async function HomePage() {
                   {i === 0 ? (
                     /* Wide hero card — image + content side by side */
                     <div className={styles.featuredHeroCard}>
-                      <div className={styles.projectImageWrap}>
-                        <Image
-                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
-                          alt={`${project.name} screenshot`}
-                          fill
-                          className={styles.projectImage}
-                        />
-                      </div>
+                      <ImageWithSkeleton
+                        src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                        alt={`${project.name} screenshot`}
+                        fill
+                        className={styles.projectImageWrap}
+                        imgClassName={styles.projectImage}
+                      />
                       <div className={styles.projectMeta}>
                         <h3 className={styles.projectTitle}>{project.name}</h3>
                         <p className={styles.projectDesc}>{project.shortDescription}</p>
@@ -165,14 +164,13 @@ export default async function HomePage() {
                   ) : (
                     /* Smaller cards — image left on wide, image top on narrow */
                     <div className={styles.projectCard}>
-                      <div className={styles.projectCardImage}>
-                        <Image
-                          src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
-                          alt={`${project.name} screenshot`}
-                          fill
-                          className={styles.projectImage}
-                        />
-                      </div>
+                      <ImageWithSkeleton
+                        src={project.imageUrl ?? `https://picsum.photos/seed/${project.id}/800/450`}
+                        alt={`${project.name} screenshot`}
+                        fill
+                        className={styles.projectCardImage}
+                        imgClassName={styles.projectImage}
+                      />
                       <div className={styles.projectCardContent}>
                         <div className={styles.projectMeta}>
                           <h3 className={styles.projectTitle}>{project.name}</h3>
