@@ -32,11 +32,16 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
 
   const technologies = await getTechnologies();
 
+  // Primary: technologies used in projects rank first (more projects = higher)
+  // Secondary: displayOrder encodes global recruiter-value ranking (lower = more valuable)
+  const byValue = (a: (typeof technologies)[number], b: (typeof technologies)[number]) =>
+    b.projects.length - a.projects.length || a.displayOrder - b.displayOrder;
+
   const filtered = selectedDiscipline
-    ? technologies
+    ? [...technologies]
         .filter(t => t.discipline === selectedDiscipline)
-        .sort((a, b) => categoryRank(a.category) - categoryRank(b.category) || a.displayOrder - b.displayOrder)
-    : technologies;
+        .sort((a, b) => categoryRank(a.category) - categoryRank(b.category) || byValue(a, b))
+    : [...technologies].sort(byValue);
 
   const availableDisciplines = DISCIPLINE_ORDER.filter(d =>
     technologies.some(t => t.discipline === d),
