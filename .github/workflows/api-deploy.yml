@@ -30,10 +30,40 @@ jobs:
       - name: Publish
         run: dotnet publish Portfolio.Api/Portfolio.Api.csproj --configuration Release --no-build --output ./publish
 
+      - name: Install EF Tool
+        run: dotnet tool install --global dotnet-ef --version '10.0.*'
+
       - name: Login to Azure
         uses: azure/login@v2
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Get Runner IP
+        id: runner-ip
+        run: echo "ip=$(curl -s https://api.ipify.org)" >> $GITHUB_OUTPUT
+
+      - name: Open SQL Firewall for Runner
+        run: |
+          az sql server firewall-rule create \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --server portfolio-sql-sb \
+            --name github-actions-runner \
+            --start-ip-address ${{ steps.runner-ip.outputs.ip }} \
+            --end-ip-address ${{ steps.runner-ip.outputs.ip }}
+
+      - name: Run EF Migrations
+        run: dotnet ef database update --project Portfolio.Api/Portfolio.Api.csproj --configuration Release --no-build
+        env:
+          ASPNETCORE_ENVIRONMENT: Development
+          ConnectionStrings__DefaultConnection: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+
+      - name: Remove SQL Firewall Rule
+        if: always()
+        run: |
+          az sql server firewall-rule delete \
+            --resource-group ${{ vars.AZURE_RESOURCE_GROUP }} \
+            --server portfolio-sql-sb \
+            --name github-actions-runner
 
       - name: Deploy to App Service
         uses: azure/webapps-deploy@v3
