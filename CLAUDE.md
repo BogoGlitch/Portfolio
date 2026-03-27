@@ -100,19 +100,22 @@ This is separate from `Category` (which describes the *type*: Language, Framewor
 - `/admin/technologies` — full CRUD: list table, modal form (create/edit), inline delete confirm
 - `/admin/projects` — full CRUD: list table, modal form with technology multi-select (checkbox grid), inline delete confirm
 
-### Seeded Technologies (19 total, local DB)
-Frontend: Next.js, React, TypeScript, CSS Modules, react-icons
-Backend: C#, ASP.NET Core, FluentValidation, Serilog, Scalar
-Database: Entity Framework Core, SQL Server
-Cloud: Azure App Service, Azure Static Web Apps, Azure SQL, Azure Key Vault, Azure Managed Identity
-DevOps: GitHub Actions
-AI: Claude
+### Technologies (37 total, local DB)
+**Frontend:** JavaScript, HTML, TypeScript, React, Next.js, CSS3, CSS Modules, react-icons, jQuery, Cypress
+**Backend:** VB.NET, C#, .NET, ASP.NET Core, Entity Framework 6, Entity Framework Core, FluentValidation, Serilog, Scalar, xUnit, FluentAssertions, NSubstitute, Postman
+**Database:** SQL Server, MongoDB
+**Cloud:** Azure App Service, Azure Static Web Apps, Azure SQL Database, Azure Key Vault, Azure Managed Identity
+**DevOps:** GitHub Actions, Git, GitHub, Azure CLI
+**AI:** Claude, GitHub Copilot, ChatGPT
+
+**Ordering:** `displayOrder` encodes a global recruiter-value rank (10=Next.js → 370=HTML). All view sorts by project count desc → displayOrder asc. Discipline view sorts by category hierarchy → same tiebreaker. Legacy and foundational items rank last.
 
 ### Still To Do (Frontend)
 - [ ] Active nav link highlighting (current page underline)
 - [ ] Headshot: actual photo (placeholder in use)
-- [ ] Technologies page card layout — grid/grouping still needs design work
 - [ ] Technology detail pages — currently sparse; could add more content sections
+- [ ] Technologies page: discipline filter default should be Backend, not Frontend — this is a backend-first portfolio
+- [ ] Back/breadcrumb links on detail pages and inner pages need to move up closer to the main nav, not sit near the page heading
 
 ### Immediate Next
 1. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
@@ -124,7 +127,8 @@ AI: Claude
 - **Filter system** — `ProjectFilterModal` (Projects page: cascading Discipline → Category → Technology drill-down; only technologyIds written to URL); Technologies page uses Link-based discipline pill bar (no modal, no JS, server component)
 - **Automated EF migrations in CI/CD** — `api-deploy.yml` runs `dotnet ef database update` before the App Service deploy; temporarily opens Azure SQL firewall for the runner IP, cleans up with `if: always()`; uses `ASPNETCORE_ENVIRONMENT=Development` to bypass Key Vault; requires `AZURE_SQL_CONNECTION_STRING` secret and `AZURE_RESOURCE_GROUP` variable in GitHub
 - **Card layout overhaul** — Projects page: 2-col grid, featured cards span full width with horizontal image+content layout, regular cards vertical with image on top, sorted featured-first, picsum fallback for missing images; GlassCard: `height: 100%` for equal-height grid rows; Technologies page: equal-height cards via flex layout, CategoryIcon replaces TechIcon on list (brand icons saved for detail pages), removed featured prop from list cards (was making 80% look hovered)
-- **Icon system** — `TechIcon`: expanded with Azure services, GitHub Actions, Claude, FluentValidation, Serilog, Scalar, CSS Modules; `DisciplineIcon`: per-discipline icons (Brush/Server/Database/Cloud/GitBranch/Brain); `CategoryIcon`: per-category icons (Braces/Stack/Book/Database/Tool/Cloud/Infinity/Brain); detail pages show individual brand TechIcon in header
+- **Icon system** — `TechIcon`: expanded with Azure services, GitHub Actions, Claude, FluentValidation, Serilog, Scalar, CSS Modules; `DisciplineIcon`: per-discipline icons (Code/Server/Database/Cloud/GitBranch/Brain); `CategoryIcon`: full set including Platform (TbCpu), Testing (TbTestPipe), Source Control (TbGitCommit), Styling (TbBrush), ORM (TbArrowsExchange); detail pages show individual brand TechIcon in header
+- **Technology data overhaul** — 37 technologies across 6 disciplines; descriptions rewritten to be general/project-agnostic; global value-ranked displayOrder; Entity Framework Core moved to Backend discipline; Azure SQL renamed to Azure SQL Database
 
 ---
 
@@ -150,7 +154,7 @@ AI: Claude
 | `portfolio-web/src/app/admin/projects/page.tsx` | Admin CRUD for projects — list table + modal form with technology multi-select |
 | `portfolio-web/src/app/components/ProjectFilterModal.tsx` | Cascading filter modal (Projects page) — Discipline → Category → Technology drill-down |
 | `portfolio-web/src/app/components/FilterModal.module.css` | Shared styles for filter modals |
-| `portfolio-web/src/app/components/DisciplineIcon.tsx` | Maps discipline name → Tabler icon (Frontend=Brush, Backend=Server, Database, Cloud, DevOps=GitBranch, AI=Brain) |
+| `portfolio-web/src/app/components/DisciplineIcon.tsx` | Maps discipline name → Tabler icon (Frontend=Code, Backend=Server, Database, Cloud, DevOps=GitBranch, AI=Brain) |
 | `portfolio-web/src/app/components/CategoryIcon.tsx` | Maps category name → Tabler icon (Language=Braces, Framework=Stack, Library=Book, Tool, CI/CD=Infinity, etc.) |
 | `portfolio-web/src/app/components/TechIcon.tsx` | Maps technology slug → brand icon — used on detail pages and project cards only |
 | `ARCHITECTURE.md` | Full design decision explanations with reasoning |
