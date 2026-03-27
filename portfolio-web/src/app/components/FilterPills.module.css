@@ -63,3 +63,15 @@
   color: var(--accent-2);
   border-color: var(--accent-2);
 }
+
+/* Ember: active filter pills lean toward reddish accent-2 */
+:global([data-theme="ember"]) .pill.active {
+  background-color: var(--accent-2-subtle);
+  border-color: var(--accent-2);
+  color: var(--accent);
+}
+
+:global([data-theme="ember"]) .pill:hover {
+  border-color: var(--accent-2);
+  color: var(--accent);
+}
