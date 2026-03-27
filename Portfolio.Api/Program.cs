@@ -19,6 +19,7 @@ using Portfolio.Api.Features.Technologies.Queries.GetTechnologyBySlug;
 using Portfolio.Api.Filters;
 using Portfolio.Api.Validators;
 using Portfolio.Api.Features.Auth.Commands.Login;
+using Portfolio.Api.Services;
 using Serilog;
 using System.Reflection;
 
@@ -87,6 +88,9 @@ builder.Services.AddScoped<ValidationFilter<CreateProjectDto>>();
 builder.Services.AddScoped<ValidationFilter<UpdateProjectDto>>();
 builder.Services.AddScoped<ValidationFilter<CreateTechnologyDto>>();
 builder.Services.AddScoped<ValidationFilter<UpdateTechnologyDto>>();
+
+// Keep Azure SQL Basic from going idle between requests
+builder.Services.AddHostedService<DatabaseKeepAliveService>();
 
 // Health checks — /health (full) and /health/live (liveness only)
 // AddDbContextCheck runs a test query against AppDbContext to confirm the DB is reachable.
