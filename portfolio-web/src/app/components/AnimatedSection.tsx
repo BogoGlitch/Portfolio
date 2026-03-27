@@ -9,9 +9,11 @@ type Props = {
   className?: string;
   delay?: number;
   as?: React.ElementType;
+  /** Skip opacity:0 start — use for cards already in the initial viewport. */
+  instant?: boolean;
 };
 
-export default function AnimatedSection({ children, className = '', delay = 0, as: Tag = 'div' }: Props) {
+export default function AnimatedSection({ children, className = '', delay = 0, as: Tag = 'div', instant = false }: Props) {
   const { ref, entry } = useIntersectionObserver();
   const theme = useDocumentTheme();
   const [animTheme, setAnimTheme] = useState<string | null>(null);
@@ -31,6 +33,10 @@ export default function AnimatedSection({ children, className = '', delay = 0, a
   }, [entry, theme]);
 
   const visibleClass = animTheme ? `visible anim-theme-${animTheme}` : '';
+
+  if (instant) {
+    return <Tag className={className || undefined}>{children}</Tag>;
+  }
 
   return (
     <Tag
