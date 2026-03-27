@@ -3,8 +3,9 @@ import { getTechnologies } from "@/lib/api";
 import type { Metadata } from "next";
 import GlassCard from "../components/GlassCard";
 import AnimatedSection from "../components/AnimatedSection";
-import FilterModal, { type FilterGroup } from "../components/FilterModal";
-import TechIcon from "../components/TechIcon";
+import DisciplineIcon from "../components/DisciplineIcon";
+import CategoryIcon from "../components/CategoryIcon";
+import { TbLayoutGrid } from "react-icons/tb";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
@@ -13,55 +14,33 @@ export const metadata: Metadata = {
 };
 
 type TechnologiesPageProps = {
-  searchParams?: Promise<{ discipline?: string; category?: string }>;
+  searchParams?: Promise<{ discipline?: string }>;
 };
 
 const DISCIPLINE_ORDER = ['Frontend', 'Backend', 'Database', 'Cloud', 'DevOps', 'AI'];
 
+const CATEGORY_ORDER = ['Language', 'Framework', 'Library', 'Database', 'ORM', 'Tool', 'Styling', 'Cloud Service', 'CI/CD', 'AI Assistant'];
+
+function categoryRank(category: string | null | undefined): number {
+  const idx = CATEGORY_ORDER.indexOf(category ?? '');
+  return idx === -1 ? CATEGORY_ORDER.length : idx;
+}
+
 export default async function TechnologiesPage({ searchParams }: TechnologiesPageProps) {
   const resolved = await searchParams;
-  const selectedDisciplines = resolved?.discipline
-    ? resolved.discipline.split(',').map(s => s.trim()).filter(Boolean)
-    : [];
-  const selectedCategories = resolved?.category
-    ? resolved.category.split(',').map(s => s.trim()).filter(Boolean)
-    : [];
+  const selectedDiscipline = resolved?.discipline?.trim() ?? '';
 
   const technologies = await getTechnologies();
 
-  const filtered = technologies.filter(t => {
-    const matchesDiscipline = selectedDisciplines.length === 0 || selectedDisciplines.includes(t.discipline ?? '');
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(t.category ?? '');
-    return matchesDiscipline && matchesCategory;
-  });
+  const filtered = selectedDiscipline
+    ? technologies
+        .filter(t => t.discipline === selectedDiscipline)
+        .sort((a, b) => categoryRank(a.category) - categoryRank(b.category) || a.displayOrder - b.displayOrder)
+    : technologies;
 
-  // Derive ordered discipline list from data
-  const disciplines = DISCIPLINE_ORDER.filter(d => technologies.some(t => t.discipline === d));
-
-  // Derive sorted category list from data
-  const categories = Array.from(
-    new Set(technologies.map((t) => t.category).filter((c): c is string => Boolean(c))),
-  ).sort();
-
-  const filterGroups: FilterGroup[] = [
-    {
-      label: 'Discipline',
-      paramName: 'discipline',
-      multiSelect: true,
-      items: disciplines.map(d => ({ value: d, label: d })),
-    },
-    {
-      label: 'Category',
-      paramName: 'category',
-      multiSelect: true,
-      items: categories.map(c => ({ value: c, label: c })),
-    },
-  ];
-
-  const filterCurrent: Record<string, string[]> = {
-    discipline: selectedDisciplines,
-    category: selectedCategories,
-  };
+  const availableDisciplines = DISCIPLINE_ORDER.filter(d =>
+    technologies.some(t => t.discipline === d),
+  );
 
   return (
     <div className={styles.page}>
@@ -75,21 +54,38 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
         </div>
       </div>
 
-      <div className={styles.body}>
-        <FilterModal
-          groups={filterGroups}
-          current={filterCurrent}
-          basePath="/technologies"
-        />
+      {/* Discipline filter bar */}
+      <div className={styles.filterBand}>
+        <div className={styles.filterBandInner}>
+          <Link
+            href="/technologies"
+            className={`${styles.disciplinePill} ${!selectedDiscipline ? styles.disciplinePillActive : ''}`}
+          >
+            <TbLayoutGrid size={14} aria-hidden="true" />
+            All
+          </Link>
+          {availableDisciplines.map(d => (
+            <Link
+              key={d}
+              href={selectedDiscipline === d ? '/technologies' : `/technologies?discipline=${encodeURIComponent(d)}`}
+              className={`${styles.disciplinePill} ${selectedDiscipline === d ? styles.disciplinePillActive : ''}`}
+            >
+              <DisciplineIcon discipline={d} size={14} />
+              {d}
+            </Link>
+          ))}
+        </div>
+      </div>
 
+      <div className={styles.body}>
         <div className={styles.grid}>
           {filtered.map((tech, i) => (
             <AnimatedSection key={tech.id} delay={i * 50}>
-              <GlassCard href={`/technologies/${tech.slug}`} featured={tech.isFeatured}>
+              <GlassCard href={`/technologies/${tech.slug}`}>
                 <div className={styles.cardInner}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardHeader}>
-                      <TechIcon slug={tech.slug} size={24} className={styles.cardIcon} />
+                      <CategoryIcon category={tech.category} size={24} className={styles.cardIcon} />
                       {tech.category && (
                         <span className={styles.category}>{tech.category}</span>
                       )}
@@ -112,7 +108,7 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
 
         {filtered.length === 0 && (
           <div className={styles.empty}>
-            <p>No technologies matched the selected filters.</p>
+            <p>No technologies in this discipline yet.</p>
           </div>
         )}
       </div>

@@ -111,21 +111,20 @@ AI: Claude
 ### Still To Do (Frontend)
 - [ ] Active nav link highlighting (current page underline)
 - [ ] Headshot: actual photo (placeholder in use)
-- [ ] Public skills/technologies page with discipline filter pills (All · Frontend · Backend · Database · Cloud · DevOps · AI)
+- [ ] Technologies page card layout — grid/grouping still needs design work
+- [ ] Technology detail pages — currently sparse; could add more content sections
 
 ### Immediate Next
-1. **Filter polish (3 known issues)** — see memory `project_filter_system.md` for details:
-   - Text readability: pill text too low-contrast, needs `var(--text)` or similar
-   - Modal top border: permanent 2px accent gradient `::after`, matching GlassCard hover pattern
-   - Filter selection bug: unknown repro — investigate on next session
-2. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
-3. **Azure deployment** — provision Resource Group → Azure SQL → App Service → Key Vault → Static Web App → wire GitHub Actions CI/CD for both API and frontend
-4. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
-5. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
+1. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
+2. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
+3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ### Completed
 - **AuthContext refactor** — `AuthProvider` at admin layout level; single `checkAuth()` call eliminates per-page auth waterfall; `AdminGuard` handles redirect; admin pages fire `load()` on mount unconditionally
-- **Filter system** — `FilterModal` (Technologies page: discipline + category multi-select, AND logic) + `ProjectFilterModal` (Projects page: cascading Discipline → Category → Technology drill-down; only technologyIds written to URL)
+- **Filter system** — `ProjectFilterModal` (Projects page: cascading Discipline → Category → Technology drill-down; only technologyIds written to URL); Technologies page uses Link-based discipline pill bar (no modal, no JS, server component)
+- **Automated EF migrations in CI/CD** — `api-deploy.yml` runs `dotnet ef database update` before the App Service deploy; temporarily opens Azure SQL firewall for the runner IP, cleans up with `if: always()`; uses `ASPNETCORE_ENVIRONMENT=Development` to bypass Key Vault; requires `AZURE_SQL_CONNECTION_STRING` secret and `AZURE_RESOURCE_GROUP` variable in GitHub
+- **Card layout overhaul** — Projects page: 2-col grid, featured cards span full width with horizontal image+content layout, regular cards vertical with image on top, sorted featured-first, picsum fallback for missing images; GlassCard: `height: 100%` for equal-height grid rows; Technologies page: equal-height cards via flex layout, CategoryIcon replaces TechIcon on list (brand icons saved for detail pages), removed featured prop from list cards (was making 80% look hovered)
+- **Icon system** — `TechIcon`: expanded with Azure services, GitHub Actions, Claude, FluentValidation, Serilog, Scalar, CSS Modules; `DisciplineIcon`: per-discipline icons (Brush/Server/Database/Cloud/GitBranch/Brain); `CategoryIcon`: per-category icons (Braces/Stack/Book/Database/Tool/Cloud/Infinity/Brain); detail pages show individual brand TechIcon in header
 
 ---
 
@@ -149,9 +148,11 @@ AI: Claude
 | `portfolio-web/src/app/admin/layout.tsx` | Admin layout — mounts AuthProvider, redirects unauthenticated users via AdminGuard |
 | `portfolio-web/src/app/admin/technologies/page.tsx` | Admin CRUD for technologies — list table + modal form |
 | `portfolio-web/src/app/admin/projects/page.tsx` | Admin CRUD for projects — list table + modal form with technology multi-select |
-| `portfolio-web/src/app/components/FilterModal.tsx` | Generic filter modal (Technologies page) — multi-select groups, shared CSS module |
 | `portfolio-web/src/app/components/ProjectFilterModal.tsx` | Cascading filter modal (Projects page) — Discipline → Category → Technology drill-down |
-| `portfolio-web/src/app/components/FilterModal.module.css` | Shared styles for both filter modals |
+| `portfolio-web/src/app/components/FilterModal.module.css` | Shared styles for filter modals |
+| `portfolio-web/src/app/components/DisciplineIcon.tsx` | Maps discipline name → Tabler icon (Frontend=Brush, Backend=Server, Database, Cloud, DevOps=GitBranch, AI=Brain) |
+| `portfolio-web/src/app/components/CategoryIcon.tsx` | Maps category name → Tabler icon (Language=Braces, Framework=Stack, Library=Book, Tool, CI/CD=Infinity, etc.) |
+| `portfolio-web/src/app/components/TechIcon.tsx` | Maps technology slug → brand icon — used on detail pages and project cards only |
 | `ARCHITECTURE.md` | Full design decision explanations with reasoning |
 
 ---
