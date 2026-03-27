@@ -7,7 +7,7 @@
   padding: 0.4375rem 1rem;
   background: var(--bg-surface);
   border: 1px solid var(--border-subtle);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.8125rem;
   letter-spacing: 0.03em;
@@ -235,10 +235,10 @@
 
 /* Pills sit on bg-band-featured cards, so use bg-raised (17%) for contrast */
 .item {
-  padding: 0 0.5rem;
+  padding: 0 1rem;
   background: var(--bg-raised);
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.8125rem;
   color: var(--text-muted);
   cursor: pointer;
@@ -268,9 +268,9 @@
 }
 
 .clearBtn {
-  padding: 0.5rem 1rem;
+  padding: 0.375rem 1rem;
   border: 1px solid var(--accent);
-  border-radius: 0.6rem;
+  border-radius: var(--radius-btn);
   background: transparent;
   font-size: 0.8125rem;
   color: var(--accent);
@@ -288,9 +288,9 @@
 }
 
 .applyBtn {
-  padding: 0.5rem 1.375rem;
+  padding: 0.375rem 1.375rem;
   background: var(--accent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   font-size: 0.8125rem;
   font-weight: 600;
   color: var(--bg);

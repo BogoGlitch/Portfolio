@@ -29,6 +29,10 @@
   /* Section band backgrounds — clear lightness steps, near-zero chroma */
   --bg-band-featured: oklch(26% 0.008 250);
   --bg-band-explore:  oklch(17% 0.008 250);
+
+  /* Border-radius tokens — uniform rounded squares */
+  --radius-pill:      0.5rem;
+  --radius-btn:       0.5rem;
 }
 
 [data-theme="ember"] {
@@ -38,18 +42,22 @@
   --border:           oklch(28% 0.025  55);
   --border-subtle:    oklch(20% 0.018  55);
 
-  --text:             oklch(95% 0.008  55);
+  --text:             oklch(97% 0.010  55);
   --text-muted:       oklch(65% 0.012  55);
 
-  --accent:           oklch(72% 0.180  65);
-  --accent-2:         oklch(65% 0.200  25);
-  --accent-glow:      oklch(72% 0.180  65 / 0.30);
-  --accent-2-glow:    oklch(65% 0.200  25 / 0.30);
-  --accent-subtle:    oklch(72% 0.180  65 / 0.10);
+  --accent:           oklch(76% 0.190  60);
+  --accent-2:         oklch(60% 0.230  18);
+  --accent-glow:      oklch(76% 0.190  60 / 0.30);
+  --accent-2-glow:    oklch(60% 0.230  18 / 0.30);
+  --accent-subtle:    oklch(76% 0.190  60 / 0.10);
 
   /* Section band backgrounds — clear lightness steps, near-zero chroma */
   --bg-band-featured: oklch(26% 0.008  55);
   --bg-band-explore:  oklch(17% 0.008  55);
+
+  /* Border-radius tokens — opposite diagonal corners match headshot */
+  --radius-pill:      0 1rem 0 1rem;
+  --radius-btn:       0 1rem 0 1rem;
 }
 
 [data-theme="cosmos"] {
@@ -71,6 +79,10 @@
   /* Section band backgrounds — clear lightness steps, near-zero chroma */
   --bg-band-featured: oklch(24% 0.008 220);
   --bg-band-explore:  oklch(16% 0.008 220);
+
+  /* Border-radius tokens — full pills match circle headshot */
+  --radius-pill:      999px;
+  --radius-btn:       999px;
 }
 
 /* ============================================================

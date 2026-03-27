@@ -23,10 +23,10 @@
 .pill {
   display: inline-flex;
   align-items: center;
-  padding: 0.3rem 0.75rem;
+  padding: 0 1rem;
   background-color: var(--bg-surface);
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--text-muted);
   font-size: 0.8125rem;
   font-weight: 500;
@@ -49,10 +49,10 @@
 }
 
 .clear {
-  padding: 0.3rem 0.75rem;
+  padding: 0 1rem;
   background: none;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--text-muted);
   font-size: 0.8125rem;
   cursor: pointer;

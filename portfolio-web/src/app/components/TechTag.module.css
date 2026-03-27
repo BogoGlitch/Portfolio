@@ -1,10 +1,10 @@
 .tag {
   display: inline-flex;
   align-items: center;
-  padding: 0.2rem 0.6rem;
+  padding: 0 1rem;
   background-color: var(--accent-subtle);
   border: 1px solid var(--accent-2-glow);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   color: var(--accent-2);
   font-family: var(--font-geist-mono), monospace;
   font-size: 0.7rem;
@@ -23,4 +23,10 @@ a.tag:hover {
   background-color: var(--accent-2-glow);
   border-color: var(--accent-2);
   color: var(--text);
+}
+
+/* Ember: use lighter orange (--accent) instead of dark red (--accent-2) */
+:global([data-theme="ember"]) .tag {
+  color: var(--accent);
+  border-color: var(--accent-glow);
 }

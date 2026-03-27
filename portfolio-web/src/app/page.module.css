@@ -41,7 +41,7 @@
   z-index: 3;
   width: min(1200px, calc(100% - 2rem));
   margin: 0 auto;
-  padding: 5rem 0 4rem;
+  padding: 2rem 0;
   display: grid;
   gap: 3rem;
   align-items: center;
@@ -50,7 +50,7 @@
 @media (min-width: 860px) {
   .heroInner {
     grid-template-columns: 1fr 300px;
-    padding: 6rem 0 5rem;
+    padding: 4rem 0;
   }
 }
 
@@ -118,15 +118,6 @@
   object-fit: cover;
   border-radius: inherit;
   border: 2px solid var(--accent);
-}
-
-/* Glitch — rounded top-left + bottom-right only */
-:global([data-theme="glitch"]) .avatarWrapper {
-  border-radius: 1.75rem 0 1.75rem 0;
-  box-shadow:
-    0 0 0 2px var(--accent-glow),
-    0 0 28px var(--accent-glow),
-    0 0 56px var(--accent-glow);
 }
 
 /* Ember — rounded top-right + bottom-left only */

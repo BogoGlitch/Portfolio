@@ -2,8 +2,8 @@
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.7rem 1.4rem;
-  border-radius: 0.6rem;
+  padding: 0.5rem 1.4rem;
+  border-radius: var(--radius-btn);
   font-size: 0.9375rem;
   font-weight: 500;
   cursor: pointer;
