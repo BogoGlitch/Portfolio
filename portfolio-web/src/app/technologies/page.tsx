@@ -19,7 +19,7 @@ type TechnologiesPageProps = {
 
 const DISCIPLINE_ORDER = ['Frontend', 'Backend', 'Database', 'Cloud', 'DevOps', 'AI'];
 
-const CATEGORY_ORDER = ['Language', 'Framework', 'Library', 'Database', 'ORM', 'Tool', 'Styling', 'Cloud Service', 'CI/CD', 'AI Assistant'];
+const CATEGORY_ORDER = ['Language', 'Platform', 'Framework', 'Library', 'Database', 'ORM', 'Testing', 'Tool', 'Styling', 'Source Control', 'Cloud Service', 'CI/CD', 'AI Assistant'];
 
 function categoryRank(category: string | null | undefined): number {
   const idx = CATEGORY_ORDER.indexOf(category ?? '');

@@ -1,17 +1,20 @@
-import { TbBraces, TbStack, TbBook, TbDatabase, TbTool, TbCloud, TbInfinity, TbBrain, TbCode, TbBrush, TbArrowsExchange } from 'react-icons/tb';
+import { TbBraces, TbStack, TbBook, TbDatabase, TbTool, TbCloud, TbInfinity, TbBrain, TbCode, TbBrush, TbArrowsExchange, TbCpu, TbTestPipe, TbGitCommit } from 'react-icons/tb';
 import type { IconType } from 'react-icons';
 
 const CATEGORY_ICONS: Record<string, IconType> = {
-  'language':      TbBraces,          // curly braces = syntax / code language
-  'framework':     TbStack,           // layered structure
-  'library':       TbBook,            // book
-  'orm':           TbArrowsExchange,  // bidirectional object ↔ row mapping
-  'tool':          TbTool,            // wrench/tool
-  'cloud service': TbCloud,           // cloud
-  'ci/cd':         TbInfinity,        // infinity loop = continuous integration/delivery
-  'ai assistant':  TbBrain,           // brain
-  'database':      TbDatabase,        // cylinder = database
-  'styling':       TbBrush,           // brush = styling / CSS
+  'language':       TbBraces,          // curly braces = syntax / code language
+  'platform':       TbCpu,             // chip = runtime / platform layer
+  'framework':      TbStack,           // layered structure
+  'library':        TbBook,            // book
+  'database':       TbDatabase,        // cylinder = database
+  'orm':            TbArrowsExchange,  // bidirectional object ↔ row mapping
+  'testing':        TbTestPipe,        // test tube = testing
+  'tool':           TbTool,            // wrench/tool
+  'styling':        TbBrush,           // brush = styling / CSS
+  'source control': TbGitCommit,       // commit dot = version control
+  'cloud service':  TbCloud,           // cloud
+  'ci/cd':          TbInfinity,        // infinity loop = continuous integration/delivery
+  'ai assistant':   TbBrain,           // brain
 };
 
 type Props = {
