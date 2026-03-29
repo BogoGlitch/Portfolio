@@ -21,6 +21,7 @@ public class CreateTechnologyCommandHandlerTests
             Slug: slug,
             Description: "A cross-platform framework.",
             Category: "Backend",
+            Discipline: "Backend",
             LogoUrl: null,
             DocumentationUrl: null,
             IsFeatured: false,

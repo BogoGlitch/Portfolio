@@ -104,7 +104,7 @@ public class UpdateProjectCommandHandlerTests
     {
         var db = DbContextFactory.Create(nameof(MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException));
         db.Projects.Add(new Project { Id = 1, Name = "My Project", Slug = "my-project", ShortDescription = "short", FullDescription = "full", DisplayOrder = 0 });
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new UpdateProjectCommandHandler(db, NullLogger<UpdateProjectCommandHandler>.Instance);
 
@@ -120,8 +120,8 @@ public class UpdateProjectCommandHandlerTests
     {
         // Original has tech 1; update replaces with tech 2 only.
         var db = DbContextFactory.Create(nameof(Technologies_AreFullyReplaced));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
-        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", DisplayOrder = 1 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", Discipline = "Frontend", DisplayOrder = 1 });
         db.Projects.Add(new Project
         {
             Id = 1,

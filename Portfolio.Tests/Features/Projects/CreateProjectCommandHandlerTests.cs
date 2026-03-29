@@ -59,8 +59,8 @@ public class CreateProjectCommandHandlerTests
         var db = DbContextFactory.Create(nameof(ValidCommand_WithTechnologies_ReturnsDtoWithTechnologies));
         var handler = new CreateProjectCommandHandler(db, NullLogger<CreateProjectCommandHandler>.Instance);
 
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
-        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", DisplayOrder = 1 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", Discipline = "Frontend", DisplayOrder = 1 });
         await db.SaveChangesAsync();
 
         var result = await handler.HandleAsync(ValidCommand(technologyIds: [1, 2]));

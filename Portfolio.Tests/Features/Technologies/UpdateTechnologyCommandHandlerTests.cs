@@ -21,6 +21,7 @@ public class UpdateTechnologyCommandHandlerTests
             Slug: slug,
             Description: "Updated description.",
             Category: "Backend",
+            Discipline: "Backend",
             LogoUrl: null,
             DocumentationUrl: null,
             IsFeatured: true,
@@ -41,7 +42,7 @@ public class UpdateTechnologyCommandHandlerTests
     public async Task ValidUpdate_ReturnsUpdatedDto()
     {
         var db = DbContextFactory.Create(nameof(ValidUpdate_ReturnsUpdatedDto));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new UpdateTechnologyCommandHandler(db, NullLogger<UpdateTechnologyCommandHandler>.Instance);
 
@@ -58,7 +59,7 @@ public class UpdateTechnologyCommandHandlerTests
     {
         // Updating without changing the slug should not trigger a uniqueness conflict.
         var db = DbContextFactory.Create(nameof(SameSlugOnSelf_DoesNotThrow));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new UpdateTechnologyCommandHandler(db, NullLogger<UpdateTechnologyCommandHandler>.Instance);
 
@@ -71,8 +72,8 @@ public class UpdateTechnologyCommandHandlerTests
     public async Task SlugTakenByOtherTechnology_ThrowsInvalidOperationException()
     {
         var db = DbContextFactory.Create(nameof(SlugTakenByOtherTechnology_ThrowsInvalidOperationException));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
-        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", DisplayOrder = 1 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", Discipline = "Frontend", DisplayOrder = 1 });
         await db.SaveChangesAsync();
         var handler = new UpdateTechnologyCommandHandler(db, NullLogger<UpdateTechnologyCommandHandler>.Instance);
 

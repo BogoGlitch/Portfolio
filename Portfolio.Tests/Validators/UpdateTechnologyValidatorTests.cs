@@ -16,10 +16,11 @@ public class UpdateTechnologyValidatorTests
         string slug = "react",
         string description = "A JavaScript library.",
         string category = "Frontend",
+        string discipline = "Frontend",
         string? logoUrl = null,
         string? documentationUrl = null,
         int displayOrder = 0) =>
-        new(name, slug, description, category, logoUrl, documentationUrl, false, displayOrder);
+        new(name, slug, description, category, discipline, logoUrl, documentationUrl, false, displayOrder);
 
     [Fact]
     public void ValidDto_PassesValidation()

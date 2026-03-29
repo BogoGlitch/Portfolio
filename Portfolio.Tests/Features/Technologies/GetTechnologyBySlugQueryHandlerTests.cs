@@ -28,7 +28,7 @@ public class GetTechnologyBySlugQueryHandlerTests
     public async Task Found_ReturnsDto()
     {
         var db = DbContextFactory.Create(nameof(Found_ReturnsDto));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new GetTechnologyBySlugQueryHandler(db, NullLogger<GetTechnologyBySlugQueryHandler>.Instance);
 
@@ -44,7 +44,7 @@ public class GetTechnologyBySlugQueryHandlerTests
     {
         // Handler normalizes the incoming slug so a mixed-case lookup still resolves.
         var db = DbContextFactory.Create(nameof(Slug_IsNormalized_BeforeQuery));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new GetTechnologyBySlugQueryHandler(db, NullLogger<GetTechnologyBySlugQueryHandler>.Instance);
 

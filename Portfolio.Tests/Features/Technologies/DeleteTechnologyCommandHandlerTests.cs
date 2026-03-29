@@ -28,7 +28,7 @@ public class DeleteTechnologyCommandHandlerTests
     public async Task Found_ReturnsTrue()
     {
         var db = DbContextFactory.Create(nameof(Found_ReturnsTrue));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new DeleteTechnologyCommandHandler(db, NullLogger<DeleteTechnologyCommandHandler>.Instance);
 
@@ -41,7 +41,7 @@ public class DeleteTechnologyCommandHandlerTests
     public async Task Found_RemovesFromDatabase()
     {
         var db = DbContextFactory.Create(nameof(Found_RemovesFromDatabase));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", DisplayOrder = 0 });
+        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new DeleteTechnologyCommandHandler(db, NullLogger<DeleteTechnologyCommandHandler>.Instance);
 
