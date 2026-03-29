@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useLayoutEffect, useState } from 'react';
 
-export const THEMES = ['glitch', 'ember', 'cosmos'] as const;
+export const THEMES = ['cosmos', 'glitch', 'ember', 'prism'] as const;
 export type Theme = typeof THEMES[number];
 
 const TRANSITION_DURATION = 320;
@@ -13,9 +13,9 @@ const useIsomorphicLayoutEffect =
   typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
 export function useTheme() {
-  const [theme, setTheme] = useState<Theme>('glitch');
+  const [theme, setTheme] = useState<Theme>('cosmos');
 
-  // Sync from localStorage before first paint so the pill never flashes 'glitch'
+  // Sync from localStorage before first paint so the pill never flashes 'cosmos'
   useIsomorphicLayoutEffect(() => {
     const stored = localStorage.getItem('portfolio-theme') as Theme | null;
     if (stored && THEMES.includes(stored)) {

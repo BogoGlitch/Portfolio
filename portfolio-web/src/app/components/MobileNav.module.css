@@ -260,6 +260,82 @@
   animation: barBotCosmosOut 500ms linear forwards;
 }
 
+/* ── Prism: refract fan — bars fan out like light dispersing, then converge into X ── */
+
+/* Phase 1 (0→40%): all three bars fan out from center at diverging angles
+   (like a beam splitting through a prism).
+   Phase 2 (40→100%): top+bottom converge into X, middle fades. */
+
+@keyframes barTopPrism {
+  0%   { transform: translateY(0) rotate(0deg) scaleX(1); opacity: 1;
+         animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+  40%  { transform: translateY(-4px) rotate(-25deg) scaleX(0.85); opacity: 1;
+         animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  100% { transform: translateY(6.5px) rotate(45deg) scaleX(1); opacity: 1; }
+}
+
+@keyframes barMidPrism {
+  0%   { transform: scaleX(1) rotate(0deg); opacity: 1;
+         animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+  40%  { transform: scaleX(1.15) rotate(0deg); opacity: 1;
+         animation-timing-function: ease-out; }
+  70%  { transform: scaleX(0.5); opacity: 0; }
+  100% { transform: scaleX(0); opacity: 0; }
+}
+
+@keyframes barBotPrism {
+  0%   { transform: translateY(0) rotate(0deg) scaleX(1); opacity: 1;
+         animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+  40%  { transform: translateY(4px) rotate(25deg) scaleX(0.85); opacity: 1;
+         animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  100% { transform: translateY(-6.5px) rotate(-45deg) scaleX(1); opacity: 1; }
+}
+
+/* Close: X converges back to a point, then fans out into parallel bars */
+
+@keyframes barTopPrismOut {
+  0%   { transform: translateY(6.5px) rotate(45deg) scaleX(1); opacity: 1;
+         animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+  45%  { transform: translateY(-4px) rotate(-25deg) scaleX(0.85); opacity: 1;
+         animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  100% { transform: translateY(0) rotate(0deg) scaleX(1); opacity: 1; }
+}
+
+@keyframes barMidPrismOut {
+  0%   { transform: scaleX(0); opacity: 0; }
+  45%  { transform: scaleX(1.15); opacity: 1;
+         animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  100% { transform: scaleX(1); opacity: 1; }
+}
+
+@keyframes barBotPrismOut {
+  0%   { transform: translateY(-6.5px) rotate(-45deg) scaleX(1); opacity: 1;
+         animation-timing-function: cubic-bezier(0.4, 0, 1, 1); }
+  45%  { transform: translateY(4px) rotate(25deg) scaleX(0.85); opacity: 1;
+         animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1); }
+  100% { transform: translateY(0) rotate(0deg) scaleX(1); opacity: 1; }
+}
+
+.toggle[data-theme="prism"][data-open] .bar:nth-child(1) {
+  animation: barTopPrism 500ms linear forwards;
+}
+.toggle[data-theme="prism"][data-open] .bar:nth-child(2) {
+  animation: barMidPrism 500ms linear forwards;
+}
+.toggle[data-theme="prism"][data-open] .bar:nth-child(3) {
+  animation: barBotPrism 500ms linear forwards;
+}
+
+.toggle[data-theme="prism"][data-closing] .bar:nth-child(1) {
+  animation: barTopPrismOut 420ms linear forwards;
+}
+.toggle[data-theme="prism"][data-closing] .bar:nth-child(2) {
+  animation: barMidPrismOut 420ms linear forwards;
+}
+.toggle[data-theme="prism"][data-closing] .bar:nth-child(3) {
+  animation: barBotPrismOut 420ms linear forwards;
+}
+
 /* ─────────────────────────────────────────
    BACKDROP
 ───────────────────────────────────────── */
@@ -355,6 +431,18 @@
 .drawerOpen.drawer[data-theme="cosmos"] {
   transition:
     transform 320ms cubic-bezier(0.16, 1, 0.3, 1),
+    visibility 0s !important;
+}
+
+/* Prism: clean ease */
+.drawer[data-theme="prism"] {
+  transition:
+    transform 280ms ease,
+    visibility 0s 280ms !important;
+}
+.drawerOpen.drawer[data-theme="prism"] {
+  transition:
+    transform 280ms ease,
     visibility 0s !important;
 }
 

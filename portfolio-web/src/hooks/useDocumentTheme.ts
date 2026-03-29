@@ -5,17 +5,17 @@ import { THEMES, type Theme } from './useTheme';
 
 function readTheme(): Theme {
   const attr = document.documentElement.getAttribute('data-theme') as Theme;
-  return THEMES.includes(attr) ? attr : 'glitch';
+  return THEMES.includes(attr) ? attr : 'cosmos';
 }
 
 /**
  * Read-only hook — returns the current theme, updates on data-theme changes.
- * Initialises to 'glitch' so server and client render the same initial HTML
+ * Initialises to 'cosmos' so server and client render the same initial HTML
  * (no hydration mismatch). After mount, syncs to the real DOM value set by
  * the FOUC inline script, then watches for changes via MutationObserver.
  */
 export function useDocumentTheme(): Theme {
-  const [theme, setTheme] = useState<Theme>('glitch');
+  const [theme, setTheme] = useState<Theme>('cosmos');
 
   useEffect(() => {
     // Sync to actual value immediately after mount

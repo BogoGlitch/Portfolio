@@ -1,19 +1,21 @@
 'use client';
 
-import { TbBolt, TbFlame, TbMoonStars } from 'react-icons/tb';
+import { TbBolt, TbFlame, TbMoonStars, TbPrism } from 'react-icons/tb';
 import { useTheme, type Theme } from '@/hooks/useTheme';
 import styles from './ThemeToggle.module.css';
 
 const ICONS: Record<Theme, React.ElementType> = {
+  cosmos: TbMoonStars,
   glitch: TbBolt,
   ember:  TbFlame,
-  cosmos: TbMoonStars,
+  prism:  TbPrism,
 };
 
 const NEXT_LABEL: Record<Theme, string> = {
-  glitch: 'Switch to Ember',
-  ember:  'Switch to Cosmos',
   cosmos: 'Switch to Glitch',
+  glitch: 'Switch to Ember',
+  ember:  'Switch to Prism',
+  prism:  'Switch to Cosmos',
 };
 
 export default function ThemeToggle() {

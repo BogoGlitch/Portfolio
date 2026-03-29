@@ -33,7 +33,7 @@ export default async function HomePage() {
     <div className={styles.page}>
       {/* ── Hero ── */}
       <section className={styles.hero}>
-        {/* Banner — <Image fill priority> so Next.js can optimize format/size and signal LCP */}
+        {/* Banner — two images, CSS shows the correct one per theme */}
         <Image
           src="/images/home-hero-banner.png"
           alt=""
@@ -41,7 +41,15 @@ export default async function HomePage() {
           fill
           priority
           sizes="100vw"
-          className={styles.heroBgImage}
+          className={`${styles.heroBgImage} ${styles.heroBgDark}`}
+        />
+        <Image
+          src="/images/prism-banner.jpg"
+          alt=""
+          role="presentation"
+          fill
+          sizes="100vw"
+          className={`${styles.heroBgImage} ${styles.heroBgLight}`}
         />
         {/* Gradient overlay — darkens the banner for text legibility */}
         <div className={styles.heroBgOverlay} aria-hidden="true" />

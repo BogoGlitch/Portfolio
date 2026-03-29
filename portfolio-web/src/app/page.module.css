@@ -15,6 +15,12 @@
   object-position: center;
 }
 
+/* Dark banner for all dark themes, light banner for prism */
+.heroBgLight { display: none; }
+
+:global([data-theme="prism"]) .heroBgDark { display: none; }
+:global([data-theme="prism"]) .heroBgLight { display: block; }
+
 /* Gradient overlay — sits above the image, darkens it for text legibility */
 .heroBgOverlay {
   position: absolute;
@@ -136,6 +142,54 @@
     0 0 0 1px var(--accent-glow),
     0 0 20px var(--accent-glow),
     0 0 48px var(--accent-glow);
+}
+
+/* Prism — soft rounded, subtle shadow */
+:global([data-theme="prism"]) .avatarWrapper {
+  border-radius: 1rem;
+  box-shadow:
+    0 0 0 1px var(--accent-glow),
+    0 4px 24px oklch(0% 0 0 / 0.10);
+}
+
+/* ── Prism hero overrides — light wash over dark banner ── */
+:global([data-theme="prism"]) .heroBgOverlay {
+  background: linear-gradient(to bottom, oklch(97% 0.006 90 / 0.25), oklch(97% 0.006 90 / 0.45));
+}
+
+:global([data-theme="prism"]) .heroText {
+  background: oklch(100% 0 0 / 0.65);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border-radius: var(--radius-btn);
+  padding: 1.5rem;
+  margin: -1.5rem;
+  border: 1px solid oklch(0% 0 0 / 0.06);
+}
+
+:global([data-theme="prism"]) .name {
+  color: var(--text);
+}
+
+:global([data-theme="prism"]) .description {
+  color: var(--text-muted);
+}
+
+/* Prism stats bar — light frosted glass */
+:global([data-theme="prism"]) .statsBar {
+  background-color: oklch(100% 0 0 / 0.55);
+}
+
+:global([data-theme="prism"]) .statValue {
+  color: var(--text);
+}
+
+:global([data-theme="prism"]) .statLabel {
+  color: var(--text-muted);
+}
+
+:global([data-theme="prism"]) .statDivider {
+  background-color: oklch(0% 0 0 / 0.10);
 }
 
 /* Stats bar */
@@ -267,7 +321,19 @@
 .highlightGrid {
   display: grid;
   gap: 1rem;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 480px) {
+  .highlightGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 960px) {
+  .highlightGrid {
+    grid-template-columns: repeat(4, 1fr);
+  }
 }
 
 .highlightCard {
@@ -488,6 +554,16 @@
 :global([data-theme="cosmos"]) .exploreBand {
   --card-surface: oklch(24% 0.010 220);
   --card-border:  oklch(49% 0.010 220); /* 3.18:1 against 16% L band */
+}
+
+/* Prism overrides — light mode: white cards on cream, cream cards on white */
+:global([data-theme="prism"]) .featuredBand {
+  --card-surface: oklch(96% 0.006 90);
+  --card-border:  oklch(72% 0.010 90); /* 3.1:1 against 100% L band */
+}
+:global([data-theme="prism"]) .exploreBand {
+  --card-surface: oklch(100% 0 0);
+  --card-border:  oklch(68% 0.010 90); /* 3.2:1 against 94% L band */
 }
 
 /* Constrained inner content for bands */

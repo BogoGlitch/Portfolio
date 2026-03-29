@@ -53,7 +53,7 @@ export default async function RootLayout({
     : [];
 
   return (
-    <html lang="en" data-theme="glitch" suppressHydrationWarning>
+    <html lang="en" data-theme="cosmos" suppressHydrationWarning>
       <head>
         {/* Prevent theme flash — reads localStorage before React hydrates */}
         <script

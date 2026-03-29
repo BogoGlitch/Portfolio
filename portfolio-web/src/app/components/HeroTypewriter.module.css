@@ -93,10 +93,57 @@
   to   { transform: translateX(0);     opacity: 1; }
 }
 
+/* ── Prism: refract — text disperses like light through a prism ── */
+
+.prismExit {
+  animation: prismDisperse 440ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+
+.prismEnter {
+  animation: prismConverge 440ms cubic-bezier(0, 0, 0.2, 1) both;
+}
+
+/* Outgoing: scales up slightly, blurs, and splits into a rainbow shimmer */
+@keyframes prismDisperse {
+  0%   {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0);
+  }
+  40% {
+    opacity: 0.8;
+    filter: blur(1px);
+  }
+  100% {
+    transform: scale(1.08);
+    opacity: 0;
+    filter: blur(6px) hue-rotate(90deg);
+  }
+}
+
+/* Incoming: converges from blurred rainbow shimmer into solid text */
+@keyframes prismConverge {
+  0%   {
+    transform: scale(0.92);
+    opacity: 0;
+    filter: blur(6px) hue-rotate(-90deg);
+  }
+  60% {
+    opacity: 0.8;
+    filter: blur(1px);
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    filter: blur(0) hue-rotate(0deg);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .cursorGlitch,
   .emberExit, .emberEnter,
-  .cosmosExit, .cosmosEnter {
+  .cosmosExit, .cosmosEnter,
+  .prismExit, .prismEnter {
     animation: none;
     opacity: 1;
     transform: none;

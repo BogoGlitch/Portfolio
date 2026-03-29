@@ -1,15 +1,37 @@
 /* ============================================================
-   DESIGN TOKENS — Three themes: glitch (default), ember, cosmos
+   DESIGN TOKENS — Four themes: cosmos (default), glitch, ember, prism
    All color references throughout the app use these variables.
    Theme switching: set data-theme on <html>.
    ============================================================ */
 
 :root {
   --header-height: 61px;
+
+  /* Default theme (cosmos) — :root sets fallback, [data-theme] overrides */
+  --bg:               oklch(7%  0.008 220);
+  --bg-surface:       oklch(11% 0.010 220);
+  --bg-raised:        oklch(15% 0.010 220);
+  --border:           oklch(25% 0.015 220);
+  --border-subtle:    oklch(18% 0.012 220);
+
+  --text:             oklch(93% 0.008 220);
+  --text-muted:       oklch(65% 0.010 220);
+
+  --accent:           oklch(75% 0.110 195);
+  --accent-2:         oklch(78% 0.080 265);
+  --accent-glow:      oklch(75% 0.110 195 / 0.25);
+  --accent-2-glow:    oklch(78% 0.080 265 / 0.25);
+  --accent-subtle:    oklch(75% 0.110 195 / 0.08);
+  --accent-2-subtle:  oklch(78% 0.080 265 / 0.10);
+
+  --bg-band-featured: oklch(24% 0.008 220);
+  --bg-band-explore:  oklch(16% 0.008 220);
+
+  --radius-pill:      999px;
+  --radius-btn:       999px;
 }
 
-[data-theme="glitch"],
-:root {
+[data-theme="glitch"] {
   --bg:               oklch(8%  0.012 250);
   --bg-surface:       oklch(13% 0.015 250);
   --bg-raised:        oklch(17% 0.015 250);
@@ -62,30 +84,52 @@
   --radius-btn:       0 1rem 0 1rem;
 }
 
+/* Cosmos — identical to :root defaults; explicit selector ensures
+   [data-theme="cosmos"] wins over :root when other themes are removed */
 [data-theme="cosmos"] {
   --bg:               oklch(7%  0.008 220);
   --bg-surface:       oklch(11% 0.010 220);
   --bg-raised:        oklch(15% 0.010 220);
   --border:           oklch(25% 0.015 220);
   --border-subtle:    oklch(18% 0.012 220);
-
   --text:             oklch(93% 0.008 220);
   --text-muted:       oklch(65% 0.010 220);
-
   --accent:           oklch(75% 0.110 195);
   --accent-2:         oklch(78% 0.080 265);
   --accent-glow:      oklch(75% 0.110 195 / 0.25);
   --accent-2-glow:    oklch(78% 0.080 265 / 0.25);
   --accent-subtle:    oklch(75% 0.110 195 / 0.08);
   --accent-2-subtle:  oklch(78% 0.080 265 / 0.10);
-
-  /* Section band backgrounds — clear lightness steps, near-zero chroma */
   --bg-band-featured: oklch(24% 0.008 220);
   --bg-band-explore:  oklch(16% 0.008 220);
-
-  /* Border-radius tokens — full pills match circle headshot */
   --radius-pill:      999px;
   --radius-btn:       999px;
+}
+
+[data-theme="prism"] {
+  --bg:               oklch(97% 0.006 90);
+  --bg-surface:       oklch(93% 0.008 90);
+  --bg-raised:        oklch(100% 0 0);
+  --border:           oklch(78% 0.012 90);
+  --border-subtle:    oklch(86% 0.008 90);
+
+  --text:             oklch(20% 0.010 250);
+  --text-muted:       oklch(45% 0.010 250);
+
+  --accent:           oklch(45% 0.140 175);
+  --accent-2:         oklch(58% 0.180 25);
+  --accent-glow:      oklch(45% 0.140 175 / 0.20);
+  --accent-2-glow:    oklch(58% 0.180 25 / 0.20);
+  --accent-subtle:    oklch(45% 0.140 175 / 0.08);
+  --accent-2-subtle:  oklch(58% 0.180 25 / 0.08);
+
+  /* Section band backgrounds — light mode: white raised, cream recessed */
+  --bg-band-featured: oklch(100% 0 0);
+  --bg-band-explore:  oklch(94% 0.006 90);
+
+  /* Border-radius tokens — subtle, crisp edges */
+  --radius-pill:      0.25rem;
+  --radius-btn:       0.25rem;
 }
 
 /* ============================================================
@@ -260,6 +304,16 @@ p {
 
 .animate-in.visible.anim-theme-cosmos {
   animation: cosmosIn 850ms cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+/* ── Prism: gentle fade-up, crisp and light ── */
+@keyframes prismIn {
+  0%   { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-in.visible.anim-theme-prism {
+  animation: prismIn 700ms cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @media (prefers-reduced-motion: reduce) {

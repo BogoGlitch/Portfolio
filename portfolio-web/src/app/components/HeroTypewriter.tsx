@@ -118,6 +118,23 @@ export default function HeroTypewriter() {
     );
   }
 
+  // ── Prism: refract — text disperses like light through a prism ──
+  if (theme === 'prism') {
+    return (
+      <span className={styles.cycleWrapper}>
+        <span className={styles.placeholder} aria-hidden="true">{LONGEST}</span>
+        <span className={`${styles.slot} ${transitioning ? styles.prismExit : ''}`}>
+          {STRINGS[curr]}
+        </span>
+        {transitioning && (
+          <span className={`${styles.slot} ${styles.prismEnter}`}>
+            {STRINGS[next]}
+          </span>
+        )}
+      </span>
+    );
+  }
+
   // ── Cosmos: slide in from left, out to right ──
   return (
     <span className={styles.cycleWrapper}>

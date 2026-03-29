@@ -15,9 +15,10 @@ const NAV_LINKS = [
 
 const ANIM_DURATION_OPEN = 460;
 const CLOSE_DURATION: Record<string, number> = {
+  cosmos: 520,
   glitch: 280,
   ember:  420,
-  cosmos: 520,
+  prism:  440,
 };
 
 export default function MobileNav() {

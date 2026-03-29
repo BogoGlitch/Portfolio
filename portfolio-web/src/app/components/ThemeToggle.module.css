@@ -38,10 +38,14 @@
   text-transform: uppercase;
 }
 
-/* Zero-height ghost reserves the width of the longest label ("glitch"/"cosmos")
-   so the pill never shrinks when "ember" is active */
+@media (max-width: 359px) {
+  .label { display: none; }
+}
+
+/* Zero-height ghost reserves the width of the longest label ("cosmos"/"glitch")
+   so the pill never shrinks when shorter names are active */
 .label::after {
-  content: 'glitch';
+  content: 'cosmos';
   display: block;
   height: 0;
   overflow: hidden;
