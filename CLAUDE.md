@@ -83,11 +83,11 @@ Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standa
 
 ## Current State
 
-### Backend Test Suite — 130 passing
+### Backend Test Suite — 132 passing
 - All handlers tested: Create, Update, Delete, GetBySlug for both Projects and Technologies; Login
 - All validators tested: CreateProject, CreateTechnology, UpdateProject, UpdateTechnology, LoginRequest
-- **Known issue:** 3 tests commented out — in-memory DB name conflicts when the same method name exists in two test classes. Root cause: `DbContextFactory.Create(nameof(MethodName))` shares state across classes that have the same method name. Fix: prefix db names with the class name (e.g. `$"{nameof(UpdateProjectCommandHandlerTests)}_{nameof(Slug_IsTrimmedAndLowercased)}"`). Affected tests: `UpdateTechnologyCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `UpdateProjectCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `CreateProjectCommandHandlerTests.MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException`.
-- **Note:** `Discipline` field was added to Technology after the test suite was written. Validator tests for CreateTechnology and UpdateTechnology will need updating to include `Discipline` in test payloads.
+- Configuration test: SQL Server retry execution strategy is wired up correctly
+- **Known issue:** 2 tests commented out — in-memory DB name conflicts when the same method name exists in two test classes. Root cause: `DbContextFactory.Create(nameof(MethodName))` shares state across classes that have the same method name. Fix: prefix db names with the class name (e.g. `$"{nameof(UpdateProjectCommandHandlerTests)}_{nameof(Slug_IsTrimmedAndLowercased)}"`). Affected tests: `UpdateTechnologyCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `UpdateProjectCommandHandlerTests.Slug_IsTrimmedAndLowercased`.
 
 ### Technology — Discipline Field
 `Technology` has a `Discipline` field (required, max 50 chars). Valid values enforced by FluentValidation:
@@ -118,11 +118,12 @@ This is separate from `Category` (which describes the *type*: Language, Framewor
 - [ ] Back/breadcrumb links on detail pages and inner pages need to move up closer to the main nav, not sit near the page heading
 
 ### Immediate Next
-1. **Fix commented-out tests** — prefix db names with class name; also update technology validator tests to include `Discipline`
+1. **Fix remaining 2 commented-out tests** — prefix db names with class name to resolve in-memory DB name conflicts
 2. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
 3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ### Completed
+- **Observability + resilience** — Application Insights telemetry (auto-instruments requests, SQL dependencies, exceptions); Serilog App Insights sink (non-Development only); EF Core `EnableRetryOnFailure` (5 retries, 30s max backoff) for Azure SQL transient errors; connection string in Key Vault as `ApplicationInsights--ConnectionString`; test suite updated to 132 passing (Discipline field gaps fixed, retry strategy test added)
 - **AuthContext refactor** — `AuthProvider` at admin layout level; single `checkAuth()` call eliminates per-page auth waterfall; `AdminGuard` handles redirect; admin pages fire `load()` on mount unconditionally
 - **Filter system** — `ProjectFilterModal` (Projects page: cascading Discipline → Category → Technology drill-down; only technologyIds written to URL); Technologies page uses Link-based discipline pill bar (no modal, no JS, server component)
 - **Automated EF migrations in CI/CD** — `api-deploy.yml` runs `dotnet ef database update` before the App Service deploy; temporarily opens Azure SQL firewall for the runner IP, cleans up with `if: always()`; uses `ASPNETCORE_ENVIRONMENT=Development` to bypass Key Vault; requires `AZURE_SQL_CONNECTION_STRING` secret and `AZURE_RESOURCE_GROUP` variable in GitHub

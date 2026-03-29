@@ -39,6 +39,8 @@ if (!builder.Environment.IsDevelopment())
 // Serilog plugs in as the underlying provider behind the same interface.
 builder.Host.UseSerilog(SerilogConfiguration.Configure);
 
+builder.Services.AddApplicationInsightsTelemetry();
+
 builder.Services.AddControllers();
 
 var allowedOrigins = builder.Configuration.GetSection("AllowedOrigins").Get<string[]>() ?? [];

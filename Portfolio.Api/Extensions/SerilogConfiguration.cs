@@ -1,3 +1,6 @@
+using Microsoft.ApplicationInsights;
+using Microsoft.ApplicationInsights.Extensibility;
+using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 
@@ -37,12 +40,19 @@ public static class SerilogConfiguration
             )
 
             // File sink — one log file per day, kept for 14 days
-            // Useful now as a stepping stone; replaced by Application Insights in Azure
             .WriteTo.File(
                 path: "logs/portfolio-api-.log",
                 rollingInterval: RollingInterval.Day,
                 retainedFileCountLimit: 14,
                 outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
             );
+
+        // Application Insights sink — sends Serilog events to Azure in non-Development environments.
+        // The SDK auto-collects requests, dependencies, and exceptions; this sink adds structured log events.
+        if (!context.HostingEnvironment.IsDevelopment())
+        {
+            var telemetryConfig = services.GetRequiredService<TelemetryConfiguration>();
+            config.WriteTo.ApplicationInsights(telemetryConfig, TelemetryConverter.Traces);
+        }
     }
 }

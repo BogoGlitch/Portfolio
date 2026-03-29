@@ -144,15 +144,40 @@ The JwtBearer middleware is configured to read the token from the cookie rather 
 
 ---
 
-## Serilog
+## Observability
+
+### Logging — Serilog
 
 Configured in `Extensions/SerilogConfiguration.cs`, not in `Program.cs`.
 
 - **Console sink** — development
 - **Rolling file sink** — `logs/` directory, 14-day retention
+- **Application Insights sink** — non-Development environments only; sends structured log events to Azure
 - EF Core and ASP.NET Core framework logs suppressed to `Warning` — only application-level logs appear at `Information`
 
 **Why suppress framework logs:** EF Core is extremely chatty at Information level. Suppressing it means the log output is signal, not noise.
+
+### Telemetry — Application Insights
+
+`AddApplicationInsightsTelemetry()` in `Program.cs` auto-instruments:
+- HTTP request tracking (response time, status codes, URLs)
+- SQL dependency calls (query duration, success/failure)
+- Unhandled exceptions with full stack traces
+- Performance counters (CPU, memory, request rate)
+
+Connection string is stored in Azure Key Vault as `ApplicationInsights--ConnectionString` (maps to `ApplicationInsights:ConnectionString` in .NET config). The SDK discovers it automatically — no appsettings entry required.
+
+**Why Application Insights over alternatives:** All infrastructure is Azure. App Insights integrates natively with App Service, Azure SQL, and Key Vault — no third-party agents, no extra infrastructure. The free tier (5 GB/month) is more than sufficient for this workload.
+
+**What changes at scale:** At high traffic, the cost and noise profile shifts. Enterprises configure adaptive sampling (send 1-in-N events to control volume), telemetry processors (filter out health check and keep-alive noise), and daily ingestion caps (prevent cost surprises). Custom KQL queries and Workbooks replace the default dashboards. App Insights often becomes one data source among many, feeding into Grafana or Azure Monitor Workbooks for cross-infrastructure correlation. The key taxonomy shift: metrics for dashboards and alerts (cheap, pre-aggregated), traces for debugging cross-service flows (moderate cost), logs only for detail that metrics can't capture (expensive at volume).
+
+### Resilience — EF Core Retry
+
+`EnableRetryOnFailure` on the SQL Server connection: 5 retries, exponential backoff up to 30 seconds. Handles transient Azure SQL errors (connection drops, throttling, login timeouts) transparently — no handler code changes needed.
+
+**Why this matters on Azure SQL Basic:** The Basic tier (5 DTU) aggressively reclaims idle connections. Without retry logic, a dropped connection surfaces as a 500 to the user. With it, EF Core silently reconnects and the request succeeds. A `DatabaseKeepAliveService` also pings the DB every 4 minutes to prevent idle disconnects in the first place — belt and suspenders.
+
+**What changes at scale:** Polly replaces or supplements EF Core's built-in retry for outbound HTTP calls (e.g., Azure OpenAI). Circuit breakers prevent cascading failures when a downstream dependency is down — stop calling it, fail fast, recover automatically when it comes back. Bulkhead isolation limits concurrent calls to any single dependency so one slow service can't exhaust the app's thread pool.
 
 ---
 
