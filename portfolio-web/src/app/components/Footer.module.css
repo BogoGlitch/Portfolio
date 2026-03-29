@@ -7,29 +7,74 @@
   width: min(1200px, calc(100% - 2rem));
   margin: 0 auto;
   padding: 2rem 0;
-  display: flex;
-  flex-direction: column;
+  display: grid;
   gap: 1.5rem;
 }
 
 @media (min-width: 640px) {
   .inner {
-    flex-direction: row;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 2rem;
     align-items: center;
-    justify-content: space-between;
   }
 }
 
-.left {
+/* ── Section A: Sitemap nav (left) ── */
+
+.sitemap {
   display: flex;
   flex-direction: column;
-  gap: 0.5rem;
 }
 
+.sitemapList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+  align-items: flex-start;
+}
+
+@media (min-width: 640px) {
+  .sitemapList {
+    flex-direction: row;
+    gap: 1rem;
+  }
+}
+
+.sitemapLink {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 150ms ease !important;
+}
+
+.sitemapLink:hover {
+  color: var(--accent);
+}
+
+/* ── Section B: Logo + name (center) ── */
+
 .brand {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.35rem;
+}
+
+@media (min-width: 640px) {
+  .brand {
+    align-items: center;
+    text-align: center;
+  }
+}
+
+.brandLink {
   display: inline-flex;
   align-items: center;
   gap: 0.5rem;
+  text-decoration: none;
 }
 
 .brandImage {
@@ -38,25 +83,25 @@
 
 .brandText {
   font-weight: 600;
-  font-size: 0.9rem;
+  font-size: 1rem;
   color: var(--text);
 }
 
-.tagline {
-  font-size: 0.8rem;
+.copyright {
+  font-size: 0.75rem;
   color: var(--text-muted);
-  max-width: 40ch;
 }
 
-.right {
+/* ── Section C: Social icons (right) ── */
+
+.connect {
   display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.75rem;
 }
 
 @media (min-width: 640px) {
-  .right { align-items: flex-end; }
+  .connect {
+    justify-content: flex-end;
+  }
 }
 
 .iconLinks {
@@ -68,8 +113,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 2rem;
-  height: 2rem;
+  width: 2.25rem;
+  height: 2.25rem;
   border: 1px solid var(--border);
   border-radius: 9999px;
   color: var(--text-muted);
@@ -80,9 +125,4 @@
   color: var(--accent);
   border-color: var(--accent);
   background-color: var(--accent-subtle);
-}
-
-.copyright {
-  font-size: 0.8rem;
-  color: var(--text-muted);
 }
