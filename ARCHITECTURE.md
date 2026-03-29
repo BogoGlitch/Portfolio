@@ -167,6 +167,11 @@ Configured in `Extensions/SerilogConfiguration.cs`, not in `Program.cs`.
 
 Connection string is stored in Azure Key Vault as `ApplicationInsights--ConnectionString` (maps to `ApplicationInsights:ConnectionString` in .NET config). The SDK discovers it automatically — no appsettings entry required.
 
+**Portal configuration:**
+- **Daily cap:** 0.1 GB/day with email alert — cost safety net
+- **Availability test:** Standard test pinging `/health/live` every 5 minutes from 5 geo-distributed locations; alerts on multi-location failure. Uses `/health/live` (liveness only) rather than `/health` (full) so DB blips don't trigger false downtime alerts.
+- **Saved KQL queries:** Failed requests (24h), slow requests >1s (24h), dependency failures (24h), exception breakdown (7d), request volume by endpoint (7d)
+
 **Why Application Insights over alternatives:** All infrastructure is Azure. App Insights integrates natively with App Service, Azure SQL, and Key Vault — no third-party agents, no extra infrastructure. The free tier (5 GB/month) is more than sufficient for this workload.
 
 **What changes at scale:** At high traffic, the cost and noise profile shifts. Enterprises configure adaptive sampling (send 1-in-N events to control volume), telemetry processors (filter out health check and keep-alive noise), and daily ingestion caps (prevent cost surprises). Custom KQL queries and Workbooks replace the default dashboards. App Insights often becomes one data source among many, feeding into Grafana or Azure Monitor Workbooks for cross-infrastructure correlation. The key taxonomy shift: metrics for dashboards and alerts (cheap, pre-aggregated), traces for debugging cross-service flows (moderate cost), logs only for detail that metrics can't capture (expensive at volume).
