@@ -1,5 +1,4 @@
 using Microsoft.ApplicationInsights;
-using Microsoft.ApplicationInsights.Extensibility;
 using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
@@ -51,8 +50,8 @@ public static class SerilogConfiguration
         // The SDK auto-collects requests, dependencies, and exceptions; this sink adds structured log events.
         if (!context.HostingEnvironment.IsDevelopment())
         {
-            var telemetryConfig = services.GetRequiredService<TelemetryConfiguration>();
-            config.WriteTo.ApplicationInsights(telemetryConfig, TelemetryConverter.Traces);
+            var telemetryClient = services.GetRequiredService<TelemetryClient>();
+            config.WriteTo.ApplicationInsights(telemetryClient, TelemetryConverter.Traces);
         }
     }
 }
