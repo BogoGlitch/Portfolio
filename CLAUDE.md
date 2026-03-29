@@ -66,9 +66,9 @@ Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standa
 
 **iOS Safari scroll lock.** `overflow: hidden` on body does not prevent scroll on iOS. Use: save `scrollY`, set `body { position: fixed; top: -${y}px; width: 100% }`. On close, restore and `window.scrollTo(0, y)`.
 
-**Hamburger state machine.** Two independent states: `open` (controls drawer + backdrop), `closing` (controls hamburger reverse animation only). `setOpen(false)` and `setClosing(true)` fire simultaneously on close — drawer and hamburger animate in parallel. `CLOSE_DURATION = { glitch: 280, ember: 420, cosmos: 520 }` clears `closing` precisely when each animation ends.
+**Hamburger state machine.** Two independent states: `open` (controls drawer + backdrop), `closing` (controls hamburger reverse animation only). `setOpen(false)` and `setClosing(true)` fire simultaneously on close — drawer and hamburger animate in parallel. `CLOSE_DURATION = { cosmos: 520, glitch: 280, ember: 420, prism: 440 }` clears `closing` precisely when each animation ends.
 
-**Theme system.** Three themes: `glitch` (blue/pink), `ember` (amber/crimson), `cosmos` (cyan/lavender). All color tokens are oklch() CSS custom properties on `[data-theme]` selectors in `globals.css`. FOUC prevented via inline `<script>` in `layout.tsx` + `suppressHydrationWarning` on `<html>`.
+**Theme system.** Four themes: `cosmos` (cyan/lavender, default), `glitch` (blue/pink), `ember` (amber/crimson), `prism` (teal/coral, light mode). All color tokens are oklch() CSS custom properties on `[data-theme]` selectors in `globals.css`. Default (cosmos) is duplicated in `:root` as fallback — `[data-theme]` selectors override it. FOUC prevented via inline `<script>` in `layout.tsx` + `suppressHydrationWarning` on `<html>`. Prism uses a separate light banner image (`prism-banner.jpg`) toggled via CSS, a frosted glass hero text panel, and lighter GlassCard shadows. Theme label hides below 360px viewport width.
 
 ---
 
@@ -123,6 +123,8 @@ This is separate from `Category` (which describes the *type*: Language, Framewor
 3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
 
 ### Completed
+- **Prism light theme + cosmos default** — Fourth theme (prism): warm off-white bg, teal/coral accents, 0.25rem radius, separate light banner image, frosted glass hero text panel, lighter shadows. Cosmos is now the default theme. `:root` holds cosmos defaults, each `[data-theme]` overrides. Theme cycle: cosmos → glitch → ember → prism. Per-theme animations: prism hero uses refract transition (blur + hue-rotate), prism hamburger uses refract fan (bars fan at diverging angles then converge to X). Theme label hides below 360px. Highlight grid uses explicit 1→2→4 column breakpoints (no 3+1 wrapping).
+- **Footer redesign** — Three sections: nav links (left/top), logo+copyright (center/bottom), social icons (right/middle). Mobile: vertical stacking with muted dividers, centered content, nav links stack vertically below 480px. Desktop: 3-column grid with explicit placement. Includes disabled Approach link.
 - **Observability + resilience** — Application Insights telemetry (auto-instruments requests, SQL dependencies, exceptions; Serilog output captured via ILogger pipeline — no dedicated sink); daily cap 0.1 GB/day; availability test pings `/health/live` every 5 min from 5 locations; 5 saved KQL queries (failed requests, slow requests, dependency failures, exception breakdown, request volume by endpoint); EF Core `EnableRetryOnFailure` (5 retries, 30s max backoff) for Azure SQL transient errors; connection string in Key Vault as `ApplicationInsights--ConnectionString`; test suite updated to 132 passing (Discipline field gaps fixed, retry strategy test added)
 - **AuthContext refactor** — `AuthProvider` at admin layout level; single `checkAuth()` call eliminates per-page auth waterfall; `AdminGuard` handles redirect; admin pages fire `load()` on mount unconditionally
 - **Filter system** — `ProjectFilterModal` (Projects page: cascading Discipline → Category → Technology drill-down; only technologyIds written to URL); Technologies page uses Link-based discipline pill bar (no modal, no JS, server component)
@@ -142,7 +144,7 @@ This is separate from `Category` (which describes the *type*: Language, Framewor
 | `Portfolio.Api/Filters/ValidationFilter.cs` | Generic pre-action validation filter |
 | `Portfolio.Api/Common/Projections/` | EF LINQ projections (entity → DTO at query level) |
 | `Portfolio.Api/Extensions/AuthenticationExtensions.cs` | JWT Bearer + cookie auth wiring |
-| `portfolio-web/src/app/globals.css` | All design tokens (3 themes) + animation keyframes |
+| `portfolio-web/src/app/globals.css` | All design tokens (4 themes) + animation keyframes |
 | `portfolio-web/src/app/layout.tsx` | Root layout: FOUC script, CommandPalette data fetch |
 | `portfolio-web/src/hooks/useTheme.ts` | Writes `data-theme` + localStorage — only use in ThemeToggle |
 | `portfolio-web/src/hooks/useDocumentTheme.ts` | Read-only theme via MutationObserver — use everywhere else |
