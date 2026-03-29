@@ -152,8 +152,8 @@ Configured in `Extensions/SerilogConfiguration.cs`, not in `Program.cs`.
 
 - **Console sink** — development
 - **Rolling file sink** — `logs/` directory, 14-day retention
-- **Application Insights sink** — non-Development environments only; sends structured log events to Azure
 - EF Core and ASP.NET Core framework logs suppressed to `Warning` — only application-level logs appear at `Information`
+- Application Insights captures Serilog output automatically via the `ILogger` pipeline — no dedicated sink needed
 
 **Why suppress framework logs:** EF Core is extremely chatty at Information level. Suppressing it means the log output is signal, not noise.
 
