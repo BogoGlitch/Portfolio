@@ -1,5 +1,3 @@
-using Microsoft.ApplicationInsights;
-using Microsoft.Extensions.DependencyInjection;
 using Serilog;
 using Serilog.Events;
 
@@ -46,12 +44,8 @@ public static class SerilogConfiguration
                 outputTemplate: "[{Timestamp:yyyy-MM-dd HH:mm:ss} {Level:u3}] {Message:lj} {Properties:j}{NewLine}{Exception}"
             );
 
-        // Application Insights sink — sends Serilog events to Azure in non-Development environments.
-        // The SDK auto-collects requests, dependencies, and exceptions; this sink adds structured log events.
-        if (!context.HostingEnvironment.IsDevelopment())
-        {
-            var telemetryClient = services.GetRequiredService<TelemetryClient>();
-            config.WriteTo.ApplicationInsights(telemetryClient, TelemetryConverter.Traces);
-        }
+        // Application Insights picks up Serilog output via ILogger automatically —
+        // AddApplicationInsightsTelemetry() in Program.cs handles the integration.
+        // No dedicated Serilog sink needed.
     }
 }
