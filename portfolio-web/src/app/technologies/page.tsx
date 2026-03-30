@@ -30,7 +30,12 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
   const resolved = await searchParams;
   const selectedDiscipline = resolved?.discipline?.trim() ?? '';
 
-  const technologies = await getTechnologies();
+  let technologies: Awaited<ReturnType<typeof getTechnologies>>;
+  try {
+    technologies = await getTechnologies();
+  } catch {
+    technologies = [];
+  }
 
   // Primary: technologies used in projects rank first (more projects = higher)
   // Secondary: displayOrder encodes global recruiter-value ranking (lower = more valuable)

@@ -11,13 +11,37 @@ const ENDPOINTS = {
   auth: `${API_BASE_URL}/api/auth`,
 } as const;
 
-async function fetchJson<T>(url: string): Promise<T> {
-  const res = await fetch(url);
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error(`Failed to fetch projects: ${res.status} - ${text}`);
+async function fetchWithTimeout(url: string, timeoutMs: number): Promise<Response> {
+  const controller = new AbortController();
+  const id = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(url, { signal: controller.signal });
+  } finally {
+    clearTimeout(id);
   }
-  return res.json() as Promise<T>;
+}
+
+async function fetchJson<T>(url: string): Promise<T> {
+  const maxAttempts = 2;
+  const timeoutMs = 15_000;
+
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      const res = await fetchWithTimeout(url, timeoutMs);
+      if (!res.ok) {
+        const text = await res.text();
+        throw new Error(`API error: ${res.status} - ${text}`);
+      }
+      return res.json() as Promise<T>;
+    } catch (err) {
+      if (attempt === maxAttempts) throw err;
+      // Brief pause before retry — gives cold-starting API a moment
+      await new Promise((r) => setTimeout(r, 2_000));
+    }
+  }
+
+  // unreachable, but satisfies TypeScript
+  throw new Error("fetchJson: exhausted retries");
 }
 
 async function mutateJson<T>(url: string, method: string, body?: unknown): Promise<T> {

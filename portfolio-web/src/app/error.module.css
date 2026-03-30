@@ -1,0 +1,51 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  padding: 2rem;
+}
+
+.card {
+  text-align: center;
+  max-width: 420px;
+  padding: 2.5rem 2rem;
+  border-radius: var(--card-radius, 0.75rem);
+  background: oklch(from var(--glass-bg) l c h / 0.6);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+}
+
+.title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 0.75rem;
+}
+
+.message {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.625rem 1.5rem;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  background: oklch(from var(--accent-primary) l c h / 0.15);
+  border: 1px solid oklch(from var(--accent-primary) l c h / 0.3);
+  border-radius: var(--card-radius, 0.75rem);
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.button:hover {
+  background: oklch(from var(--accent-primary) l c h / 0.25);
+  border-color: oklch(from var(--accent-primary) l c h / 0.5);
+}

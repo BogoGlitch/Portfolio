@@ -24,10 +24,13 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
     ? resolved.technologyIds.split(',').map(s => s.trim()).filter(Boolean)
     : [];
 
-  const [projects, technologies] = await Promise.all([
+  const [projectsResult, technologiesResult] = await Promise.allSettled([
     getProjects({ technologyIds: selectedTechIds }),
     getTechnologies(),
   ]);
+
+  const projects = projectsResult.status === "fulfilled" ? projectsResult.value : [];
+  const technologies = technologiesResult.status === "fulfilled" ? technologiesResult.value : [];
 
   // Featured projects rise to the top, then sort by displayOrder
   const sorted = [...projects].sort((a, b) => {
