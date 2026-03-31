@@ -23,22 +23,11 @@ Personal portfolio site + living proof of enterprise-level full-stack engineerin
 
 ## Hosting Strategy — Azure Everything
 
-**All infrastructure lives in Azure. No third-party hosting (no Vercel, no Netlify, no Railway).** This mirrors what large enterprises actually run and is the deliberate learning goal.
+**All infrastructure lives in Azure. No third-party hosting.** This mirrors enterprise reality and is the deliberate learning goal. Target: enterprise-grade Azure fluency for under $50/month.
 
-| Service | Azure Resource | Est. Cost |
-|---|---|---|
-| API | App Service (B1 Linux) | ~$13/mo |
-| Frontend | Static Web Apps (Standard) | ~$9/mo |
-| Database | Azure SQL (Basic, 5 DTU) | ~$5/mo |
-| Secrets | Key Vault | ~$0/mo (free ops volume) |
-| Auth (future) | Azure AD B2C or Entra ID | free tier sufficient |
-| **Total** | | **~$27/mo** |
+Why Azure Static Web Apps over Vercel: SWA integrates natively with GitHub Actions, Azure AD, and the Azure ecosystem. The friction is higher — that's the point.
 
-**Target: enterprise-grade Azure fluency for under $50/month.**
-
-Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standardized infra use. It integrates natively with GitHub Actions, Azure AD, and the rest of the Azure ecosystem. The friction is higher than Vercel but that's the point — learning the real thing.
-
-**CI/CD philosophy:** Azure Pipelines YAML (or GitHub Actions targeting Azure) for every deployment. No manual `az` deploys after initial setup. Build → test → deploy on every merge to `main`.
+**CI/CD philosophy:** GitHub Actions for every deployment. No manual `az` deploys after initial setup. Build → test → deploy on every merge to `main`.
 
 ---
 
@@ -58,17 +47,15 @@ Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standa
 
 ## Frontend — Critical Gotchas
 
-**`useDocumentTheme` not `useTheme` in most components.** `useTheme` has isolated per-component state — it won't receive updates when another component calls `cycleTheme`. `useDocumentTheme` watches `html[data-theme]` via MutationObserver and always reflects the real current theme. Only `ThemeToggle` uses `useTheme` (it's the one calling `cycleTheme`).
+**`useDocumentTheme` not `useTheme` in most components.** `useTheme` has isolated per-component state. `useDocumentTheme` watches `html[data-theme]` via MutationObserver. Only `ThemeToggle` uses `useTheme`.
 
-**Header is `position: fixed`, not `position: sticky`.** Sticky + `backdrop-filter` breaks `transform` — the compositing layer ignores transform so only content moves, not the background. `--header-height: 61px` in `:root` is the single source of truth used by `appMain { padding-top }` and mobile drawer `top`.
+**Header is `position: fixed`, not `position: sticky`.** Sticky + `backdrop-filter` breaks `transform`. `--header-height: 61px` in `:root` is the single source of truth.
 
-**MobileNav must portal to `document.body`.** The header's `backdrop-filter` creates a stacking context that traps fixed children and renders their backgrounds transparent. Any modal/drawer/overlay inside the header must use `createPortal(el, document.body)`.
+**MobileNav must portal to `document.body`.** The header's `backdrop-filter` creates a stacking context that traps fixed children.
 
-**iOS Safari scroll lock.** `overflow: hidden` on body does not prevent scroll on iOS. Use: save `scrollY`, set `body { position: fixed; top: -${y}px; width: 100% }`. On close, restore and `window.scrollTo(0, y)`.
+**iOS Safari scroll lock.** `overflow: hidden` on body doesn't work on iOS. Use `position: fixed; top: -${y}px` pattern.
 
-**Hamburger state machine.** Two independent states: `open` (controls drawer + backdrop), `closing` (controls hamburger reverse animation only). `setOpen(false)` and `setClosing(true)` fire simultaneously on close — drawer and hamburger animate in parallel. `CLOSE_DURATION = { cosmos: 520, glitch: 280, ember: 420, prism: 440 }` clears `closing` precisely when each animation ends.
-
-**Theme system.** Four themes: `cosmos` (cyan/lavender, default), `glitch` (blue/pink), `ember` (amber/crimson), `prism` (teal/coral, light mode). All color tokens are oklch() CSS custom properties on `[data-theme]` selectors in `globals.css`. Default (cosmos) is duplicated in `:root` as fallback — `[data-theme]` selectors override it. FOUC prevented via inline `<script>` in `layout.tsx` + `suppressHydrationWarning` on `<html>`. Prism uses a separate light banner image (`prism-banner.jpg`) toggled via CSS, a frosted glass hero text panel, and lighter GlassCard shadows. Theme label hides below 360px viewport width.
+**Theme system.** Four themes: `cosmos` (default), `glitch`, `ember`, `prism` (light). All oklch() tokens on `[data-theme]` selectors in `globals.css`. FOUC prevented via inline `<script>` in `layout.tsx`.
 
 ---
 
@@ -83,55 +70,28 @@ Why Azure Static Web Apps over Vercel: SWA is what enterprises with Azure-standa
 
 ## Current State
 
-### Backend Test Suite — 132 passing
-- All handlers tested: Create, Update, Delete, GetBySlug for both Projects and Technologies; Login
-- All validators tested: CreateProject, CreateTechnology, UpdateProject, UpdateTechnology, LoginRequest
-- Configuration test: SQL Server retry execution strategy is wired up correctly
-- **Known issue:** 2 tests commented out — in-memory DB name conflicts when the same method name exists in two test classes. Root cause: `DbContextFactory.Create(nameof(MethodName))` shares state across classes that have the same method name. Fix: prefix db names with the class name (e.g. `$"{nameof(UpdateProjectCommandHandlerTests)}_{nameof(Slug_IsTrimmedAndLowercased)}"`). Affected tests: `UpdateTechnologyCommandHandlerTests.Slug_IsTrimmedAndLowercased`, `UpdateProjectCommandHandlerTests.Slug_IsTrimmedAndLowercased`.
+### Backend
+- **132 tests passing** — all handlers, validators, and config tests
+- **Known issue:** 2 tests commented out — in-memory DB name conflicts. Fix: prefix db names with class name.
+- **Resilience stack:** EF Core retry (5 retries, 30s backoff) + `DatabaseKeepAliveService` (SQL ping every 4min) + `QueryWarmupService` (pre-compiles EF queries at startup)
+- **Observability:** Application Insights (requests, SQL dependencies, exceptions), Serilog (console + file), App Insights daily cap 0.1 GB/day, availability test every 5min
 
-### Technology — Discipline Field
-`Technology` has a `Discipline` field (required, max 50 chars). Valid values enforced by FluentValidation:
-`Frontend` | `Backend` | `Database` | `Cloud` | `DevOps` | `AI`
+### Frontend
+- **Admin UI:** Full CRUD for Technologies and Projects at `/admin/*`
+- **Filter system:** ProjectFilterModal (3-level cascading), Technologies discipline pill bar (server component)
+- **SSR resilience:** fetchJson with 15s timeout + 1 retry, allSettled fallbacks, root error boundary
 
-This is separate from `Category` (which describes the *type*: Language, Framework, Library, ORM, Tool, Cloud Service, CI/CD, AI Assistant, etc.). Discipline is the search/filter facet; Category is the display grouping.
-
-### Admin UI
-- `/admin` — landing page with links to Technologies and Projects
-- `/admin/technologies` — full CRUD: list table, modal form (create/edit), inline delete confirm
-- `/admin/projects` — full CRUD: list table, modal form with technology multi-select (checkbox grid), inline delete confirm
-
-### Technologies (37 total, local DB)
-**Frontend:** JavaScript, HTML, TypeScript, React, Next.js, CSS3, CSS Modules, react-icons, jQuery, Cypress
-**Backend:** VB.NET, C#, .NET, ASP.NET Core, Entity Framework 6, Entity Framework Core, FluentValidation, Serilog, Scalar, xUnit, FluentAssertions, NSubstitute, Postman
-**Database:** SQL Server, MongoDB
-**Cloud:** Azure App Service, Azure Static Web Apps, Azure SQL Database, Azure Key Vault, Azure Managed Identity
-**DevOps:** GitHub Actions, Git, GitHub, Azure CLI
-**AI:** Claude, GitHub Copilot, ChatGPT
-
-**Ordering:** `displayOrder` encodes a global recruiter-value rank (10=Next.js → 370=HTML). All view sorts by project count desc → displayOrder asc. Discipline view sorts by category hierarchy → same tiebreaker. Legacy and foundational items rank last.
-
-### Still To Do (Frontend)
-- [ ] Active nav link highlighting (current page underline)
+### Still To Do
+- [ ] Active nav link highlighting
 - [ ] Headshot: actual photo (placeholder in use)
-- [ ] Technology detail pages — currently sparse; could add more content sections
-- [ ] Technologies page: discipline filter default should be Backend, not Frontend — this is a backend-first portfolio
-- [ ] Back/breadcrumb links on detail pages and inner pages need to move up closer to the main nav, not sit near the page heading
+- [ ] Technology detail pages — could add more content
+- [ ] Technologies page: discipline filter default should be Backend, not Frontend
+- [ ] Back/breadcrumb links should be closer to main nav, not near page heading
 
 ### Immediate Next
-1. **Fix remaining 2 commented-out tests** — prefix db names with class name to resolve in-memory DB name conflicts
+1. **Fix remaining 2 commented-out tests** — prefix db names with class name
 2. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
 3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
-
-### Completed
-- **Prism light theme + cosmos default** — Fourth theme (prism): warm off-white bg, teal/coral accents, 0.25rem radius, separate light banner image, frosted glass hero text panel, lighter shadows. Cosmos is now the default theme. `:root` holds cosmos defaults, each `[data-theme]` overrides. Theme cycle: cosmos → glitch → ember → prism. Per-theme animations: prism hero uses refract transition (blur + hue-rotate), prism hamburger uses refract fan (bars fan at diverging angles then converge to X). Theme label hides below 360px. Highlight grid uses explicit 1→2→4 column breakpoints (no 3+1 wrapping).
-- **Footer redesign** — Three sections: nav links (left/top), logo+copyright (center/bottom), social icons (right/middle). Mobile: vertical stacking with muted dividers, centered content, nav links stack vertically below 480px. Desktop: 3-column grid with explicit placement. Includes disabled Approach link.
-- **Observability + resilience** — Application Insights telemetry (auto-instruments requests, SQL dependencies, exceptions; Serilog output captured via ILogger pipeline — no dedicated sink); daily cap 0.1 GB/day; availability test pings `/health/live` every 5 min from 5 locations; 5 saved KQL queries (failed requests, slow requests, dependency failures, exception breakdown, request volume by endpoint); EF Core `EnableRetryOnFailure` (5 retries, 30s max backoff) for Azure SQL transient errors; connection string in Key Vault as `ApplicationInsights--ConnectionString`; test suite updated to 132 passing (Discipline field gaps fixed, retry strategy test added)
-- **AuthContext refactor** — `AuthProvider` at admin layout level; single `checkAuth()` call eliminates per-page auth waterfall; `AdminGuard` handles redirect; admin pages fire `load()` on mount unconditionally
-- **Filter system** — `ProjectFilterModal` (Projects page: cascading Discipline → Category → Technology drill-down; only technologyIds written to URL); Technologies page uses Link-based discipline pill bar (no modal, no JS, server component)
-- **Automated EF migrations in CI/CD** — `api-deploy.yml` runs `dotnet ef database update` before the App Service deploy; temporarily opens Azure SQL firewall for the runner IP, cleans up with `if: always()`; uses `ASPNETCORE_ENVIRONMENT=Development` to bypass Key Vault; requires `AZURE_SQL_CONNECTION_STRING` secret and `AZURE_RESOURCE_GROUP` variable in GitHub
-- **Card layout overhaul** — Projects page: 2-col grid, featured cards span full width with horizontal image+content layout, regular cards vertical with image on top, sorted featured-first, picsum fallback for missing images; GlassCard: `height: 100%` for equal-height grid rows; Technologies page: equal-height cards via flex layout, CategoryIcon replaces TechIcon on list (brand icons saved for detail pages), removed featured prop from list cards (was making 80% look hovered)
-- **Icon system** — `TechIcon`: expanded with Azure services, GitHub Actions, Claude, FluentValidation, Serilog, Scalar, CSS Modules; `DisciplineIcon`: per-discipline icons (Code/Server/Database/Cloud/GitBranch/Brain); `CategoryIcon`: full set including Platform (TbCpu), Testing (TbTestPipe), Source Control (TbGitCommit), Styling (TbBrush), ORM (TbArrowsExchange); detail pages show individual brand TechIcon in header
-- **Technology data overhaul** — 37 technologies across 6 disciplines; descriptions rewritten to be general/project-agnostic; global value-ranked displayOrder; Entity Framework Core moved to Backend discipline; Azure SQL renamed to Azure SQL Database
 
 ---
 
@@ -144,30 +104,29 @@ This is separate from `Category` (which describes the *type*: Language, Framewor
 | `Portfolio.Api/Filters/ValidationFilter.cs` | Generic pre-action validation filter |
 | `Portfolio.Api/Common/Projections/` | EF LINQ projections (entity → DTO at query level) |
 | `Portfolio.Api/Extensions/AuthenticationExtensions.cs` | JWT Bearer + cookie auth wiring |
+| `Portfolio.Api/Services/QueryWarmupService.cs` | Pre-compiles EF queries at startup |
+| `Portfolio.Api/Services/DatabaseKeepAliveService.cs` | Pings SQL every 4min to prevent idle timeout |
 | `portfolio-web/src/app/globals.css` | All design tokens (4 themes) + animation keyframes |
 | `portfolio-web/src/app/layout.tsx` | Root layout: FOUC script, CommandPalette data fetch |
-| `portfolio-web/src/hooks/useTheme.ts` | Writes `data-theme` + localStorage — only use in ThemeToggle |
-| `portfolio-web/src/hooks/useDocumentTheme.ts` | Read-only theme via MutationObserver — use everywhere else |
-| `portfolio-web/src/hooks/useScrollDirection.ts` | Returns `hidden: boolean` for header hide/reveal |
+| `portfolio-web/src/hooks/useDocumentTheme.ts` | Read-only theme via MutationObserver — use everywhere except ThemeToggle |
 | `portfolio-web/src/app/components/MobileNav.tsx` | Portaled drawer, scroll lock, hamburger state machine |
-| `portfolio-web/src/lib/api.ts` | Typed frontend API client — includes `TechnologyWriteDto`, `ProjectWriteDto`, and all mutation fns |
-| `portfolio-web/src/context/AuthContext.tsx` | Shared auth state (AuthProvider + useAuthContext) — consumed by admin layout |
-| `portfolio-web/src/app/admin/layout.tsx` | Admin layout — mounts AuthProvider, redirects unauthenticated users via AdminGuard |
-| `portfolio-web/src/app/admin/technologies/page.tsx` | Admin CRUD for technologies — list table + modal form |
-| `portfolio-web/src/app/admin/projects/page.tsx` | Admin CRUD for projects — list table + modal form with technology multi-select |
-| `portfolio-web/src/app/components/ProjectFilterModal.tsx` | Cascading filter modal (Projects page) — Discipline → Category → Technology drill-down |
-| `portfolio-web/src/app/components/FilterModal.module.css` | Shared styles for filter modals |
-| `portfolio-web/src/app/components/DisciplineIcon.tsx` | Maps discipline name → Tabler icon (Frontend=Code, Backend=Server, Database, Cloud, DevOps=GitBranch, AI=Brain) |
-| `portfolio-web/src/app/components/CategoryIcon.tsx` | Maps category name → Tabler icon (Language=Braces, Framework=Stack, Library=Book, Tool, CI/CD=Infinity, etc.) |
-| `portfolio-web/src/app/components/TechIcon.tsx` | Maps technology slug → brand icon — used on detail pages and project cards only |
-| `ARCHITECTURE.md` | Full design decision explanations with reasoning |
+| `portfolio-web/src/lib/api.ts` | Typed frontend API client |
+| `portfolio-web/src/context/AuthContext.tsx` | Shared auth state — consumed by admin layout |
+| `portfolio-web/src/app/components/ProjectFilterModal.tsx` | Cascading filter modal (Discipline → Category → Technology) |
+| `ARCHITECTURE.md` | Design decisions with reasoning |
+| `INTERVIEW.md` | Interview prep — decisions with "why, what over, what at scale" (local only) |
+| `DEVLOG.md` | Chronological dev journal (local only) |
 
 ---
 
 ## Documentation Maintenance
 
-When completing a feature or architectural decision, update:
-- **`CLAUDE.md`** — Current State, Immediate Next
-- **`README.md`** — new endpoints, setup changes
-- **`ARCHITECTURE.md`** — new patterns or significant decisions
-- **`DEVLOG.md`** — append entry (local only, not source controlled)
+**After each commit**, evaluate whether the change is worth documenting. If it introduced a new pattern, architectural decision, operational change, or lesson learned, update the relevant files before moving on:
+
+- **`DEVLOG.md`** — append chronological entry (what happened, what broke, what we learned)
+- **`ARCHITECTURE.md`** — new patterns or significant technical decisions
+- **`INTERVIEW.md`** — new sections with: what, why, chose over, at scale, "how I'd say it"
+- **`CLAUDE.md`** — update Current State, Immediate Next, Key Files as needed
+- **`README.md`** — new endpoints or setup changes
+
+Not every commit needs all five — use judgment. A CSS tweak needs nothing. A new service or architecture decision needs all of them. **Don't wait for the user to ask.**
