@@ -99,6 +99,9 @@ builder.Services.AddScoped<ValidationFilter<UpdateTechnologyDto>>();
 // Keep Azure SQL Basic from going idle between requests
 builder.Services.AddHostedService<DatabaseKeepAliveService>();
 
+// Pre-compile EF queries at startup so the first real request is fast
+builder.Services.AddHostedService<QueryWarmupService>();
+
 // Health checks — /health (full) and /health/live (liveness only)
 // AddDbContextCheck runs a test query against AppDbContext to confirm the DB is reachable.
 builder.Services.AddHealthChecks()
