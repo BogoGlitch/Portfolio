@@ -39,7 +39,8 @@ if (!builder.Environment.IsDevelopment())
 // Serilog plugs in as the underlying provider behind the same interface.
 builder.Host.UseSerilog(SerilogConfiguration.Configure);
 
-builder.Services.AddApplicationInsightsTelemetry();
+if (!string.IsNullOrEmpty(builder.Configuration["APPLICATIONINSIGHTS_CONNECTION_STRING"]))
+    builder.Services.AddApplicationInsightsTelemetry();
 
 builder.Services.AddControllers();
 

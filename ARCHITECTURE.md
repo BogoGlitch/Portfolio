@@ -159,7 +159,7 @@ Configured in `Extensions/SerilogConfiguration.cs`, not in `Program.cs`.
 
 ### Telemetry — Application Insights
 
-`AddApplicationInsightsTelemetry()` in `Program.cs` auto-instruments:
+`AddApplicationInsightsTelemetry()` in `Program.cs` is **conditionally registered** — only when `APPLICATIONINSIGHTS_CONNECTION_STRING` is present. This prevents the SDK from crashing the host locally (v3.0.0 moved to OpenTelemetry internally and hard-fails without a connection string). When registered, it auto-instruments:
 - HTTP request tracking (response time, status codes, URLs)
 - SQL dependency calls (query duration, success/failure)
 - Unhandled exceptions with full stack traces
