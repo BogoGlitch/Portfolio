@@ -81,17 +81,19 @@ Why Azure Static Web Apps over Vercel: SWA integrates natively with GitHub Actio
 - **Filter system:** ProjectFilterModal (3-level cascading), Technologies discipline pill bar (server component)
 - **SSR resilience:** fetchJson with 15s timeout + 1 retry, allSettled fallbacks, root error boundary
 
-### Still To Do
-- [ ] Active nav link highlighting
-- [ ] Headshot: actual photo (placeholder in use)
-- [ ] Technology detail pages — could add more content
-- [ ] Technologies page: discipline filter default should be Backend, not Frontend
-- [ ] Back/breadcrumb links should be closer to main nav, not near page heading
-
 ### Immediate Next
-1. **Fix remaining 2 commented-out tests** — prefix db names with class name
-2. **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response to frontend.
-3. **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table, Entra ID or B2C
+1. **Reseed Technologies** — clean up DB, remove resume-padding entries, establish a solid foundation before deeper work
+2. **Technologies landing page** — review layout/filters once reseeded data is in place
+
+### Backlog
+- [ ] Active nav link / current-page state (useful even with future menu system)
+- [ ] Breadcrumb component — own container, not tied to headline component
+- [ ] Technology detail pages — back burner, revisit after Technologies cleanup
+- [ ] Theme cycle order — default to Prism (light), reorder cycle based on `prefers-color-scheme`
+- [ ] Caching / avoid unnecessary re-renders — HTTP cache headers on API, verify Next.js router cache, explore Azure Cache for Redis
+- [ ] **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response. Needs a gated role (e.g. "JobSeeker") to control costs.
+- [ ] **Entra ID exploration** — understand Entra ID (workforce SSO) vs External ID (customer-facing). External ID for Job Fit sign-up, Entra ID for admin.
+- [ ] **Roles + multi-user auth** — `role` claim in JWT, `[Authorize(Roles = "Admin")]`, Users table
 
 ---
 
