@@ -91,14 +91,14 @@ The `Jwt:Key` and `AdminCredentials` values are intentionally blank in `appsetti
 | PUT | `/api/projects/{id}` | Required | Update project |
 | DELETE | `/api/projects/{id}` | Required | Delete project |
 
-### Technologies
+### Skills
 | Method | Endpoint | Auth | Description |
 |---|---|---|---|
-| GET | `/api/technologies` | Public | List all technologies |
-| GET | `/api/technologies/{slug}` | Public | Get technology by slug |
-| POST | `/api/technologies` | Required | Create technology |
-| PUT | `/api/technologies/{id}` | Required | Update technology |
-| DELETE | `/api/technologies/{id}` | Required | Delete technology |
+| GET | `/api/skills` | Public | List all skills |
+| GET | `/api/skills/{slug}` | Public | Get skill by slug |
+| POST | `/api/skills` | Required | Create skill |
+| PUT | `/api/skills/{id}` | Required | Update skill |
+| DELETE | `/api/skills/{id}` | Required | Delete skill |
 
 ### Health
 | Method | Endpoint | Description |

@@ -72,23 +72,23 @@ Why Azure Static Web Apps over Vercel: SWA integrates natively with GitHub Actio
 
 ### Backend
 - **132 tests passing** — all handlers, validators, and config tests
-- **Known issue:** 2 tests commented out — in-memory DB name conflicts. Fix: prefix db names with class name.
+- **Known issue:** 2 tests commented out — in-memory DB name conflicts (prefixed Create_/Update_ on active tests; commented-out tests still need similar fix).
 - **Resilience stack:** EF Core retry (5 retries, 30s backoff) + `DatabaseKeepAliveService` (SQL ping every 4min) + `QueryWarmupService` (pre-compiles EF queries at startup)
 - **Observability:** Application Insights (requests, SQL dependencies, exceptions), Serilog (console + file), App Insights daily cap 0.1 GB/day, availability test every 5min
 
 ### Frontend
-- **Admin UI:** Full CRUD for Technologies and Projects at `/admin/*`
-- **Filter system:** ProjectFilterModal (3-level cascading), Technologies discipline pill bar (server component)
+- **Admin UI:** Full CRUD for Skills and Projects at `/admin/*`
+- **Filter system:** ProjectFilterModal (3-level cascading), Skills discipline pill bar (server component)
 - **SSR resilience:** fetchJson with 15s timeout + 1 retry, allSettled fallbacks, root error boundary
 
 ### Immediate Next
-1. **Reseed Technologies** — clean up DB, remove resume-padding entries, establish a solid foundation before deeper work
-2. **Technologies landing page** — review layout/filters once reseeded data is in place
+1. **Reseed Skills** — clean up DB, remove resume-padding entries, establish a solid foundation before deeper work
+2. **Skills landing page** — review layout/filters once reseeded data is in place
 
 ### Backlog
 - [ ] Active nav link / current-page state (useful even with future menu system)
 - [ ] Breadcrumb component — own container, not tied to headline component
-- [ ] Technology detail pages — back burner, revisit after Technologies cleanup
+- [ ] Skill detail pages — back burner, revisit after Skills cleanup
 - [ ] Theme cycle order — default to Prism (light), reorder cycle based on `prefers-color-scheme`
 - [ ] Caching / avoid unnecessary re-renders — HTTP cache headers on API, verify Next.js router cache, explore Azure Cache for Redis
 - [ ] **AI Job Fit feature** — user pastes job post, Azure OpenAI responds citing portfolio projects. Streaming response. Needs a gated role (e.g. "JobSeeker") to control costs.
@@ -114,7 +114,7 @@ Why Azure Static Web Apps over Vercel: SWA integrates natively with GitHub Actio
 | `portfolio-web/src/app/components/MobileNav.tsx` | Portaled drawer, scroll lock, hamburger state machine |
 | `portfolio-web/src/lib/api.ts` | Typed frontend API client |
 | `portfolio-web/src/context/AuthContext.tsx` | Shared auth state — consumed by admin layout |
-| `portfolio-web/src/app/components/ProjectFilterModal.tsx` | Cascading filter modal (Discipline → Category → Technology) |
+| `portfolio-web/src/app/components/ProjectFilterModal.tsx` | Cascading filter modal (Discipline → Category → Skill) |
 | `ARCHITECTURE.md` | Design decisions with reasoning |
 | `INTERVIEW.md` | Interview prep — decisions with "why, what over, what at scale" (local only) |
 | `DEVLOG.md` | Chronological dev journal (local only) |

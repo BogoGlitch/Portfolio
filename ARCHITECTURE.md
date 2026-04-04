@@ -16,7 +16,7 @@ Features/
     Commands/CreateProject/
     Commands/UpdateProject/
     Commands/DeleteProject/
-  Technologies/
+  Skills/
     (same structure)
   Auth/
     Commands/Login/
