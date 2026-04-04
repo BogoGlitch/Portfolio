@@ -18,7 +18,7 @@ public class QueryWarmupService(IServiceScopeFactory scopeFactory, ILogger<Query
             using var scope = scopeFactory.CreateScope();
             var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
 
-            // Warm up the Projects query (includes ProjectTechnologies → Technology)
+            // Warm up the Projects query (includes ProjectSkills → Skill)
             await db.Projects
                 .AsNoTracking()
                 .OrderBy(p => p.DisplayOrder)
@@ -26,15 +26,15 @@ public class QueryWarmupService(IServiceScopeFactory scopeFactory, ILogger<Query
                 .Select(ProjectProjections.ToDto())
                 .ToListAsync(stoppingToken);
 
-            // Warm up the Technologies query (includes ProjectTechnologies → Project)
-            await db.Technologies
+            // Warm up the Skills query (includes ProjectSkills → Project)
+            await db.Skills
                 .AsNoTracking()
-                .OrderBy(t => t.DisplayOrder)
-                .ThenBy(t => t.Name)
-                .Select(TechnologyProjections.ToDto())
+                .OrderBy(s => s.DisplayOrder)
+                .ThenBy(s => s.Name)
+                .Select(SkillProjections.ToDto())
                 .ToListAsync(stoppingToken);
 
-            logger.LogInformation("Query warmup completed — Projects and Technologies queries compiled.");
+            logger.LogInformation("Query warmup completed — Projects and Skills queries compiled.");
         }
         catch (Exception ex) when (!stoppingToken.IsCancellationRequested)
         {

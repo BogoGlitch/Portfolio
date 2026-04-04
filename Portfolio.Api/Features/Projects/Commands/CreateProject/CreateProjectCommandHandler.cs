@@ -7,7 +7,7 @@ using Portfolio.Api.Entities;
 namespace Portfolio.Api.Features.Projects.Commands.CreateProject;
 
 /// <summary>
-/// Handles the CreateProjectCommand. Validates slug uniqueness and technology IDs,
+/// Handles the CreateProjectCommand. Validates slug uniqueness and skill IDs,
 /// persists the new project, then re-fetches it with full navigation data for the response.
 /// </summary>
 public class CreateProjectCommandHandler
@@ -35,15 +35,15 @@ public class CreateProjectCommandHandler
             throw new InvalidOperationException($"A project with slug '{normalizedSlug}' already exists.");
         }
 
-        // Validate that every supplied technology ID actually exists in the database.
+        // Validate that every supplied skill ID actually exists in the database.
         // If the counts differ, at least one ID was invalid.
-        var technologies = await _db.Technologies
-            .Where(t => dto.TechnologyIds.Contains(t.Id))
+        var skills = await _db.Skills
+            .Where(s => dto.SkillIds.Contains(s.Id))
             .ToListAsync(cancellationToken);
 
-        if (technologies.Count != dto.TechnologyIds.Count)
+        if (skills.Count != dto.SkillIds.Count)
         {
-            throw new InvalidOperationException("One or more technology IDs are invalid.");
+            throw new InvalidOperationException("One or more skill IDs are invalid.");
         }
 
         var project = new Project
@@ -58,8 +58,8 @@ public class CreateProjectCommandHandler
             IsFeatured = dto.IsFeatured,
             DisplayOrder = dto.DisplayOrder,
             DateCreatedUtc = DateTime.UtcNow,
-            ProjectTechnologies = technologies
-                .Select(t => new ProjectTechnology { TechnologyId = t.Id })
+            ProjectSkills = skills
+                .Select(s => new ProjectSkill { SkillId = s.Id })
                 .ToList()
         };
 
@@ -69,7 +69,7 @@ public class CreateProjectCommandHandler
         _logger.LogInformation("Created project {ProjectId} with slug {ProjectSlug}.", project.Id, project.Slug);
 
         // Re-fetch with AsNoTracking so the response includes full navigation data
-        // (e.g. technology names) that EF does not populate on the tracked entity after insert.
+        // (e.g. skill names) that EF does not populate on the tracked entity after insert.
         return await _db.Projects
             .AsNoTracking()
             .Where(p => p.Id == project.Id)

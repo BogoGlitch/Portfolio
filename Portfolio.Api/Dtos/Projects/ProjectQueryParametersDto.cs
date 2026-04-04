@@ -2,7 +2,7 @@
 
 public record ProjectQueryParametersDto
 (
-    string? TechnologyIds,
+    string? SkillIds,
     string? Discipline
 );
 

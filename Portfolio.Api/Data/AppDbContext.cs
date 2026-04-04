@@ -9,7 +9,7 @@ public class AppDbContext : DbContext
         : base(options)
     {
     }
-    public DbSet<Technology> Technologies { get; set; } = null!;
+    public DbSet<Skill> Skills { get; set; } = null!;
     public DbSet<Project> Projects { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

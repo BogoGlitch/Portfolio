@@ -1,5 +1,5 @@
-﻿using Portfolio.Api.Dtos.Projects;
-using Portfolio.Api.Dtos.Technologies;
+using Portfolio.Api.Dtos.Projects;
+using Portfolio.Api.Dtos.Skills;
 using Portfolio.Api.Entities;
 using System.Linq.Expressions;
 
@@ -21,14 +21,14 @@ public static class ProjectProjections
             project.ImageUrl,
             project.IsFeatured,
             project.DisplayOrder,
-            project.ProjectTechnologies
-                .OrderBy(pt => pt.Technology.DisplayOrder)
-                .ThenBy(pt => pt.Technology.Name)
-                .Select(pt => new TechnologySummaryDto
+            project.ProjectSkills
+                .OrderBy(ps => ps.Skill.DisplayOrder)
+                .ThenBy(ps => ps.Skill.Name)
+                .Select(ps => new SkillSummaryDto
                     (
-                        pt.Technology.Id,
-                        pt.Technology.Name,
-                        pt.Technology.Slug
+                        ps.Skill.Id,
+                        ps.Skill.Name,
+                        ps.Skill.Slug
                     )
                 )
                 .ToList()

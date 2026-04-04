@@ -24,5 +24,5 @@ public class Project
 
     public DateTime DateCreatedUtc { get; set; }
 
-    public ICollection<ProjectTechnology> ProjectTechnologies { get; set; } = [];
+    public ICollection<ProjectSkill> ProjectSkills { get; set; } = [];
 }

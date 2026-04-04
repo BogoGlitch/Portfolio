@@ -4,18 +4,18 @@ using Microsoft.EntityFrameworkCore;
 using Portfolio.Api.Data;
 using Portfolio.Api.Dtos.Auth;
 using Portfolio.Api.Dtos.Projects;
-using Portfolio.Api.Dtos.Technologies;
+using Portfolio.Api.Dtos.Skills;
 using Portfolio.Api.Extensions;
 using Portfolio.Api.Features.Projects.Commands.CreateProject;
 using Portfolio.Api.Features.Projects.Commands.DeleteProject;
 using Portfolio.Api.Features.Projects.Commands.UpdateProject;
 using Portfolio.Api.Features.Projects.Queries.GetProjectBySlug;
 using Portfolio.Api.Features.Projects.Queries.GetProjects;
-using Portfolio.Api.Features.Technologies.Commands.CreateTechnology;
-using Portfolio.Api.Features.Technologies.Commands.DeleteTechnology;
-using Portfolio.Api.Features.Technologies.Commands.UpdateTechnology;
-using Portfolio.Api.Features.Technologies.Queries.GetTechnologies;
-using Portfolio.Api.Features.Technologies.Queries.GetTechnologyBySlug;
+using Portfolio.Api.Features.Skills.Commands.CreateSkill;
+using Portfolio.Api.Features.Skills.Commands.DeleteSkill;
+using Portfolio.Api.Features.Skills.Commands.UpdateSkill;
+using Portfolio.Api.Features.Skills.Queries.GetSkills;
+using Portfolio.Api.Features.Skills.Queries.GetSkillBySlug;
 using Portfolio.Api.Filters;
 using Portfolio.Api.Validators;
 using Portfolio.Api.Features.Auth.Commands.Login;
@@ -74,28 +74,28 @@ builder.Services.AddScoped<CreateProjectCommandHandler>();
 builder.Services.AddScoped<UpdateProjectCommandHandler>();
 builder.Services.AddScoped<DeleteProjectCommandHandler>();
 
-// Technology query handlers
-builder.Services.AddScoped<GetTechnologiesQueryHandler>();
-builder.Services.AddScoped<GetTechnologyBySlugQueryHandler>();
+// Skill query handlers
+builder.Services.AddScoped<GetSkillsQueryHandler>();
+builder.Services.AddScoped<GetSkillBySlugQueryHandler>();
 
-// Technology command handlers
-builder.Services.AddScoped<CreateTechnologyCommandHandler>();
-builder.Services.AddScoped<UpdateTechnologyCommandHandler>();
-builder.Services.AddScoped<DeleteTechnologyCommandHandler>();
+// Skill command handlers
+builder.Services.AddScoped<CreateSkillCommandHandler>();
+builder.Services.AddScoped<UpdateSkillCommandHandler>();
+builder.Services.AddScoped<DeleteSkillCommandHandler>();
 
 // Validators — one per writable DTO
 builder.Services.AddScoped<IValidator<LoginRequestDto>, LoginRequestValidator>();
 builder.Services.AddScoped<IValidator<CreateProjectDto>, CreateProjectValidator>();
 builder.Services.AddScoped<IValidator<UpdateProjectDto>, UpdateProjectValidator>();
-builder.Services.AddScoped<IValidator<CreateTechnologyDto>, CreateTechnologyValidator>();
-builder.Services.AddScoped<IValidator<UpdateTechnologyDto>, UpdateTechnologyValidator>();
+builder.Services.AddScoped<IValidator<CreateSkillDto>, CreateSkillValidator>();
+builder.Services.AddScoped<IValidator<UpdateSkillDto>, UpdateSkillValidator>();
 
 // Validation filters — registered so ServiceFilter can resolve them from DI
 builder.Services.AddScoped<ValidationFilter<LoginRequestDto>>();
 builder.Services.AddScoped<ValidationFilter<CreateProjectDto>>();
 builder.Services.AddScoped<ValidationFilter<UpdateProjectDto>>();
-builder.Services.AddScoped<ValidationFilter<CreateTechnologyDto>>();
-builder.Services.AddScoped<ValidationFilter<UpdateTechnologyDto>>();
+builder.Services.AddScoped<ValidationFilter<CreateSkillDto>>();
+builder.Services.AddScoped<ValidationFilter<UpdateSkillDto>>();
 
 // Keep Azure SQL Basic from going idle between requests
 builder.Services.AddHostedService<DatabaseKeepAliveService>();

@@ -15,7 +15,7 @@ public class CreateProjectCommandHandlerTests
         return new CreateProjectCommandHandler(db, NullLogger<CreateProjectCommandHandler>.Instance);
     }
 
-    private static CreateProjectCommand ValidCommand(string slug = "my-project", IReadOnlyList<int>? technologyIds = null) =>
+    private static CreateProjectCommand ValidCommand(string slug = "my-project", IReadOnlyList<int>? skillIds = null) =>
         new(new CreateProjectDto(
             Name: "My Project",
             Slug: slug,
@@ -26,20 +26,20 @@ public class CreateProjectCommandHandlerTests
             ImageUrl: null,
             IsFeatured: false,
             DisplayOrder: 0,
-            TechnologyIds: technologyIds ?? []
+            SkillIds: skillIds ?? []
         ));
 
     [Fact]
-    public async Task ValidCommand_NoTechnologies_ReturnsProjectReadDto()
+    public async Task ValidCommand_NoSkills_ReturnsProjectReadDto()
     {
-        var handler = BuildHandler(nameof(ValidCommand_NoTechnologies_ReturnsProjectReadDto));
+        var handler = BuildHandler(nameof(ValidCommand_NoSkills_ReturnsProjectReadDto));
 
         var result = await handler.HandleAsync(ValidCommand());
 
         result.Should().NotBeNull();
         result.Name.Should().Be("My Project");
         result.Slug.Should().Be("my-project");
-        result.Technologies.Should().BeEmpty();
+        result.Skills.Should().BeEmpty();
     }
 
     [Fact]
@@ -54,19 +54,19 @@ public class CreateProjectCommandHandlerTests
     }
 
     [Fact]
-    public async Task ValidCommand_WithTechnologies_ReturnsDtoWithTechnologies()
+    public async Task ValidCommand_WithSkills_ReturnsDtoWithSkills()
     {
-        var db = DbContextFactory.Create(nameof(ValidCommand_WithTechnologies_ReturnsDtoWithTechnologies));
+        var db = DbContextFactory.Create(nameof(ValidCommand_WithSkills_ReturnsDtoWithSkills));
         var handler = new CreateProjectCommandHandler(db, NullLogger<CreateProjectCommandHandler>.Instance);
 
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
-        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", Discipline = "Frontend", DisplayOrder = 1 });
+        db.Skills.Add(new Skill { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
+        db.Skills.Add(new Skill { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", Discipline = "Frontend", DisplayOrder = 1 });
         await db.SaveChangesAsync();
 
-        var result = await handler.HandleAsync(ValidCommand(technologyIds: [1, 2]));
+        var result = await handler.HandleAsync(ValidCommand(skillIds: [1, 2]));
 
-        result.Technologies.Should().HaveCount(2);
-        result.Technologies.Select(t => t.Slug).Should().BeEquivalentTo(["dotnet", "react"]);
+        result.Skills.Should().HaveCount(2);
+        result.Skills.Select(s => s.Slug).Should().BeEquivalentTo(["dotnet", "react"]);
     }
 
     [Fact]
@@ -83,19 +83,19 @@ public class CreateProjectCommandHandlerTests
     }
 
     [Fact]
-    public async Task InvalidTechnologyId_ThrowsInvalidOperationException()
+    public async Task InvalidSkillId_ThrowsInvalidOperationException()
     {
-        var handler = BuildHandler(nameof(InvalidTechnologyId_ThrowsInvalidOperationException));
+        var handler = BuildHandler($"Create_{nameof(InvalidSkillId_ThrowsInvalidOperationException)}");
 
-        var act = () => handler.HandleAsync(ValidCommand(technologyIds: [999]));
+        var act = () => handler.HandleAsync(ValidCommand(skillIds: [999]));
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*technology IDs are invalid*");
+            .WithMessage("*skill IDs are invalid*");
     }
 
-    // TODO: db name "MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException" conflicts with UpdateProjectCommandHandlerTests — revisit in a dedicated session
+    // TODO: db name "MixedValidAndInvalidSkillIds_ThrowsInvalidOperationException" conflicts with UpdateProjectCommandHandlerTests — revisit in a dedicated session
     // [Fact]
-    // public async Task MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException() { ... }
+    // public async Task MixedValidAndInvalidSkillIds_ThrowsInvalidOperationException() { ... }
 
     [Fact]
     public async Task Slug_IsTrimmedAndLowercased()

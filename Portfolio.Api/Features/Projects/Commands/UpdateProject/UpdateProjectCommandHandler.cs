@@ -23,9 +23,9 @@ public class UpdateProjectCommandHandler
 
     public async Task<ProjectReadDto?> HandleAsync(UpdateProjectCommand command, CancellationToken cancellationToken = default)
     {
-        // Load with ProjectTechnologies so EF tracks the collection and we can replace it.
+        // Load with ProjectSkills so EF tracks the collection and we can replace it.
         var project = await _db.Projects
-            .Include(p => p.ProjectTechnologies)
+            .Include(p => p.ProjectSkills)
             .FirstOrDefaultAsync(p => p.Id == command.Id, cancellationToken);
 
         if (project is null)
@@ -46,13 +46,13 @@ public class UpdateProjectCommandHandler
             throw new InvalidOperationException($"A project with slug '{normalizedSlug}' already exists.");
         }
 
-        var technologies = await _db.Technologies
-            .Where(t => dto.TechnologyIds.Contains(t.Id))
+        var skills = await _db.Skills
+            .Where(s => dto.SkillIds.Contains(s.Id))
             .ToListAsync(cancellationToken);
 
-        if (technologies.Count != dto.TechnologyIds.Count)
+        if (skills.Count != dto.SkillIds.Count)
         {
-            throw new InvalidOperationException("One or more technology IDs are invalid.");
+            throw new InvalidOperationException("One or more skill IDs are invalid.");
         }
 
         project.Name = dto.Name;
@@ -65,14 +65,14 @@ public class UpdateProjectCommandHandler
         project.IsFeatured = dto.IsFeatured;
         project.DisplayOrder = dto.DisplayOrder;
 
-        // Replace the technology collection by clearing and re-adding.
-        project.ProjectTechnologies.Clear();
-        foreach (var technology in technologies)
+        // Replace the skill collection by clearing and re-adding.
+        project.ProjectSkills.Clear();
+        foreach (var skill in skills)
         {
-            project.ProjectTechnologies.Add(new ProjectTechnology
+            project.ProjectSkills.Add(new ProjectSkill
             {
                 ProjectId = project.Id,
-                TechnologyId = technology.Id
+                SkillId = skill.Id
             });
         }
 

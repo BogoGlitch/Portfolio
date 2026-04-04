@@ -11,5 +11,5 @@ public record UpdateProjectDto
     string? ImageUrl,
     bool IsFeatured,
     int DisplayOrder,
-    IReadOnlyList<int> TechnologyIds
+    IReadOnlyList<int> SkillIds
 );

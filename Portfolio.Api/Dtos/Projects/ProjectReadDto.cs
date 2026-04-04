@@ -1,4 +1,4 @@
-﻿using Portfolio.Api.Dtos.Technologies;
+﻿using Portfolio.Api.Dtos.Skills;
 
 namespace Portfolio.Api.Dtos.Projects;
 
@@ -14,5 +14,5 @@ public record ProjectReadDto
     string? ImageUrl,
     bool IsFeatured,
     int DisplayOrder,
-    IReadOnlyList<TechnologySummaryDto> Technologies
+    IReadOnlyList<SkillSummaryDto> Skills
 );

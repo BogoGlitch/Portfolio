@@ -6,7 +6,7 @@ using Portfolio.Api.Dtos.Projects;
 namespace Portfolio.Api.Features.Projects.Queries.GetProjects;
 
 /// <summary>
-/// Handles the GetProjectsQuery. Applies optional technology ID filtering,
+/// Handles the GetProjectsQuery. Applies optional skill ID filtering,
 /// then returns all matching projects ordered by DisplayOrder then Name.
 /// </summary>
 public class GetProjectsQueryHandler
@@ -24,37 +24,37 @@ public class GetProjectsQueryHandler
     {
         _logger.LogInformation("Retrieving all projects.");
 
-        // Parse the optional comma-separated technology ID filter from the query string.
+        // Parse the optional comma-separated skill ID filter from the query string.
         // e.g. "1,2,3" becomes [1, 2, 3]. Invalid values are silently skipped.
-        var technologyIds = new List<int>();
+        var skillIds = new List<int>();
 
-        if (!string.IsNullOrWhiteSpace(query.QueryParameters.TechnologyIds))
+        if (!string.IsNullOrWhiteSpace(query.QueryParameters.SkillIds))
         {
-            foreach (var value in query.QueryParameters.TechnologyIds
+            foreach (var value in query.QueryParameters.SkillIds
                 .Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
             {
                 if (int.TryParse(value, out var id))
                 {
-                    technologyIds.Add(id);
+                    skillIds.Add(id);
                 }
             }
 
-            technologyIds = technologyIds.Distinct().ToList();
+            skillIds = skillIds.Distinct().ToList();
         }
 
         var dbQuery = _db.Projects.AsNoTracking();
 
-        if (technologyIds.Count > 0)
+        if (skillIds.Count > 0)
         {
             dbQuery = dbQuery.Where(p =>
-                p.ProjectTechnologies.Any(pt => technologyIds.Contains(pt.TechnologyId)));
+                p.ProjectSkills.Any(ps => skillIds.Contains(ps.SkillId)));
         }
 
         if (!string.IsNullOrWhiteSpace(query.QueryParameters.Discipline))
         {
             var discipline = query.QueryParameters.Discipline.Trim();
             dbQuery = dbQuery.Where(p =>
-                p.ProjectTechnologies.Any(pt => pt.Technology.Discipline == discipline));
+                p.ProjectSkills.Any(ps => ps.Skill.Discipline == discipline));
         }
 
         return await dbQuery

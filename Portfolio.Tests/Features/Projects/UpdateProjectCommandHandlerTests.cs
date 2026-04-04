@@ -15,7 +15,7 @@ public class UpdateProjectCommandHandlerTests
         return new UpdateProjectCommandHandler(db, NullLogger<UpdateProjectCommandHandler>.Instance);
     }
 
-    private static UpdateProjectCommand UpdateCommand(int id, string slug = "my-project", IReadOnlyList<int>? technologyIds = null) =>
+    private static UpdateProjectCommand UpdateCommand(int id, string slug = "my-project", IReadOnlyList<int>? skillIds = null) =>
         new(id, new UpdateProjectDto(
             Name: "My Project Updated",
             Slug: slug,
@@ -26,7 +26,7 @@ public class UpdateProjectCommandHandlerTests
             ImageUrl: null,
             IsFeatured: true,
             DisplayOrder: 1,
-            TechnologyIds: technologyIds ?? []
+            SkillIds: skillIds ?? []
         ));
 
     [Fact]
@@ -86,42 +86,42 @@ public class UpdateProjectCommandHandlerTests
     }
 
     [Fact]
-    public async Task InvalidTechnologyId_ThrowsInvalidOperationException()
+    public async Task InvalidSkillId_ThrowsInvalidOperationException()
     {
-        var db = DbContextFactory.Create(nameof(InvalidTechnologyId_ThrowsInvalidOperationException));
+        var db = DbContextFactory.Create($"Update_{nameof(InvalidSkillId_ThrowsInvalidOperationException)}");
         db.Projects.Add(new Project { Id = 1, Name = "My Project", Slug = "my-project", ShortDescription = "short", FullDescription = "full", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new UpdateProjectCommandHandler(db, NullLogger<UpdateProjectCommandHandler>.Instance);
 
-        var act = () => handler.HandleAsync(UpdateCommand(1, technologyIds: [999]));
+        var act = () => handler.HandleAsync(UpdateCommand(1, skillIds: [999]));
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*technology IDs are invalid*");
+            .WithMessage("*skill IDs are invalid*");
     }
 
     [Fact]
-    public async Task MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException()
+    public async Task MixedValidAndInvalidSkillIds_ThrowsInvalidOperationException()
     {
-        var db = DbContextFactory.Create(nameof(MixedValidAndInvalidTechnologyIds_ThrowsInvalidOperationException));
+        var db = DbContextFactory.Create(nameof(MixedValidAndInvalidSkillIds_ThrowsInvalidOperationException));
         db.Projects.Add(new Project { Id = 1, Name = "My Project", Slug = "my-project", ShortDescription = "short", FullDescription = "full", DisplayOrder = 0 });
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
+        db.Skills.Add(new Skill { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
         await db.SaveChangesAsync();
         var handler = new UpdateProjectCommandHandler(db, NullLogger<UpdateProjectCommandHandler>.Instance);
 
         // ID 1 exists, ID 999 does not — count mismatch should throw.
-        var act = () => handler.HandleAsync(UpdateCommand(1, technologyIds: [1, 999]));
+        var act = () => handler.HandleAsync(UpdateCommand(1, skillIds: [1, 999]));
 
         await act.Should().ThrowAsync<InvalidOperationException>()
-            .WithMessage("*technology IDs are invalid*");
+            .WithMessage("*skill IDs are invalid*");
     }
 
     [Fact]
-    public async Task Technologies_AreFullyReplaced()
+    public async Task Skills_AreFullyReplaced()
     {
-        // Original has tech 1; update replaces with tech 2 only.
-        var db = DbContextFactory.Create(nameof(Technologies_AreFullyReplaced));
-        db.Technologies.Add(new Technology { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
-        db.Technologies.Add(new Technology { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", Discipline = "Frontend", DisplayOrder = 1 });
+        // Original has skill 1; update replaces with skill 2 only.
+        var db = DbContextFactory.Create(nameof(Skills_AreFullyReplaced));
+        db.Skills.Add(new Skill { Id = 1, Name = ".NET", Slug = "dotnet", Description = "desc", Category = "Backend", Discipline = "Backend", DisplayOrder = 0 });
+        db.Skills.Add(new Skill { Id = 2, Name = "React", Slug = "react", Description = "desc", Category = "Frontend", Discipline = "Frontend", DisplayOrder = 1 });
         db.Projects.Add(new Project
         {
             Id = 1,
@@ -130,18 +130,18 @@ public class UpdateProjectCommandHandlerTests
             ShortDescription = "short",
             FullDescription = "full",
             DisplayOrder = 0,
-            ProjectTechnologies = [new ProjectTechnology { ProjectId = 1, TechnologyId = 1 }]
+            ProjectSkills = [new ProjectSkill { ProjectId = 1, SkillId = 1 }]
         });
         await db.SaveChangesAsync();
         var handler = new UpdateProjectCommandHandler(db, NullLogger<UpdateProjectCommandHandler>.Instance);
 
-        var result = await handler.HandleAsync(UpdateCommand(1, technologyIds: [2]));
+        var result = await handler.HandleAsync(UpdateCommand(1, skillIds: [2]));
 
-        result!.Technologies.Should().ContainSingle(t => t.Slug == "react");
-        result.Technologies.Should().NotContain(t => t.Slug == "dotnet");
+        result!.Skills.Should().ContainSingle(s => s.Slug == "react");
+        result.Skills.Should().NotContain(s => s.Slug == "dotnet");
     }
 
-    // TODO: db name "Slug_IsTrimmedAndLowercased" conflicts with UpdateTechnologyCommandHandlerTests — revisit in a dedicated session
+    // TODO: db name "Slug_IsTrimmedAndLowercased" conflicts with UpdateSkillCommandHandlerTests — revisit in a dedicated session
     // [Fact]
     // public async Task Slug_IsTrimmedAndLowercased() { ... }
 }
