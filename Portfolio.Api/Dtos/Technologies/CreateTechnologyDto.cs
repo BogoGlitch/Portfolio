@@ -9,6 +9,7 @@ public record CreateTechnologyDto
     string Discipline,
     string? LogoUrl,
     string? DocumentationUrl,
+    string? FullStory,
     bool IsFeatured,
     int DisplayOrder
 );

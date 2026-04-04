@@ -24,6 +24,7 @@ public class UpdateTechnologyCommandHandlerTests
             Discipline: "Backend",
             LogoUrl: null,
             DocumentationUrl: null,
+            FullStory: null,
             IsFeatured: true,
             DisplayOrder: 1
         ));

@@ -24,6 +24,7 @@ public class CreateTechnologyCommandHandlerTests
             Discipline: "Backend",
             LogoUrl: null,
             DocumentationUrl: null,
+            FullStory: null,
             IsFeatured: false,
             DisplayOrder: 0
         ));

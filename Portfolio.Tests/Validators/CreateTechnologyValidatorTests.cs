@@ -16,8 +16,9 @@ public class CreateTechnologyValidatorTests
         string discipline = "Frontend",
         string? logoUrl = null,
         string? documentationUrl = null,
+        string? fullStory = null,
         int displayOrder = 0) =>
-        new(name, slug, description, category, discipline, logoUrl, documentationUrl, false, displayOrder);
+        new(name, slug, description, category, discipline, logoUrl, documentationUrl, fullStory, false, displayOrder);
 
     [Fact]
     public void ValidDto_PassesValidation()

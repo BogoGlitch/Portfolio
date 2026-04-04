@@ -43,6 +43,7 @@ public class CreateTechnologyCommandHandler
             Discipline = dto.Discipline,
             LogoUrl = dto.LogoUrl,
             DocumentationUrl = dto.DocumentationUrl,
+            FullStory = dto.FullStory,
             IsFeatured = dto.IsFeatured,
             DisplayOrder = dto.DisplayOrder,
             DateAddedUtc = DateTime.UtcNow

@@ -44,6 +44,10 @@ public class UpdateTechnologyValidator : AbstractValidator<UpdateTechnologyDto>
             .WithMessage("DocumentationUrl must be a valid URL.")
             .When(x => !string.IsNullOrEmpty(x.DocumentationUrl));
 
+        RuleFor(x => x.FullStory)
+            .MaximumLength(4000)
+            .When(x => !string.IsNullOrEmpty(x.FullStory));
+
         RuleFor(x => x.DisplayOrder)
             .GreaterThanOrEqualTo(0);
     }

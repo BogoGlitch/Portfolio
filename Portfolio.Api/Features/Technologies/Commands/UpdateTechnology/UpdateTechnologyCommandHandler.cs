@@ -49,6 +49,7 @@ public class UpdateTechnologyCommandHandler
         technology.Discipline = dto.Discipline;
         technology.LogoUrl = dto.LogoUrl;
         technology.DocumentationUrl = dto.DocumentationUrl;
+        technology.FullStory = dto.FullStory;
         technology.IsFeatured = dto.IsFeatured;
         technology.DisplayOrder = dto.DisplayOrder;
 

@@ -18,6 +18,8 @@ public class Technology
 
     public string? DocumentationUrl { get; set; }
 
+    public string? FullStory { get; set; }
+
     public bool IsFeatured { get; set; } = false;
 
     public int DisplayOrder { get; set; }

@@ -45,6 +45,9 @@ public class TechnologyConfiguration : IEntityTypeConfiguration<Technology>
         builder.Property(t => t.DocumentationUrl)
             .HasMaxLength(500);
 
+        builder.Property(t => t.FullStory)
+            .HasMaxLength(4000);
+
         builder.Property(t => t.IsFeatured)
             .IsRequired();
 
