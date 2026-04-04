@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { getTechnologies } from "@/lib/api";
+import { getSkills } from "@/lib/api";
 import type { Metadata } from "next";
 import GlassCard from "../components/GlassCard";
 import AnimatedSection from "../components/AnimatedSection";
@@ -9,11 +9,11 @@ import { TbLayoutGrid } from "react-icons/tb";
 import styles from "./page.module.css";
 
 export const metadata: Metadata = {
-  title: "Technologies",
-  description: "Technologies, frameworks, and platform choices used across the portfolio.",
+  title: "Skills",
+  description: "Skills, frameworks, and platform choices used across the portfolio.",
 };
 
-type TechnologiesPageProps = {
+type SkillsPageProps = {
   searchParams?: Promise<{ discipline?: string }>;
 };
 
@@ -26,30 +26,30 @@ function categoryRank(category: string | null | undefined): number {
   return idx === -1 ? CATEGORY_ORDER.length : idx;
 }
 
-export default async function TechnologiesPage({ searchParams }: TechnologiesPageProps) {
+export default async function SkillsPage({ searchParams }: SkillsPageProps) {
   const resolved = await searchParams;
   const selectedDiscipline = resolved?.discipline?.trim() ?? '';
 
-  let technologies: Awaited<ReturnType<typeof getTechnologies>>;
+  let skills: Awaited<ReturnType<typeof getSkills>>;
   try {
-    technologies = await getTechnologies();
+    skills = await getSkills();
   } catch {
-    technologies = [];
+    skills = [];
   }
 
-  // Primary: technologies used in projects rank first (more projects = higher)
+  // Primary: skills used in projects rank first (more projects = higher)
   // Secondary: displayOrder encodes global recruiter-value ranking (lower = more valuable)
-  const byValue = (a: (typeof technologies)[number], b: (typeof technologies)[number]) =>
+  const byValue = (a: (typeof skills)[number], b: (typeof skills)[number]) =>
     b.projects.length - a.projects.length || a.displayOrder - b.displayOrder;
 
   const filtered = selectedDiscipline
-    ? [...technologies]
-        .filter(t => t.discipline === selectedDiscipline)
+    ? [...skills]
+        .filter(s => s.discipline === selectedDiscipline)
         .sort((a, b) => categoryRank(a.category) - categoryRank(b.category) || byValue(a, b))
-    : [...technologies].sort(byValue);
+    : [...skills].sort(byValue);
 
   const availableDisciplines = DISCIPLINE_ORDER.filter(d =>
-    technologies.some(t => t.discipline === d),
+    skills.some(s => s.discipline === d),
   );
 
   return (
@@ -57,7 +57,7 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
       <div className={styles.header}>
         <div className={styles.headerInner}>
           <Link href="/" className={styles.backLink}>← Home</Link>
-          <h1 className={styles.title}>Technologies</h1>
+          <h1 className={styles.title}>Skills</h1>
           <p className={styles.subtitle}>
             Explore the tools and platforms used across the portfolio.
           </p>
@@ -68,7 +68,7 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
       <div className={styles.filterBand}>
         <div className={styles.filterBandInner}>
           <Link
-            href="/technologies"
+            href="/skills"
             className={`${styles.disciplinePill} ${!selectedDiscipline ? styles.disciplinePillActive : ''}`}
           >
             <TbLayoutGrid size={14} aria-hidden="true" />
@@ -77,7 +77,7 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
           {availableDisciplines.map(d => (
             <Link
               key={d}
-              href={selectedDiscipline === d ? '/technologies' : `/technologies?discipline=${encodeURIComponent(d)}`}
+              href={selectedDiscipline === d ? '/skills' : `/skills?discipline=${encodeURIComponent(d)}`}
               className={`${styles.disciplinePill} ${selectedDiscipline === d ? styles.disciplinePillActive : ''}`}
             >
               <DisciplineIcon discipline={d} size={14} />
@@ -89,25 +89,25 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
 
       <div className={styles.body}>
         <div className={styles.grid}>
-          {filtered.map((tech, i) => (
-            <AnimatedSection key={tech.id} delay={i * 25} instant={i < 5}>
-              <GlassCard href={`/technologies/${tech.slug}`}>
+          {filtered.map((skill, i) => (
+            <AnimatedSection key={skill.id} delay={i * 25} instant={i < 5}>
+              <GlassCard href={`/skills/${skill.slug}`}>
                 <div className={styles.cardInner}>
                   <div className={styles.cardTop}>
                     <div className={styles.cardHeader}>
-                      <CategoryIcon category={tech.category} size={24} className={styles.cardIcon} />
-                      {tech.category && (
-                        <span className={styles.category}>{tech.category}</span>
+                      <CategoryIcon category={skill.category} size={24} className={styles.cardIcon} />
+                      {skill.category && (
+                        <span className={styles.category}>{skill.category}</span>
                       )}
                     </div>
-                    <h2 className={styles.cardTitle}>{tech.name}</h2>
-                    {tech.description && (
-                      <p className={styles.cardDesc}>{tech.description}</p>
+                    <h2 className={styles.cardTitle}>{skill.name}</h2>
+                    {skill.description && (
+                      <p className={styles.cardDesc}>{skill.description}</p>
                     )}
                   </div>
                   <div className={styles.cardFooter}>
                     <span className={styles.projectCount}>
-                      {tech.projects.length} {tech.projects.length === 1 ? 'project' : 'projects'}
+                      {skill.projects.length} {skill.projects.length === 1 ? 'project' : 'projects'}
                     </span>
                   </div>
                 </div>
@@ -118,7 +118,7 @@ export default async function TechnologiesPage({ searchParams }: TechnologiesPag
 
         {filtered.length === 0 && (
           <div className={styles.empty}>
-            <p>No technologies in this discipline yet.</p>
+            <p>No skills in this discipline yet.</p>
           </div>
         )}
       </div>

@@ -4,7 +4,7 @@ export type ProjectSummary = {
   slug: string;
 };
 
-export type Technology = {
+export type Skill = {
   id: number;
   name: string;
   slug: string;

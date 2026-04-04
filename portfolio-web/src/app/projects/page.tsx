@@ -1,4 +1,4 @@
-import { getProjects, getTechnologies } from "@/lib/api";
+import { getProjects, getSkills } from "@/lib/api";
 import Link from "next/link";
 import ImageWithSkeleton from "../components/ImageWithSkeleton";
 import type { Metadata } from "next";
@@ -15,22 +15,22 @@ export const metadata: Metadata = {
 };
 
 type ProjectsPageProps = {
-  searchParams?: Promise<{ technologyIds?: string }>;
+  searchParams?: Promise<{ skillIds?: string }>;
 };
 
 export default async function ProjectsPage({ searchParams }: ProjectsPageProps) {
   const resolved = await searchParams;
-  const selectedTechIds = resolved?.technologyIds
-    ? resolved.technologyIds.split(',').map(s => s.trim()).filter(Boolean)
+  const selectedSkillIds = resolved?.skillIds
+    ? resolved.skillIds.split(',').map(s => s.trim()).filter(Boolean)
     : [];
 
-  const [projectsResult, technologiesResult] = await Promise.allSettled([
-    getProjects({ technologyIds: selectedTechIds }),
-    getTechnologies(),
+  const [projectsResult, skillsResult] = await Promise.allSettled([
+    getProjects({ skillIds: selectedSkillIds }),
+    getSkills(),
   ]);
 
   const projects = projectsResult.status === "fulfilled" ? projectsResult.value : [];
-  const technologies = technologiesResult.status === "fulfilled" ? technologiesResult.value : [];
+  const skills = skillsResult.status === "fulfilled" ? skillsResult.value : [];
 
   // Featured projects rise to the top, then sort by displayOrder
   const sorted = [...projects].sort((a, b) => {
@@ -45,15 +45,15 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
           <Link href="/" className={styles.backLink}>← Home</Link>
           <h1 className={styles.title}>Projects</h1>
           <p className={styles.subtitle}>
-            Browse portfolio projects and filter by technology.
+            Browse portfolio projects and filter by skill.
           </p>
         </div>
       </div>
 
       <div className={styles.body}>
         <ProjectFilterModal
-          technologies={technologies}
-          currentTechIds={selectedTechIds}
+          skills={skills}
+          currentSkillIds={selectedSkillIds}
           basePath="/projects"
         />
 
@@ -88,13 +88,13 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                           <h2 className={styles.cardTitle}>{project.name}</h2>
                           <p className={styles.cardDesc}>{project.shortDescription}</p>
                         </div>
-                        {project.technologies.length > 0 && (
+                        {project.skills.length > 0 && (
                           <div className={styles.cardTags}>
-                            {project.technologies.slice(0, 6).map((t) => (
-                              <TechTag key={t.id} name={t.name} />
+                            {project.skills.slice(0, 6).map((s) => (
+                              <TechTag key={s.id} name={s.name} />
                             ))}
-                            {project.technologies.length > 6 && (
-                              <span className={styles.moreTags}>+{project.technologies.length - 6}</span>
+                            {project.skills.length > 6 && (
+                              <span className={styles.moreTags}>+{project.skills.length - 6}</span>
                             )}
                           </div>
                         )}
@@ -115,13 +115,13 @@ export default async function ProjectsPage({ searchParams }: ProjectsPageProps) 
                           <h2 className={styles.cardTitle}>{project.name}</h2>
                           <p className={styles.cardDesc}>{project.shortDescription}</p>
                         </div>
-                        {project.technologies.length > 0 && (
+                        {project.skills.length > 0 && (
                           <div className={styles.cardTags}>
-                            {project.technologies.slice(0, 4).map((t) => (
-                              <TechTag key={t.id} name={t.name} />
+                            {project.skills.slice(0, 4).map((s) => (
+                              <TechTag key={s.id} name={s.name} />
                             ))}
-                            {project.technologies.length > 4 && (
-                              <span className={styles.moreTags}>+{project.technologies.length - 4}</span>
+                            {project.skills.length > 4 && (
+                              <span className={styles.moreTags}>+{project.skills.length - 4}</span>
                             )}
                           </div>
                         )}

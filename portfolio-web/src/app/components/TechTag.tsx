@@ -9,7 +9,7 @@ type TechTagProps = {
 export default function TechTag({ name, slug }: TechTagProps) {
   if (slug) {
     return (
-      <Link href={`/technologies/${slug}`} className={styles.tag}>
+      <Link href={`/skills/${slug}`} className={styles.tag}>
         {name}
       </Link>
     );

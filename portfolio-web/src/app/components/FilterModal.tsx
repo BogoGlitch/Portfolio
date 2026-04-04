@@ -7,7 +7,7 @@ import styles from './FilterModal.module.css';
 export type FilterGroup = {
   /** Visual section heading (e.g. "Frontend", "Discipline") */
   label: string;
-  /** URL query-param key this group writes to (e.g. "technologyIds", "discipline") */
+  /** URL query-param key this group writes to (e.g. "skillIds", "discipline") */
   paramName: string;
   /** true → checkbox multi-select; false → radio single-select */
   multiSelect: boolean;

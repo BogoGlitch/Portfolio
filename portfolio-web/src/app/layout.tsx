@@ -4,7 +4,7 @@ import "./globals.css";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import CommandPalette from "./components/CommandPalette";
-import { getProjects, getTechnologies } from "@/lib/api";
+import { getProjects, getSkills } from "@/lib/api";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -39,17 +39,17 @@ export default async function RootLayout({
 }>) {
   // Fetch data server-side so CommandPalette has everything it needs
   // without the client making extra requests on Cmd+K
-  const [projects, technologies] = await Promise.allSettled([
+  const [projects, skills] = await Promise.allSettled([
     getProjects(),
-    getTechnologies(),
+    getSkills(),
   ]);
 
   const paletteProjects = projects.status === "fulfilled"
     ? projects.value.map((p) => ({ type: "project" as const, name: p.name, slug: p.slug, description: p.shortDescription }))
     : [];
 
-  const paletteTechnologies = technologies.status === "fulfilled"
-    ? technologies.value.map((t) => ({ type: "technology" as const, name: t.name, slug: t.slug, description: t.description ?? undefined }))
+  const paletteSkills = skills.status === "fulfilled"
+    ? skills.value.map((s) => ({ type: "skill" as const, name: s.name, slug: s.slug, description: s.description ?? undefined }))
     : [];
 
   return (
@@ -68,7 +68,7 @@ export default async function RootLayout({
           <main className="appMain">{children}</main>
           <Footer />
         </div>
-        <CommandPalette projects={paletteProjects} technologies={paletteTechnologies} />
+        <CommandPalette projects={paletteProjects} skills={paletteSkills} />
       </body>
     </html>
   );

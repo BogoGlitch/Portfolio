@@ -4,19 +4,19 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { TbArrowDown, TbArrowLeft, TbArrowUp, TbEdit, TbPlus, TbTrash } from 'react-icons/tb';
 import {
-  createTechnology,
-  deleteTechnology,
-  getTechnologies,
-  TechnologyWriteDto,
-  updateTechnology,
+  createSkill,
+  deleteSkill,
+  getSkills,
+  SkillWriteDto,
+  updateSkill,
 } from '@/lib/api';
 import { SkeletonTableRows } from '@/app/components/SkeletonLoader';
-import { Technology } from '@/types/technology';
-import styles from './technologies.module.css';
+import { Skill } from '@/types/skill';
+import styles from './skills.module.css';
 
 const DISCIPLINES = ['Frontend', 'Backend', 'Database', 'Cloud', 'DevOps', 'AI'] as const;
 
-type TechSortKey = 'name' | 'category' | 'discipline' | 'slug' | 'displayOrder' | 'isFeatured';
+type SkillSortKey = 'name' | 'category' | 'discipline' | 'slug' | 'displayOrder' | 'isFeatured';
 type Discipline = typeof DISCIPLINES[number];
 
 type FormState = {
@@ -47,7 +47,7 @@ function slugify(name: string): string {
   return name.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '');
 }
 
-function formToDto(f: FormState): TechnologyWriteDto {
+function formToDto(f: FormState): SkillWriteDto {
   return {
     name: f.name,
     slug: f.slug,
@@ -61,12 +61,12 @@ function formToDto(f: FormState): TechnologyWriteDto {
   };
 }
 
-export default function TechnologiesAdminPage() {
-  const [technologies, setTechnologies] = useState<Technology[]>([]);
+export default function SkillsAdminPage() {
+  const [skills, setSkills] = useState<Skill[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
-  const [sortKey, setSortKey] = useState<TechSortKey>('discipline');
+  const [sortKey, setSortKey] = useState<SkillSortKey>('discipline');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
-  const [modal, setModal] = useState<{ mode: 'create' | 'edit'; tech?: Technology } | null>(null);
+  const [modal, setModal] = useState<{ mode: 'create' | 'edit'; skill?: Skill } | null>(null);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [slugManual, setSlugManual] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -80,8 +80,8 @@ export default function TechnologiesAdminPage() {
   async function load() {
     setDataLoading(true);
     try {
-      const items = await getTechnologies();
-      setTechnologies(items as Technology[]);
+      const items = await getSkills();
+      setSkills(items as Skill[]);
     } finally {
       setDataLoading(false);
     }
@@ -94,21 +94,21 @@ export default function TechnologiesAdminPage() {
     setModal({ mode: 'create' });
   }
 
-  function openEdit(tech: Technology) {
+  function openEdit(skill: Skill) {
     setForm({
-      name: tech.name,
-      slug: tech.slug,
-      description: tech.description ?? '',
-      category: tech.category ?? '',
-      discipline: (tech.discipline as Discipline) ?? '',
-      logoUrl: tech.logoUrl ?? '',
-      documentationUrl: tech.documentationUrl ?? '',
-      isFeatured: tech.isFeatured,
-      displayOrder: String(tech.displayOrder),
+      name: skill.name,
+      slug: skill.slug,
+      description: skill.description ?? '',
+      category: skill.category ?? '',
+      discipline: (skill.discipline as Discipline) ?? '',
+      logoUrl: skill.logoUrl ?? '',
+      documentationUrl: skill.documentationUrl ?? '',
+      isFeatured: skill.isFeatured,
+      displayOrder: String(skill.displayOrder),
     });
     setSlugManual(true);
     setError(null);
-    setModal({ mode: 'edit', tech });
+    setModal({ mode: 'edit', skill });
   }
 
   function handleNameChange(value: string) {
@@ -131,9 +131,9 @@ export default function TechnologiesAdminPage() {
     try {
       const dto = formToDto(form);
       if (modal?.mode === 'create') {
-        await createTechnology(dto);
-      } else if (modal?.tech) {
-        await updateTechnology(modal.tech.id, dto);
+        await createSkill(dto);
+      } else if (modal?.skill) {
+        await updateSkill(modal.skill.id, dto);
       }
       setModal(null);
       await load();
@@ -146,14 +146,14 @@ export default function TechnologiesAdminPage() {
 
   async function handleDelete(id: number) {
     try {
-      await deleteTechnology(id);
+      await deleteSkill(id);
     } finally {
       setConfirmDelete(null);
       await load();
     }
   }
 
-  function handleSort(key: TechSortKey) {
+  function handleSort(key: SkillSortKey) {
     if (key === sortKey) {
       setSortDir(d => (d === 'asc' ? 'desc' : 'asc'));
     } else {
@@ -162,12 +162,12 @@ export default function TechnologiesAdminPage() {
     }
   }
 
-  function sortIcon(key: TechSortKey) {
+  function sortIcon(key: SkillSortKey) {
     if (sortKey !== key) return null;
     return sortDir === 'asc' ? <TbArrowUp size={11} /> : <TbArrowDown size={11} />;
   }
 
-  const sorted = [...technologies].sort((a, b) => {
+  const sorted = [...skills].sort((a, b) => {
     const av = (a[sortKey] ?? '') as string | number | boolean;
     const bv = (b[sortKey] ?? '') as string | number | boolean;
     const al = typeof av === 'string' ? av.toLowerCase() : av;
@@ -185,15 +185,15 @@ export default function TechnologiesAdminPage() {
           <Link href="/admin" className={styles.back}>
             <TbArrowLeft size={16} /> Admin
           </Link>
-          <h1 className={styles.heading}>Technologies</h1>
+          <h1 className={styles.heading}>Skills</h1>
         </div>
         <button className={styles.addBtn} onClick={openCreate}>
-          <TbPlus size={15} /> Add Technology
+          <TbPlus size={15} /> Add Skill
         </button>
       </div>
 
-      {!dataLoading && technologies.length === 0 ? (
-        <p className={styles.empty}>No technologies yet. Add one to get started.</p>
+      {!dataLoading && skills.length === 0 ? (
+        <p className={styles.empty}>No skills yet. Add one to get started.</p>
       ) : (
         <table className={styles.table}>
           <thead>
@@ -210,21 +210,21 @@ export default function TechnologiesAdminPage() {
           <tbody>
             {dataLoading ? (
               <SkeletonTableRows rows={6} cols={7} />
-            ) : sorted.map(tech => (
-              <tr key={tech.id}>
-                <td className={styles.nameCell}>{tech.name}</td>
-                <td>{tech.category ?? '—'}</td>
-                <td>{tech.discipline}</td>
-                <td className={styles.slugCell}>{tech.slug}</td>
-                <td>{tech.displayOrder}</td>
-                <td>{tech.isFeatured ? '✓' : ''}</td>
+            ) : sorted.map(skill => (
+              <tr key={skill.id}>
+                <td className={styles.nameCell}>{skill.name}</td>
+                <td>{skill.category ?? '—'}</td>
+                <td>{skill.discipline}</td>
+                <td className={styles.slugCell}>{skill.slug}</td>
+                <td>{skill.displayOrder}</td>
+                <td>{skill.isFeatured ? '✓' : ''}</td>
                 <td className={styles.actions}>
-                  <button className={styles.iconBtn} onClick={() => openEdit(tech)} title="Edit">
+                  <button className={styles.iconBtn} onClick={() => openEdit(skill)} title="Edit">
                     <TbEdit size={15} />
                   </button>
-                  {confirmDelete === tech.id ? (
+                  {confirmDelete === skill.id ? (
                     <>
-                      <button className={styles.confirmDeleteBtn} onClick={() => handleDelete(tech.id)}>
+                      <button className={styles.confirmDeleteBtn} onClick={() => handleDelete(skill.id)}>
                         Delete
                       </button>
                       <button className={styles.cancelBtn} onClick={() => setConfirmDelete(null)}>
@@ -234,7 +234,7 @@ export default function TechnologiesAdminPage() {
                   ) : (
                     <button
                       className={`${styles.iconBtn} ${styles.dangerBtn}`}
-                      onClick={() => setConfirmDelete(tech.id)}
+                      onClick={() => setConfirmDelete(skill.id)}
                       title="Delete"
                     >
                       <TbTrash size={15} />
@@ -251,7 +251,7 @@ export default function TechnologiesAdminPage() {
         <div className={styles.overlay} onClick={() => setModal(null)}>
           <div className={styles.modal} onClick={e => e.stopPropagation()}>
             <h2 className={styles.modalTitle}>
-              {modal.mode === 'create' ? 'Add Technology' : 'Edit Technology'}
+              {modal.mode === 'create' ? 'Add Skill' : 'Edit Skill'}
             </h2>
             <form onSubmit={handleSubmit} className={styles.form}>
               <div className={styles.twoCol}>

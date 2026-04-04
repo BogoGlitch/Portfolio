@@ -1,7 +1,7 @@
 import SkeletonLoader from "@/app/components/SkeletonLoader";
 import styles from "./loading.module.css";
 
-export default function LoadingTechnologyDetail() {
+export default function LoadingSkillDetail() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>

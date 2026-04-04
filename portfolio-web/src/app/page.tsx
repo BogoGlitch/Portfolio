@@ -2,7 +2,7 @@ import Image from "next/image";
 import ImageWithSkeleton from "./components/ImageWithSkeleton";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getProjects, getTechnologies } from "@/lib/api";
+import { getProjects, getSkills } from "@/lib/api";
 import { TbFolder, TbCpu, TbBrain } from "react-icons/tb";
 import GlassCard from "./components/GlassCard";
 import GlowButton from "./components/GlowButton";
@@ -14,17 +14,17 @@ import styles from "./page.module.css";
 export const metadata: Metadata = {
   title: "Home | Sean Bogolin",
   description:
-    "Backend-first portfolio platform showcasing projects, technologies, and pragmatic software engineering decisions.",
+    "Backend-first portfolio platform showcasing projects, skills, and pragmatic software engineering decisions.",
 };
 
 export default async function HomePage() {
-  const [projects, technologies] = await Promise.allSettled([
+  const [projects, skills] = await Promise.allSettled([
     getProjects(),
-    getTechnologies(),
+    getSkills(),
   ]);
 
   const projectCount = projects.status === "fulfilled" ? projects.value.length : 0;
-  const techCount = technologies.status === "fulfilled" ? technologies.value.length : 0;
+  const skillCount = skills.status === "fulfilled" ? skills.value.length : 0;
   const featuredProjects = projects.status === "fulfilled"
     ? projects.value.filter((p) => p.isFeatured).slice(0, 3)
     : [];
@@ -67,7 +67,7 @@ export default async function HomePage() {
             </p>
             <div className={styles.heroActions}>
               <GlowButton href="/projects" variant="primary">View Projects</GlowButton>
-              <GlowButton href="/technologies" variant="secondary">Browse Technologies</GlowButton>
+              <GlowButton href="/skills" variant="secondary">Browse Skills</GlowButton>
             </div>
           </div>
 
@@ -93,8 +93,8 @@ export default async function HomePage() {
             </div>
             <div className={styles.statDivider} />
             <div className={styles.stat}>
-              <span className={styles.statValue}>{techCount}</span>
-              <span className={styles.statLabel}>Technologies</span>
+              <span className={styles.statValue}>{skillCount}</span>
+              <span className={styles.statLabel}>Skills</span>
             </div>
             <div className={styles.statDivider} />
             <div className={styles.stat}>
@@ -160,10 +160,10 @@ export default async function HomePage() {
                       <div className={styles.projectMeta}>
                         <h3 className={styles.projectTitle}>{project.name}</h3>
                         <p className={styles.projectDesc}>{project.shortDescription}</p>
-                        {project.technologies.length > 0 && (
+                        {project.skills.length > 0 && (
                           <div className={styles.projectTags}>
-                            {project.technologies.slice(0, 6).map((t) => (
-                              <TechTag key={t.id} name={t.name} />
+                            {project.skills.slice(0, 6).map((s) => (
+                              <TechTag key={s.id} name={s.name} />
                             ))}
                           </div>
                         )}
@@ -184,10 +184,10 @@ export default async function HomePage() {
                           <h3 className={styles.projectTitle}>{project.name}</h3>
                           <p className={styles.projectDesc}>{project.shortDescription}</p>
                         </div>
-                        {project.technologies.length > 0 && (
+                        {project.skills.length > 0 && (
                           <div className={styles.projectTags}>
-                            {project.technologies.slice(0, 4).map((t) => (
-                              <TechTag key={t.id} name={t.name} />
+                            {project.skills.slice(0, 4).map((s) => (
+                              <TechTag key={s.id} name={s.name} />
                             ))}
                           </div>
                         )}
@@ -213,9 +213,9 @@ export default async function HomePage() {
                 <span className={styles.exploreArrow}>→</span>
               </div>
             </GlassCard>
-            <GlassCard href="/technologies">
+            <GlassCard href="/skills">
               <div className={styles.exploreCard}>
-                <span className={styles.exploreLabel}><TbCpu size={14} />Technologies</span>
+                <span className={styles.exploreLabel}><TbCpu size={14} />Skills</span>
                 <h3 className={styles.exploreTitle}>Frameworks, platforms, and tooling choices</h3>
                 <span className={styles.exploreArrow}>→</span>
               </div>

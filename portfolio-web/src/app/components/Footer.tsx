@@ -7,7 +7,7 @@ import styles from "./Footer.module.css";
 const NAV_LINKS = [
   { href: "/",              label: "Home" },
   { href: "/projects",      label: "Projects" },
-  { href: "/technologies",  label: "Technologies" },
+  { href: "/skills",         label: "Skills" },
   { href: null,             label: "Approach",     disabled: true },
 ];
 

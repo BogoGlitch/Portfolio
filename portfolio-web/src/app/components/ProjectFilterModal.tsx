@@ -2,33 +2,33 @@
 
 import { useState, useMemo } from 'react';
 import { useRouter } from 'next/navigation';
-import type { Technology } from '@/types/technology';
+import type { Skill } from '@/types/skill';
 import styles from './FilterModal.module.css';
 
 type Props = {
-  technologies: Technology[];
-  currentTechIds: string[];
+  skills: Skill[];
+  currentSkillIds: string[];
   basePath: string;
 };
 
 const DISCIPLINE_ORDER = ['Frontend', 'Backend', 'Database', 'Cloud', 'DevOps', 'AI'];
 
-export default function ProjectFilterModal({ technologies, currentTechIds, basePath }: Props) {
+export default function ProjectFilterModal({ skills, currentSkillIds, basePath }: Props) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [pendingDisciplines, setPendingDisciplines] = useState<string[]>([]);
   const [pendingCategories, setPendingCategories] = useState<string[]>([]);
-  const [pendingTechIds, setPendingTechIds] = useState<string[]>([]);
+  const [pendingSkillIds, setPendingSkillIds] = useState<string[]>([]);
 
   const openModal = () => {
-    const selectedTechs = technologies.filter(t => currentTechIds.includes(String(t.id)));
-    setPendingDisciplines([...new Set(selectedTechs.map(t => t.discipline))]);
+    const selectedSkills = skills.filter(s => currentSkillIds.includes(String(s.id)));
+    setPendingDisciplines([...new Set(selectedSkills.map(s => s.discipline))]);
     setPendingCategories([...new Set(
-      selectedTechs
-        .filter((t): t is typeof t & { category: string } => t.category !== null)
-        .map(t => `${t.discipline}::${t.category}`),
+      selectedSkills
+        .filter((s): s is typeof s & { category: string } => s.category !== null)
+        .map(s => `${s.discipline}::${s.category}`),
     )]);
-    setPendingTechIds(currentTechIds);
+    setPendingSkillIds(currentSkillIds);
     setOpen(true);
   };
 
@@ -37,25 +37,25 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
     const result: Record<string, string[]> = {};
     for (const d of pendingDisciplines) {
       const cats = [...new Set(
-        technologies.filter(t => t.discipline === d && t.category !== null).map(t => t.category as string),
+        skills.filter(s => s.discipline === d && s.category !== null).map(s => s.category as string),
       )].sort();
       if (cats.length > 0) result[d] = cats;
     }
     return result;
-  }, [technologies, pendingDisciplines]);
+  }, [skills, pendingDisciplines]);
 
-  // For each selected discipline::category composite key, which technologies are available
-  const techsByCategory = useMemo(() => {
-    const result: Record<string, Technology[]> = {};
+  // For each selected discipline::category composite key, which skills are available
+  const skillsByCategory = useMemo(() => {
+    const result: Record<string, Skill[]> = {};
     for (const key of pendingCategories) {
       const [discipline, category] = key.split('::');
-      const techs = technologies.filter(
-        t => t.discipline === discipline && t.category === category,
+      const matching = skills.filter(
+        s => s.discipline === discipline && s.category === category,
       );
-      if (techs.length > 0) result[key] = techs;
+      if (matching.length > 0) result[key] = matching;
     }
     return result;
-  }, [technologies, pendingCategories]);
+  }, [skills, pendingCategories]);
 
   const toggleDiscipline = (discipline: string) => {
     const next = pendingDisciplines.includes(discipline)
@@ -64,14 +64,14 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
 
     const nextCategories = pendingCategories.filter(key => next.includes(key.split('::')[0]));
     const validComposites = new Set(nextCategories);
-    const nextTechIds = pendingTechIds.filter(id => {
-      const tech = technologies.find(t => String(t.id) === id);
-      return tech ? validComposites.has(`${tech.discipline}::${tech.category}`) : false;
+    const nextSkillIds = pendingSkillIds.filter(id => {
+      const skill = skills.find(s => String(s.id) === id);
+      return skill ? validComposites.has(`${skill.discipline}::${skill.category}`) : false;
     });
 
     setPendingDisciplines(next);
     setPendingCategories(nextCategories);
-    setPendingTechIds(nextTechIds);
+    setPendingSkillIds(nextSkillIds);
   };
 
   const toggleCategory = (discipline: string, category: string) => {
@@ -81,42 +81,42 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
       : [...pendingCategories, key];
 
     const validComposites = new Set(next);
-    const nextTechIds = pendingTechIds.filter(id => {
-      const tech = technologies.find(t => String(t.id) === id);
-      return tech ? validComposites.has(`${tech.discipline}::${tech.category}`) : false;
+    const nextSkillIds = pendingSkillIds.filter(id => {
+      const skill = skills.find(s => String(s.id) === id);
+      return skill ? validComposites.has(`${skill.discipline}::${skill.category}`) : false;
     });
 
     setPendingCategories(next);
-    setPendingTechIds(nextTechIds);
+    setPendingSkillIds(nextSkillIds);
   };
 
-  const toggleTech = (techId: string) => {
-    setPendingTechIds(prev =>
-      prev.includes(techId) ? prev.filter(id => id !== techId) : [...prev, techId],
+  const toggleSkill = (skillId: string) => {
+    setPendingSkillIds(prev =>
+      prev.includes(skillId) ? prev.filter(id => id !== skillId) : [...prev, skillId],
     );
   };
 
   const clearAll = () => {
     setPendingDisciplines([]);
     setPendingCategories([]);
-    setPendingTechIds([]);
+    setPendingSkillIds([]);
   };
 
   const apply = () => {
-    const prev = [...currentTechIds].sort().join(',');
-    const next = [...pendingTechIds].sort().join(',');
+    const prev = [...currentSkillIds].sort().join(',');
+    const next = [...pendingSkillIds].sort().join(',');
     if (prev !== next) {
-      const query = pendingTechIds.length > 0 ? `?technologyIds=${pendingTechIds.join(',')}` : '';
+      const query = pendingSkillIds.length > 0 ? `?skillIds=${pendingSkillIds.join(',')}` : '';
       router.push(`${basePath}${query}`);
     }
     setOpen(false);
   };
 
-  const orderedDisciplines = DISCIPLINE_ORDER.filter(d => technologies.some(t => t.discipline === d));
+  const orderedDisciplines = DISCIPLINE_ORDER.filter(d => skills.some(s => s.discipline === d));
   const hasDisciplines = pendingDisciplines.length > 0;
   const hasCategories = pendingCategories.length > 0;
-  const activeCount = currentTechIds.length;
-  const hasChanged = [...currentTechIds].sort().join(',') !== [...pendingTechIds].sort().join(',');
+  const activeCount = currentSkillIds.length;
+  const hasChanged = [...currentSkillIds].sort().join(',') !== [...pendingSkillIds].sort().join(',');
 
   return (
     <>
@@ -192,15 +192,15 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
                 )}
               </div>
 
-              {/* ── Level 3: Technology ── */}
+              {/* ── Level 3: Skill ── */}
               <div className={`${styles.group} ${!hasCategories ? styles.groupDimmed : ''}`}>
                 <div className={styles.groupHeader}>
-                  <span className={styles.groupLabel}>Technology</span>
+                  <span className={styles.groupLabel}>Skill</span>
                   <span className={styles.groupHelp}>(Choose 1 or more.)</span>
                 </div>
                 {!hasCategories ? (
                   <div className={styles.groupCardWaiting}>
-                    <span className={styles.groupCardEmpty}>Select a category above to see technologies.</span>
+                    <span className={styles.groupCardEmpty}>Select a category above to see skills.</span>
                   </div>
                 ) : (
                   <div className={styles.groupCardsWrap}>
@@ -210,13 +210,13 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
                       <div key={key} className={styles.groupCard}>
                         <div className={styles.groupCardLabel}>{category}</div>
                         <div className={styles.groupItems}>
-                          {(techsByCategory[key] ?? []).map(t => (
+                          {(skillsByCategory[key] ?? []).map(s => (
                             <button
-                              key={t.id}
-                              className={`${styles.item} ${pendingTechIds.includes(String(t.id)) ? styles.itemActive : ''}`}
-                              onClick={() => toggleTech(String(t.id))}
+                              key={s.id}
+                              className={`${styles.item} ${pendingSkillIds.includes(String(s.id)) ? styles.itemActive : ''}`}
+                              onClick={() => toggleSkill(String(s.id))}
                             >
-                              {t.name}
+                              {s.name}
                             </button>
                           ))}
                         </div>
@@ -232,7 +232,7 @@ export default function ProjectFilterModal({ technologies, currentTechIds, baseP
             <div className={styles.modalFooter}>
               <button className={styles.clearBtn} onClick={clearAll} disabled={pendingDisciplines.length === 0}>Clear all</button>
               <button className={styles.applyBtn} onClick={apply}>
-                {hasChanged ? `Apply (${pendingTechIds.length})` : 'Close'}
+                {hasChanged ? `Apply (${pendingSkillIds.length})` : 'Close'}
               </button>
             </div>
           </div>

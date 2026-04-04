@@ -6,7 +6,7 @@ import { TbSearch, TbCode, TbCpu, TbX } from 'react-icons/tb';
 import styles from './CommandPalette.module.css';
 
 type CommandItem = {
-  type: 'project' | 'technology';
+  type: 'project' | 'skill';
   name: string;
   slug: string;
   description?: string;
@@ -14,10 +14,10 @@ type CommandItem = {
 
 type CommandPaletteProps = {
   projects: CommandItem[];
-  technologies: CommandItem[];
+  skills: CommandItem[];
 };
 
-export default function CommandPalette({ projects, technologies }: CommandPaletteProps) {
+export default function CommandPalette({ projects, skills }: CommandPaletteProps) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
@@ -28,9 +28,9 @@ export default function CommandPalette({ projects, technologies }: CommandPalett
   const allItems = useMemo<CommandItem[]>(
     () => [
       ...projects.map((p) => ({ ...p, type: 'project' as const })),
-      ...technologies.map((t) => ({ ...t, type: 'technology' as const })),
+      ...skills.map((s) => ({ ...s, type: 'skill' as const })),
     ],
-    [projects, technologies],
+    [projects, skills],
   );
 
   const filtered = useMemo(() => {
@@ -59,7 +59,7 @@ export default function CommandPalette({ projects, technologies }: CommandPalett
     (item: CommandItem) => {
       const path = item.type === 'project'
         ? `/projects/${item.slug}`
-        : `/technologies/${item.slug}`;
+        : `/skills/${item.slug}`;
       router.push(path);
       closePalette();
     },
@@ -135,7 +135,7 @@ export default function CommandPalette({ projects, technologies }: CommandPalett
             ref={inputRef}
             type="text"
             className={styles.input}
-            placeholder="Search projects and technologies..."
+            placeholder="Search projects and skills..."
             value={query}
             onChange={(e) => setQuery(e.target.value)}
           />

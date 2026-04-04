@@ -11,9 +11,9 @@ export default function AdminPage() {
       <p className={styles.sub}>Manage site content</p>
 
       <div className={styles.grid}>
-        <Link href="/admin/technologies" className={styles.card}>
+        <Link href="/admin/skills" className={styles.card}>
           <TbCode size={28} className={styles.cardIcon} />
-          <span className={styles.cardLabel}>Technologies</span>
+          <span className={styles.cardLabel}>Skills</span>
         </Link>
         <Link href="/admin/projects" className={styles.card}>
           <TbDatabase size={28} className={styles.cardIcon} />

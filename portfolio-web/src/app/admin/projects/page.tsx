@@ -7,16 +7,16 @@ import {
   createProject,
   deleteProject,
   getProjects,
-  getTechnologies,
+  getSkills,
   ProjectWriteDto,
   updateProject,
 } from '@/lib/api';
-import { Project, TechnologySummary } from '@/types/project';
-import { Technology } from '@/types/technology';
+import { Project, SkillSummary } from '@/types/project';
+import { Skill } from '@/types/skill';
 import { SkeletonTableRows } from '@/app/components/SkeletonLoader';
 import styles from './projects.module.css';
 
-type ProjectSortKey = 'name' | 'slug' | 'techCount' | 'displayOrder' | 'isFeatured';
+type ProjectSortKey = 'name' | 'slug' | 'skillCount' | 'displayOrder' | 'isFeatured';
 
 type FormState = {
   name: string;
@@ -28,7 +28,7 @@ type FormState = {
   imageUrl: string;
   isFeatured: boolean;
   displayOrder: string;
-  technologyIds: number[];
+  skillIds: number[];
 };
 
 const emptyForm: FormState = {
@@ -41,7 +41,7 @@ const emptyForm: FormState = {
   imageUrl: '',
   isFeatured: false,
   displayOrder: '0',
-  technologyIds: [],
+  skillIds: [],
 };
 
 function slugify(name: string): string {
@@ -59,13 +59,13 @@ function formToDto(f: FormState): ProjectWriteDto {
     imageUrl: f.imageUrl || null,
     isFeatured: f.isFeatured,
     displayOrder: parseInt(f.displayOrder, 10) || 0,
-    technologyIds: f.technologyIds,
+    skillIds: f.skillIds,
   };
 }
 
 export default function ProjectsAdminPage() {
   const [projects, setProjects] = useState<Project[]>([]);
-  const [allTechs, setAllTechs] = useState<Technology[]>([]);
+  const [allSkills, setAllSkills] = useState<Skill[]>([]);
   const [dataLoading, setDataLoading] = useState(true);
   const [sortKey, setSortKey] = useState<ProjectSortKey>('displayOrder');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
@@ -83,9 +83,9 @@ export default function ProjectsAdminPage() {
   async function load() {
     setDataLoading(true);
     try {
-      const [projectsRes, techsRes] = await Promise.all([getProjects(), getTechnologies()]);
+      const [projectsRes, skillsRes] = await Promise.all([getProjects(), getSkills()]);
       setProjects(projectsRes as Project[]);
-      setAllTechs(techsRes as Technology[]);
+      setAllSkills(skillsRes as Skill[]);
     } finally {
       setDataLoading(false);
     }
@@ -109,7 +109,7 @@ export default function ProjectsAdminPage() {
       imageUrl: project.imageUrl ?? '',
       isFeatured: project.isFeatured,
       displayOrder: String(project.displayOrder),
-      technologyIds: project.technologies.map((t: TechnologySummary) => t.id),
+      skillIds: project.skills.map((s: SkillSummary) => s.id),
     });
     setSlugManual(true);
     setError(null);
@@ -129,12 +129,12 @@ export default function ProjectsAdminPage() {
     setForm(f => ({ ...f, slug: value }));
   }
 
-  function toggleTech(id: number) {
+  function toggleSkill(id: number) {
     setForm(f => ({
       ...f,
-      technologyIds: f.technologyIds.includes(id)
-        ? f.technologyIds.filter(t => t !== id)
-        : [...f.technologyIds, id],
+      skillIds: f.skillIds.includes(id)
+        ? f.skillIds.filter(s => s !== id)
+        : [...f.skillIds, id],
     }));
   }
 
@@ -182,8 +182,8 @@ export default function ProjectsAdminPage() {
   }
 
   const sorted = [...projects].sort((a, b) => {
-    const av = sortKey === 'techCount' ? a.technologies.length : (a[sortKey] ?? '') as string | number | boolean;
-    const bv = sortKey === 'techCount' ? b.technologies.length : (b[sortKey] ?? '') as string | number | boolean;
+    const av = sortKey === 'skillCount' ? a.skills.length : (a[sortKey] ?? '') as string | number | boolean;
+    const bv = sortKey === 'skillCount' ? b.skills.length : (b[sortKey] ?? '') as string | number | boolean;
     const al = typeof av === 'string' ? av.toLowerCase() : av;
     const bl = typeof bv === 'string' ? bv.toLowerCase() : bv;
     if (al < bl) return sortDir === 'asc' ? -1 : 1;
@@ -213,7 +213,7 @@ export default function ProjectsAdminPage() {
             <tr>
               <th className={styles.sortable} onClick={() => handleSort('name')}><span className={styles.thContent}>Name{sortIcon('name')}</span></th>
               <th className={styles.sortable} onClick={() => handleSort('slug')}><span className={styles.thContent}>Slug{sortIcon('slug')}</span></th>
-              <th className={styles.sortable} onClick={() => handleSort('techCount')}><span className={styles.thContent}>Technologies{sortIcon('techCount')}</span></th>
+              <th className={styles.sortable} onClick={() => handleSort('skillCount')}><span className={styles.thContent}>Skills{sortIcon('skillCount')}</span></th>
               <th className={styles.sortable} onClick={() => handleSort('displayOrder')}><span className={styles.thContent}>Order{sortIcon('displayOrder')}</span></th>
               <th className={styles.sortable} onClick={() => handleSort('isFeatured')}><span className={styles.thContent}>Featured{sortIcon('isFeatured')}</span></th>
               <th></th>
@@ -227,7 +227,7 @@ export default function ProjectsAdminPage() {
                 <td className={styles.nameCell}>{project.name}</td>
                 <td className={styles.slugCell}>{project.slug}</td>
                 <td className={styles.techCell}>
-                  {project.technologies.map(t => t.name).join(', ') || '—'}
+                  {project.skills.map(s => s.name).join(', ') || '—'}
                 </td>
                 <td>{project.displayOrder}</td>
                 <td>{project.isFeatured ? '✓' : ''}</td>
@@ -362,18 +362,18 @@ export default function ProjectsAdminPage() {
                 <span>Featured</span>
               </label>
 
-              {allTechs.length > 0 && (
+              {allSkills.length > 0 && (
                 <div className={styles.field}>
-                  <span className={styles.label}>Technologies</span>
+                  <span className={styles.label}>Skills</span>
                   <div className={styles.techList}>
-                    {allTechs.map(tech => (
-                      <label key={tech.id} className={styles.techItem}>
+                    {allSkills.map(skill => (
+                      <label key={skill.id} className={styles.techItem}>
                         <input
                           type="checkbox"
-                          checked={form.technologyIds.includes(tech.id)}
-                          onChange={() => toggleTech(tech.id)}
+                          checked={form.skillIds.includes(skill.id)}
+                          onChange={() => toggleSkill(skill.id)}
                         />
-                        <span>{tech.name}</span>
+                        <span>{skill.name}</span>
                       </label>
                     ))}
                   </div>

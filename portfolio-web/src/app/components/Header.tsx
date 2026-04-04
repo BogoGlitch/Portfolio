@@ -29,7 +29,7 @@ export default function Header() {
 
         <nav className={styles.nav} aria-label="Main navigation">
           <Link href="/projects" className={styles.navLink}>Projects</Link>
-          <Link href="/technologies" className={styles.navLink}>Technologies</Link>
+          <Link href="/skills" className={styles.navLink}>Skills</Link>
           <span className={`${styles.navLink} ${styles.navLinkDisabled}`} aria-disabled="true">
             Approach
           </span>

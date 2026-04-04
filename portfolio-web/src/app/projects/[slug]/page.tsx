@@ -45,10 +45,10 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
           {project.shortDescription && (
             <p className={styles.subtitle}>{project.shortDescription}</p>
           )}
-          {project.technologies.length > 0 && (
+          {project.skills.length > 0 && (
             <div className={styles.tags}>
-              {project.technologies.map((t) => (
-                <TechTag key={t.id} name={t.name} slug={t.slug} />
+              {project.skills.map((s) => (
+                <TechTag key={s.id} name={s.name} slug={s.slug} />
               ))}
             </div>
           )}
@@ -89,14 +89,14 @@ export default async function ProjectDetailPage({ params }: { params: Promise<{ 
         </div>
 
         <aside className={styles.sidebar}>
-          {project.technologies.length > 0 && (
+          {project.skills.length > 0 && (
             <AnimatedSection delay={120}>
               <GlassCard>
-                <h2 className={styles.sectionTitle}>Technologies</h2>
+                <h2 className={styles.sectionTitle}>Skills</h2>
                 <div className={styles.techList}>
-                  {project.technologies.map((t) => (
-                    <Link key={t.id} href={`/technologies/${t.slug}`} className={styles.techItem}>
-                      {t.name}
+                  {project.skills.map((s) => (
+                    <Link key={s.id} href={`/skills/${s.slug}`} className={styles.techItem}>
+                      {s.name}
                     </Link>
                   ))}
                 </div>

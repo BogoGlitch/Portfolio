@@ -9,7 +9,7 @@ import styles from './MobileNav.module.css';
 
 const NAV_LINKS = [
   { href: '/projects',     label: 'Projects',     Icon: TbFolder },
-  { href: '/technologies', label: 'Technologies', Icon: TbCpu },
+  { href: '/skills',       label: 'Skills',        Icon: TbCpu },
   { href: null,            label: 'Approach',     Icon: TbBrain, disabled: true },
 ];
 

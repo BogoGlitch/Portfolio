@@ -267,7 +267,7 @@
   resize: vertical;
 }
 
-/* ── Technology checkbox list ── */
+/* ── Skill checkbox list ── */
 .techList {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));

@@ -6,13 +6,13 @@ import styles from './FilterPills.module.css';
 type FilterItem = { id: number; name: string };
 
 type FilterPillsProps = {
-  technologies: FilterItem[];
+  skills: FilterItem[];
   selectedIds: string[];
   basePath: string;
   paramName: string;
 };
 
-export default function FilterPills({ technologies, selectedIds, basePath, paramName }: FilterPillsProps) {
+export default function FilterPills({ skills, selectedIds, basePath, paramName }: FilterPillsProps) {
   const router = useRouter();
 
   const toggle = (id: number) => {
@@ -32,7 +32,7 @@ export default function FilterPills({ technologies, selectedIds, basePath, param
     <div className={styles.wrapper}>
       <span className={styles.label}>Filter</span>
       <div className={styles.pills}>
-        {technologies.map((t) => {
+        {skills.map((t) => {
           const active = selectedIds.includes(String(t.id));
           return (
             <button

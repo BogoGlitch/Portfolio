@@ -1,4 +1,4 @@
-export type TechnologySummary = {
+export type SkillSummary = {
   id: number;
   name: string;
   slug: string;
@@ -15,5 +15,5 @@ export type Project = {
   imageUrl: string | null;
   isFeatured: boolean;
   displayOrder: number;
-  technologies: TechnologySummary[];
+  skills: SkillSummary[];
 };

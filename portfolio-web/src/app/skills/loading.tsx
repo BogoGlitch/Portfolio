@@ -4,7 +4,7 @@ import styles from './loading.module.css';
 // These widths loosely match: All, Frontend, Backend, Database, Cloud, DevOps, AI
 const PILL_WIDTHS = ['3.5rem', '5.5rem', '5rem', '5.5rem', '4rem', '5rem', '3rem'];
 
-export default function LoadingTechnologies() {
+export default function LoadingSkills() {
   return (
     <div className={styles.page}>
       <div className={styles.header}>
